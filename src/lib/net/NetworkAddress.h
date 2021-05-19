@@ -31,13 +31,13 @@ public:
     /*!
     Constructs the invalid address
     */
-    NetworkAddress();
+    NetworkAddress() = default;
 
     /*!
     Construct the wildcard address with the given port.  \c port must
     not be zero.
     */
-    NetworkAddress(int port);
+    NetworkAddress(int port, IArchNetwork::EAddressFamily family);
 
     /*!
     Construct the network address for the given \c hostname and \c port.
@@ -117,7 +117,7 @@ private:
     void                checkPort();
 
 private:
-    ArchNetAddress        m_address;
-    String                m_hostname;
-    int                    m_port;
+    ArchNetAddress        m_address  = nullptr;
+    String                m_hostname = "";
+    int                   m_port     = 0;
 };

@@ -40,6 +40,40 @@ TEST(ServerConfigTests, serverconfig_will_deem_inequal_configs_with_different_ma
     a.addScreen("screenA");
     EXPECT_FALSE(a == b);
     EXPECT_FALSE(b == a);
+    EXPECT_FALSE(a.addScreen("screenA"));
+}
+
+TEST(ServerConfigTests, serverconfig_screen_rename)
+{
+    Config a(nullptr);
+    EXPECT_TRUE(a.addScreen("screenA"));
+    EXPECT_TRUE(a.renameScreen("screenA", "screenB"));
+    EXPECT_TRUE(a.getCanonicalName("screenB") == "screenB");
+
+    Config b(nullptr);
+    EXPECT_FALSE(b.removeScreen("screenA"));
+    EXPECT_FALSE(b.renameScreen("screenA", "screenB"));
+    EXPECT_TRUE(b.addScreen("screenA"));
+    EXPECT_TRUE(b.addScreen("screenB"));
+    EXPECT_FALSE(b.renameScreen("screenA", "screenB"));
+    EXPECT_TRUE(b.renameScreen("screenA", "screena"));
+
+    EXPECT_FALSE(b.addAlias("screena", "screena"));
+    EXPECT_FALSE(b.addAlias("screenC", "screenA_Alias"));
+    EXPECT_TRUE(b.addAlias("screenA", "screenA_Alias1"));
+    EXPECT_TRUE(b.addAlias("screenA", "screenA_Alias2"));
+    EXPECT_FALSE(b.removeAlias("screenA"));
+    EXPECT_FALSE(b.removeAlias("missed_Alias"));
+    EXPECT_TRUE(b.removeAlias("screenA_Alias1"));
+    EXPECT_FALSE(b.removeAliases("screenC"));
+    EXPECT_TRUE(b.removeAliases("screenA"));
+    EXPECT_TRUE(b.removeScreen("screenA"));
+
+    b.removeAllAliases();
+    b.removeAllScreens();
+
+    EXPECT_TRUE(b.getCanonicalName("screena") == "");
+    EXPECT_TRUE(b.getCanonicalName("screenB") == "");
 }
 
 TEST(ServerConfigTests, serverconfig_will_deem_inequal_configs_with_different_cell_names)
@@ -59,6 +93,7 @@ TEST(ServerConfigTests, serverconfig_will_deem_equal_configs_with_same_cell_name
     EXPECT_TRUE(a.addScreen("screenA"));
     EXPECT_TRUE(a.addScreen("screenB"));
     EXPECT_TRUE(a.addScreen("screenC"));
+    EXPECT_FALSE(a.connect("screenD", EDirection::kBottom, 0.0f, 0.5f, "screenC", 0.5f, 1.0f));
     EXPECT_TRUE(a.connect("screenA", EDirection::kBottom, 0.0f, 0.5f, "screenB", 0.5f, 1.0f));
     EXPECT_TRUE(a.connect("screenB", EDirection::kLeft, 0.0f, 0.5f, "screenB", 0.5f, 1.0f));
     EXPECT_TRUE(b.addScreen("screenA"));
@@ -78,11 +113,32 @@ TEST(ServerConfigTests, serverconfig_will_deem_equal_configs_with_same_cell_name
     addr1.resolve();
     NetworkAddress addr2("localhost", 8080);
     addr2.resolve();
-    a.setSynergyAddress(addr1);
-    b.setSynergyAddress(addr2);
+    a.setSynergyAddresses({addr1});
+    b.setSynergyAddresses({addr2});
 
     EXPECT_TRUE(a == b);
     EXPECT_TRUE(b == a);
+
+    EXPECT_FALSE(a.disconnect("screenD", EDirection::kBottom));
+    EXPECT_TRUE(a.disconnect("screenC", EDirection::kBottom));
+    EXPECT_TRUE(a.removeOption("screenA", kOptionClipboardSharing));
+    EXPECT_TRUE(a.removeOptions("screenA"));
+}
+
+TEST(ServerConfigTests, hostname_null_copy_test)
+{
+    NetworkAddress empty;
+    NetworkAddress copyEmpty(empty);
+
+    EXPECT_TRUE(copyEmpty.getAddress() == nullptr);
+    EXPECT_TRUE(copyEmpty.getPort() == 0);
+
+
+    NetworkAddress addr1("localhost", 3060);
+    NetworkAddress addr2("::1", 4090);
+    addr1 = addr2;
+
+    EXPECT_TRUE(addr1 == addr2);
 }
 
 TEST(NetworkAddress, hostname_valid_parsing)
@@ -202,8 +258,8 @@ TEST(ServerConfigTests, serverconfig_will_deem_different_configs_with_different_
     Config b(nullptr);
     a.addScreen("screenA");
     b.addScreen("screenA");
-    a.setSynergyAddress(NetworkAddress(8080));
-    b.setSynergyAddress(NetworkAddress(1010));
+    a.setSynergyAddresses({NetworkAddress(8080, IArchNetwork::kINET), NetworkAddress(8080, IArchNetwork::kINET6)});
+    b.setSynergyAddresses({NetworkAddress(1010, IArchNetwork::kINET), NetworkAddress(1010, IArchNetwork::kINET6)});
     EXPECT_FALSE(a == b);
     EXPECT_FALSE(b == a);
 }

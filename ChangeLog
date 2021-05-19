@@ -28,8 +28,8 @@ Enhancements:
 - #6962 | #6965 Add macOS 10.13 builder
 - #6990 Change VersionChecker URL and include system language in the header
 - #6999 Detect if Linux is running with Wayland, and display a warning message
+- #7002 Add ipv6 support on windows and Linux
 - #7003 Prioritization rules server config
-===========
 
 v1.13.1-stable
 ===========

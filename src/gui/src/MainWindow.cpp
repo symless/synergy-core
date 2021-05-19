@@ -132,7 +132,9 @@ MainWindow::MainWindow (AppConfig& appConfig,
 
     updateScreenName();
     connect(m_AppConfig, SIGNAL(screenNameChanged()), this, SLOT(updateScreenName()));
-    m_pLabelIpAddresses->setText(tr("This computer's IP addresses: %1").arg(getIPAddresses()));
+    auto synergyIpAddresses = getIPAddresses();
+    appendLogDebug(synergyIpAddresses);
+    m_pLabelIpAddresses->setText(tr("This computer's IP addresses: %1").arg(synergyIpAddresses));
 
 #if defined(Q_OS_WIN)
     // ipc must always be enabled, so that we can disable command when switching to desktop mode.
@@ -799,7 +801,19 @@ bool MainWindow::clientArgs(QStringList& args, QString& app)
         }
 #endif
     }
-    args << m_pLineEditHostname->text() + ":" + QString::number(appConfig().port());
+
+    QString hostName = m_pLineEditHostname->text();
+    // if interface is IPv6 - ensure that ip is in square brackets
+    if (hostName.count(':') > 1) {
+        if(hostName[0] != '[') {
+            hostName.insert(0, '[');
+        }
+        if(hostName[hostName.size() - 1] != ']') {
+            hostName.push_back(']');
+        }
+    }
+
+    args << hostName + ":" + QString::number(appConfig().port());
     return true;
 }
 
@@ -898,7 +912,11 @@ bool MainWindow::serverArgs(QStringList& args, QString& app)
     // wrap in quotes in case username contains spaces.
     configFilename = QString("\"%1\"").arg(configFilename);
 #endif
-    args << "-c" << configFilename << "--address" << address();
+    args << "-c" << configFilename;
+
+    if (!appConfig().networkInterface().isEmpty()) {
+        args << "--address " << address();
+    }
     appendLogInfo("config file: " + configFilename);
 
 #ifndef SYNERGY_ENTERPRISE
@@ -1065,34 +1083,42 @@ void MainWindow::setVisible(bool visible)
 
 QString MainWindow::getIPAddresses()
 {
-    QStringList result;
-    bool hinted = false;
-    const auto localnet = QHostAddress::parseSubnet("192.168.0.0/16");
-    const QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
+    QList<QString> possibleMatches;
+    for(auto iface : QNetworkInterface::allInterfaces()) {
+        // We only want valid interfaces that are running and aren't loopback/virtual/point to point
+        if ( !iface.isValid() ||
+             !(iface.flags() & QNetworkInterface::IsRunning) ||
+             iface.flags() & QNetworkInterface::IsLoopBack ||
+             iface.flags() & QNetworkInterface::IsPointToPoint) {
+            continue;
+        }
 
-    for (const auto& address : addresses) {
-        if (address.protocol() == QAbstractSocket::IPv4Protocol &&
-            address != QHostAddress(QHostAddress::LocalHost) &&
-            !address.isInSubnet(QHostAddress::parseSubnet("169.254.0.0/16"))) {
+        for(auto addressEntry : iface.addressEntries()) {
+            auto address = addressEntry.ip();
+            auto ip = address.toString();
+            if ( ip.isEmpty() ||
+                 address == QHostAddress::Null ||
+                 address == QHostAddress::LocalHost ||
+                 address == QHostAddress::LocalHostIPv6 ) {
+                continue;
+            }
 
-            // usually 192.168.x.x is a useful ip for the user, so indicate
-            // this by making it bold.
-            if (!hinted && address.isInSubnet(localnet)) {
-                QString format = "<span style=\"color:#4285F4;\">%1</span>";
-                result.append(format.arg(address.toString()));
-                hinted = true;
+            // normolize ipv6 scopeID
+            if (!address.toIPv4Address()) {
+                auto temp = ip.split('%');
+                temp.last() = QString::number(iface.index());
+                ip = temp.join('%');
             }
-            else {
-                result.append(address.toString());
-            }
+
+            possibleMatches.push_back(ip);
         }
     }
 
-    if (result.isEmpty()) {
-        result.append(tr("Unknown"));
+    if (possibleMatches.isEmpty()) {
+        possibleMatches.append(tr("Unknown"));
     }
 
-    return result.join(", ");
+    return possibleMatches.join(", ");
 }
 
 void MainWindow::changeEvent(QEvent* event)

@@ -21,6 +21,7 @@
 #include "arch/win32/XArchWindows.h"
 #include "arch/IArchMultithread.h"
 #include "arch/Arch.h"
+#include "base/Log.h"
 
 #include <malloc.h>
 
@@ -892,6 +893,87 @@ ArchNetworkWinsock::isEqualAddr(ArchNetAddress a, ArchNetAddress b)
 {
     return (a == b || (a->m_len == b->m_len &&
             memcmp(&a->m_addr, &b->m_addr, a->m_len) == 0));
+}
+
+std::string ArchNetworkWinsock::getConnectionName(ArchSocket s)
+{
+    struct sockaddr peer;
+    int peer_len = sizeof(peer);
+    /* Ask getpeername to fill in peer's socket address.  */
+    if (getpeername(s->m_socket, &peer, &peer_len) == -1) {
+        return "";
+    }
+
+    socklen_t client_len = sizeof(struct sockaddr_storage);
+    std::string hoststr(NI_MAXHOST, '\0');
+    std::string portstr(NI_MAXSERV, '\0');
+    int rc = getnameinfo(&peer, client_len,
+                         &hoststr[0], static_cast<unsigned int>(hoststr.size()),
+                         &portstr[0], static_cast<unsigned int>(portstr.size()), 
+                         NI_NUMERICHOST | NI_NUMERICSERV);
+    if (rc == 0) return hoststr;
+    return "";
+}
+
+bool
+sendWakeOnLanSingle(const std::string& ethernetAddress, unsigned short port, unsigned int bcast)
+{
+    LOG((CLOG_INFO "sendWakeOnLanSingle %s %u %u", ethernetAddress.c_str(), port, bcast));
+    LOG((CLOG_INFO "ethernetAddress %d,%d,%d,%d,%d,%d", ethernetAddress[0], ethernetAddress[1], ethernetAddress[2], ethernetAddress[3], ethernetAddress[4], ethernetAddress[5]));
+    auto packet = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+    // Build the message to send.
+    //   (6 * 0XFF followed by 16 * destination address.)
+    std::string message(6, 0xFF);
+    for (size_t i = 0; i < 16; ++i) {
+        message += ethernetAddress;
+    }
+
+    // Set socket options.
+    int optval = 1;
+    if (setsockopt(packet, SOL_SOCKET, SO_BROADCAST, (char*)&optval, sizeof(optval)) < 0) {
+        closesocket(packet);
+        LOG((CLOG_INFO "failed to set sock options"));
+        return false;
+    }
+
+    // Set up address
+    sockaddr_in addr{};
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = bcast;
+    addr.sin_port = htons(port);
+
+    // Send the packet out.
+    if (sendto(packet, message.c_str(), message.length(), 0,
+        reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0) {
+        closesocket(packet);
+        LOG((CLOG_INFO "failed to send"));
+        return false;
+    }
+    closesocket(packet);
+    LOG((CLOG_INFO "sent ok"));
+    return true;
+}
+
+bool
+ArchNetworkWinsock::sendWakeOnLan(const std::string& ethernetAddress, const std::string& ipAddress)
+{
+    unsigned int bcast;
+    bool sendResult = false;
+
+    if (!ipAddress.empty())
+    {
+        bcast = inet_addr(ipAddress.c_str());
+        sendResult |= sendWakeOnLanSingle(ethernetAddress, 0, bcast);
+        sendResult |= sendWakeOnLanSingle(ethernetAddress, 7, bcast);
+        sendResult |= sendWakeOnLanSingle(ethernetAddress, 9, bcast);
+    }
+
+    bcast = 0xFFFFFFFF;
+    sendResult |= sendWakeOnLanSingle(ethernetAddress, 0, bcast);
+    sendResult |= sendWakeOnLanSingle(ethernetAddress, 7, bcast);
+    sendResult |= sendWakeOnLanSingle(ethernetAddress, 9, bcast);
+    return sendResult;
 }
 
 void

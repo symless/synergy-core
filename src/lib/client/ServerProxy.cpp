@@ -154,6 +154,10 @@ ServerProxy::parseHandshakeMessage(const UInt8* code)
         infoAcknowledgment();
     }
 
+    else if (memcmp(code, kMsgQWol, 4) == 0) {
+        queryWakeOnLanInfo();
+    }
+
     else if (memcmp(code, kMsgDSetOptions, 4) == 0) {
         setOptions();
 
@@ -285,6 +289,10 @@ ServerProxy::parseMessage(const UInt8* code)
         infoAcknowledgment();
     }
 
+    else if (memcmp(code, kMsgQWol, 4) == 0) {
+        queryWakeOnLanInfo();
+    }
+
     else if (memcmp(code, kMsgDClipboard, 4) == 0) {
         setClipboard();
     }
@@ -389,6 +397,19 @@ ServerProxy::sendInfo(const ClientInfo& info)
                                 info.m_x, info.m_y,
                                 info.m_w, info.m_h, 0,
                                 info.m_mx, info.m_my);
+}
+
+void
+ServerProxy::sendWakeOnLanInfo(const ClientWakeOnLanInfo& info)
+{
+    LOG((CLOG_DEBUG1 "sending info %d,%d,%d,%d,%d,%d", info.m_mac[0], info.m_mac[1], info.m_mac[2], info.m_mac[3], info.m_mac[4], info.m_mac[5]));
+    ProtocolUtil::writef(m_stream, kMsgDWol,
+        info.m_mac[0],
+        info.m_mac[1],
+        info.m_mac[2],
+        info.m_mac[3],
+        info.m_mac[4],
+        info.m_mac[5]);
 }
 
 KeyID
@@ -856,6 +877,25 @@ ServerProxy::infoAcknowledgment()
 {
     LOG((CLOG_DEBUG1 "recv info acknowledgment"));
     m_ignoreMouse = false;
+}
+
+ClientWakeOnLanInfo
+wolFromString(const std::string& ether_addr) {
+    ClientWakeOnLanInfo result;
+    for (size_t i = 0; i < 6; ++i)
+    {
+        result.m_mac[i] = ether_addr[i];
+    }
+    return result;
+}
+
+void
+ServerProxy::queryWakeOnLanInfo()
+{
+    auto args = m_client->getClientArgs();
+    for (const auto& mac : args.m_macAddresses) {
+        sendWakeOnLanInfo(wolFromString(mac));
+    }
 }
 
 void

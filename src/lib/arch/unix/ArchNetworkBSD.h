@@ -117,6 +117,8 @@ public:
     virtual int                getAddrPort(ArchNetAddress);
     virtual bool            isAnyAddr(ArchNetAddress);
     virtual bool            isEqualAddr(ArchNetAddress, ArchNetAddress);
+    std::string             getConnectionName(ArchSocket s) final;
+    bool                    sendWakeOnLan(const std::string&, const std::string&) final;
 
     struct Connectors 
     {

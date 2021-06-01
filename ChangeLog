@@ -10,6 +10,7 @@ Bug fixes:
 Enhancements:
 - #6998 Remove functionality related to the screen saver synchronisation
 - #7026 Update the way we package OpenSSL for Windows build
+- #7025 Add support for Wake-on-LAN to the server
 ===========
 
 v1.14.0-rc1

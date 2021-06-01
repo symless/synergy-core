@@ -81,6 +81,66 @@ ArgParser::parseServerArgs(lib::synergy::ServerArgs& args, int argc, const char*
     return true;
 }
 
+// Attempts to extract hexadecimal from ASCII string.
+bool get_hex_from_string(const std::string& s, unsigned& hex)
+{
+    for (size_t i = 0; i < s.length(); ++i)
+    {
+        hex <<= 4;
+        if (isdigit(s[i])) {
+            hex |= s[i] - '0';
+        }
+        else if (s[i] >= 'a' && s[i] <= 'f')
+        {
+            hex |= s[i] - 'a' + 10;
+        }
+        else if (s[i] >= 'A' && s[i] <= 'F')
+        {
+            hex |= s[i] - 'A' + 10;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool get_ether(const std::string& hardwareAddress, std::vector<String>& etherAddresses)
+{
+    LOG((CLOG_PRINT "mac: %s", hardwareAddress.c_str()));
+    std::string etherAddr;
+
+    for (size_t i = 0; i < hardwareAddress.length();)
+    {
+        // Parse two characters at a time.
+        unsigned hex = 0;
+        if (!get_hex_from_string(hardwareAddress.substr(i, 2), hex))
+        {
+            return false;
+        }
+
+        i += 2;
+
+        etherAddr += static_cast<char>(hex & 0xFF);
+
+        // We might get a colon here, but it is not required.
+        if (hardwareAddress[i] == ':')
+            ++i;
+    }
+
+    if (etherAddr.length() != 6)
+    {
+        return false;
+    }
+    etherAddresses.emplace_back(etherAddr);
+
+    // TODO: remove later
+    LOG((CLOG_PRINT "ether: %d,%d,%d,%d,%d,%d", etherAddr[0], etherAddr[1], etherAddr[2], etherAddr[3], etherAddr[4], etherAddr[5]));
+
+    return true;
+}
+
 bool
 ArgParser::parseClientArgs(lib::synergy::ClientArgs& args, int argc, const char* const* argv)
 {
@@ -110,6 +170,9 @@ ArgParser::parseClientArgs(lib::synergy::ClientArgs& args, int argc, const char*
         else if (isArg(i, argc, argv, nullptr, "--yscroll", 1)) {
             // define scroll
             args.m_yscroll = atoi(argv[++i]);
+        }
+        else if (isArg(i, argc, argv, nullptr, "--mac-addr", 1)) {
+            get_ether(std::string(argv[++i]), args.m_macAddresses);
         }
         else {
             if (i + 1 == argc) {

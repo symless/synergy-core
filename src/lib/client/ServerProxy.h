@@ -19,6 +19,7 @@
 #pragma once
 
 #include "synergy/clipboard_types.h"
+#include "synergy/protocol_types.h"
 #include "synergy/key_types.h"
 #include "base/Event.h"
 #include "base/Stopwatch.h"
@@ -80,6 +81,8 @@ private:
 
     void                sendInfo(const ClientInfo&);
 
+    void                sendWakeOnLanInfo(const ClientWakeOnLanInfo&);
+
     void                resetKeepAliveAlarm();
     void                setKeepAliveRate(double);
 
@@ -109,6 +112,7 @@ private:
     void                setOptions();
     void                queryInfo();
     void                infoAcknowledgment();
+    void                queryWakeOnLanInfo();
     void                fileChunkReceived();
     void                dragInfoReceived();
     void                handleClipboardSendingEvent(const Event&, void*);

@@ -20,6 +20,7 @@
 #define HELP_URL     "http://symless.com/help?source=gui"
 
 #include <array>
+#include <set>
 
 #include "MainWindow.h"
 
@@ -597,6 +598,26 @@ void MainWindow::clearLog()
     m_pLogOutput->clear();
 }
 
+void appendWakeOnLanArgs(QStringList& args)
+{
+    std::set<QString> macAddresses;
+    foreach(QNetworkInterface netInterface, QNetworkInterface::allInterfaces())
+    {
+        // Return only non-loopback MAC addresses
+        if (!(netInterface.flags() & QNetworkInterface::IsLoopBack) &&
+            (netInterface.flags() & QNetworkInterface::IsUp) &&
+            !netInterface.hardwareAddress().isEmpty())
+        {
+            macAddresses.insert(netInterface.hardwareAddress());
+        }
+    }
+
+    for (auto& mac : macAddresses)
+    {
+        args << "--mac-addr" << mac;
+    }
+}
+
 void MainWindow::startSynergy()
 {
     saveSettings();
@@ -675,6 +696,10 @@ void MainWindow::startSynergy()
     }
 #endif
 
+    if (synergyType() == synergyClient) {
+        appendWakeOnLanArgs(args);
+    }
+
     if (m_AppConfig->getPreventSleep())
     {
         args << "--prevent-sleep";
@@ -722,6 +747,9 @@ void MainWindow::startSynergy()
             return;
         }
     }
+
+    //-f --no-tray --debug INFO --name DESKTOP-B2RN8RK --ipc --stop-on-desk-switch --enable-drag-drop --enable-crypto --tls-cert "C:\Users\sikac\AppData\Local\Synergy/SSL/Synergy.pem" --profile-dir "C:\Users\sikac\AppData\Local" --mac-addr 02:50:69:61:8B:33 --mac-addr 0A:00:27:00:00:16 --mac-addr 00:50:56:C0:00:01 --mac-addr 00:50:56:C0:00:08 --mac-addr 20:79:18:8E:10:02 --mac-addr 00:00:00:00:00:00:00:E0 192.168.1.92:24800
+    appendLogInfo(args.join(" "));
 
     if (serviceMode)
     {

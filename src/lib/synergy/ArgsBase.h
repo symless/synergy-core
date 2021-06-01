@@ -59,6 +59,7 @@ namespace lib {
             String               m_tlsCertFile;                    /// @brief Contains the location of the TLS certificate file
             bool                 m_enableLangSync = true;          /// @brief Should keyboard input be in same language as on server
             bool                 m_preventSleep = false;           /// @brief Stop this computer from sleeping
+            std::vector<String>  m_macAddresses;                   /// @brief All active MAC addresses of the client
 
 #if SYSAPI_WIN32
             bool                 m_debugServiceWait  = false;

@@ -352,4 +352,7 @@ private:
     IOPMAssertionID           m_sleepPreventionAssertionID = 0;
 
     class OSXScreenImpl*    m_impl;
+
+    // Compat mode for Parallels style apps
+	void*                   m_compatDelegate;
 };

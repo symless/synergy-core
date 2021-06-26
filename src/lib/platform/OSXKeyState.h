@@ -36,6 +36,8 @@ class OSXKeyState : public KeyState {
 public:
     typedef std::vector<KeyID> KeyIDs;
 
+    signed char             CompatModeActive;
+
     OSXKeyState(IEventQueue* events);
     OSXKeyState(IEventQueue* events, synergy::KeyMap& keyMap);
     virtual ~OSXKeyState();

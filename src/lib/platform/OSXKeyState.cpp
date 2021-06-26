@@ -552,8 +552,21 @@ OSXKeyState::postHIDVirtualKey(const UInt8 virtualKeyCode,
         }
             
         kern_return_t kr;
-        kr = IOHIDPostEvent(getEventDriver(), NX_FLAGSCHANGED, loc,
-                &event, kNXEventDataVersion, modifiers, true);
+        // If we aren't in compat mode, send the modifiers as flags,
+        // otherwise send the raw keycode
+		if (!CompatModeActive) {
+			kr = IOHIDPostEvent(getEventDriver(), NX_FLAGSCHANGED, loc,
+			&event, kNXEventDataVersion, modifiers, true);
+		}
+		else {
+			event.key.repeat = false;
+			event.key.keyCode = virtualKeyCode;
+			event.key.origCharSet = event.key.charSet = NX_ASCIISET;
+			event.key.origCharCode = event.key.charCode = 0;
+			kr = IOHIDPostEvent(getEventDriver(),
+				postDown ? NX_KEYDOWN : NX_KEYUP,
+				loc, &event, kNXEventDataVersion, 0, false);
+		}
         assert(KERN_SUCCESS == kr);
         break;
 

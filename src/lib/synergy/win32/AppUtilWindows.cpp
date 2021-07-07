@@ -32,10 +32,13 @@
 #include "base/EventQueue.h"
 #include "common/Version.h"
 
+#include <thread>
 #include <sstream>
 #include <iostream>
 #include <conio.h>
 #include <VersionHelpers.h>
+
+#include <Windows.h>
 
 AppUtilWindows::AppUtilWindows(IEventQueue* events) :
     m_events(events),
@@ -181,8 +184,38 @@ AppUtilWindows::startNode()
     app().startNode();
 }
 
+std::vector<String>
+AppUtilWindows::getKeyboardLayoutList()
+{
+    std::vector<String> layoutLangCodes;
+    {
+        auto uLayouts = GetKeyboardLayoutList(0, NULL);
+        auto lpList = (HKL*)LocalAlloc(LPTR, (uLayouts * sizeof(HKL)));
+        uLayouts = GetKeyboardLayoutList(uLayouts, lpList);
+
+        for (int i = 0; i < uLayouts; ++i){
+            String code("", 2);
+            GetLocaleInfoA(MAKELCID(((UINT)lpList[i] & 0xffffffff), SORT_DEFAULT), LOCALE_SISO639LANGNAME, &code[0], code.size());
+            layoutLangCodes.push_back(code);
+        }
+
+        if (lpList) {
+            LocalFree(lpList);
+        }
+    }
+    return layoutLangCodes;
+}
+
+void
+AppUtilWindows::showMessageBox(const String& title, const String& text)
+{
+    auto thr = std::thread([=]{MessageBox(NULL, text.c_str(), title.c_str(), MB_OK | MB_ICONERROR);});
+    thr.detach();
+}
+
 void
 AppUtilWindows::showNotification(const String & title, const String & text) const
 {
     LOG((CLOG_DEBUG "Showing notification. Title: \"%s\". Text: \"%s\"", title.c_str(), text.c_str()));
 }
+

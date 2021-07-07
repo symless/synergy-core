@@ -19,6 +19,7 @@
 #include "client/Client.h"
 
 #include "client/ServerProxy.h"
+#include "synergy/AppUtil.h"
 #include "synergy/Screen.h"
 #include "synergy/FileChunk.h"
 #include "synergy/DropHelper.h"
@@ -46,6 +47,7 @@
 #include <fstream>
 #include <algorithm>
 #include <climits>
+#include <iterator>
 
 //
 // Client
@@ -721,7 +723,8 @@ void
 Client::handleHello(const Event&, void*)
 {
     SInt16 major, minor;
-    if (!ProtocolUtil::readf(m_stream, kMsgHello, &major, &minor)) {
+    String keyboardLayoutList("<unknown>");
+    if (!ProtocolUtil::readf(m_stream, kMsgHello, &major, &minor, &keyboardLayoutList)) {
         sendConnectionFailedEvent("Protocol error from server, check encryption settings");
         cleanupTimer();
         cleanupConnection();
@@ -746,10 +749,38 @@ Client::handleHello(const Event&, void*)
     }
 
     // say hello back
+    LOG((CLOG_DEBUG1 "say hello version %d.%d", kProtocolMajorVersion, kProtocolMinorVersion));
+    String allKeyboardLayoutsStr;
+    for (const auto& layout : AppUtil::instance().getKeyboardLayoutList()) {
+        allKeyboardLayoutsStr += layout;
+    }
+
     LOG((CLOG_DEBUG1 "say hello version %d.%d", helloBackMajor, helloBackMinor));
     ProtocolUtil::writef(m_stream, kMsgHelloBack,
                             helloBackMajor,
-                            helloBackMinor, & m_name);
+                            helloBackMinor, & m_name, &allKeyboardLayoutsStr);
+
+    if(m_args.m_enableLangSync) {
+        std::vector<String> missed;
+        std::vector<String> supported;
+        AppUtil::instance().getKeyboardLayoutsDiff(keyboardLayoutList, missed, supported);
+
+        if(!supported.empty()) {
+            std::ostringstream result;
+            std::copy(supported.begin(), supported.end(), std::ostream_iterator<String>(result, ", "));
+            LOG((CLOG_DEBUG "Supported server languages: %s",  result.str().c_str()));
+        }
+
+        if(!missed.empty()) {
+            std::ostringstream result;
+            std::copy(missed.begin(), missed.end(), std::ostream_iterator<String>(result, ", "));
+            AppUtil::instance().showMessageBox("Language synchronization error",
+                                               "These languages are required for client proper work: " + result.str());
+        }
+    }
+    else {
+        LOG((CLOG_DEBUG "Language sync logic is disabled."));
+    }
 
     // now connected but waiting to complete handshake
     setupScreen();

@@ -23,6 +23,8 @@
 #include "mt/Lock.h"
 #include "arch/XArch.h"
 #include "base/Log.h"
+#include "synergy/ArgParser.h"
+#include "synergy/ArgsBase.h"
 
 #include <openssl/ssl.h>
 #include <openssl/err.h>
@@ -680,11 +682,9 @@ SecureSocket::verifyCertFingerprint()
 {
     // calculate received certificate fingerprint
     X509 *cert = cert = SSL_get_peer_certificate(m_ssl->m_ssl);
-    EVP_MD* tempDigest;
     unsigned char tempFingerprint[EVP_MAX_MD_SIZE];
     unsigned int tempFingerprintLen;
-    tempDigest = (EVP_MD*)EVP_sha256();
-    int digestResult = X509_digest(cert, tempDigest, tempFingerprint, &tempFingerprintLen);
+    int digestResult = X509_digest(cert, EVP_sha256(), tempFingerprint, &tempFingerprintLen);
 
     if (digestResult <= 0) {
         LOG((CLOG_ERR "failed to calculate fingerprint, digest result: %d", digestResult));
@@ -695,6 +695,39 @@ SecureSocket::verifyCertFingerprint()
     String fingerprint(static_cast<char*>(static_cast<void*>(tempFingerprint)), tempFingerprintLen);
     formatFingerprint(fingerprint);
     LOG((CLOG_NOTE "server fingerprint: %s", fingerprint.c_str()));
+
+    // if the --tls-cert option is set, check the fingerprint against that first
+    if (!ArgParser::argsBase().m_tlsCertFile.empty()) {
+        String certificateFilename = ArgParser::argsBase().m_tlsCertFile;
+
+        FILE *fp = fopen(certificateFilename.c_str(), "r");
+        if (!fp) {
+            LOG((CLOG_ERR "unable to open tls-cert file: %s", certificateFilename.c_str()));
+            return false;
+        }
+
+        X509 *trustedCert = PEM_read_X509(fp, NULL, NULL, NULL);
+        fclose(fp);
+        if (!trustedCert) {
+            LOG((CLOG_ERR "unable to parse PEM certificate from tls-cert file: %s", certificateFilename.c_str()));
+            return false;
+        }
+
+        digestResult = X509_digest(trustedCert, EVP_sha256(), tempFingerprint, &tempFingerprintLen);
+        if (digestResult <= 0) {
+            LOG((CLOG_ERR "failed to calculate trusted fingerprint, digest result: %d", digestResult));
+            return false;
+        }
+
+        // format fingerprint into hexdecimal format with colon separator
+        String trustedFingerprint(static_cast<char*>(static_cast<void*>(tempFingerprint)), tempFingerprintLen);
+        formatFingerprint(trustedFingerprint);
+        LOG((CLOG_NOTE "trusted fingerprint: %s", trustedFingerprint.c_str()));
+
+        if (trustedFingerprint == fingerprint) {
+            return true;
+        }
+    }
 
     String trustedServersFilename;
     trustedServersFilename = synergy::string::sprintf(

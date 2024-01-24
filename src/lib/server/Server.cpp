@@ -459,6 +459,7 @@ void
 Server::switchScreen(BaseClientProxy* dst,
 				SInt32 x, SInt32 y, bool forScreensaver)
 {
+	LOG((CLOG_DEBUG "DAUN - Attempting to switch screen"));
 	assert(dst != NULL);
 
 	// if trial is expired, exit the process
@@ -470,7 +471,8 @@ Server::switchScreen(BaseClientProxy* dst,
 #ifndef NDEBUG
 	{
 		SInt32 dx, dy, dw, dh;
-		dst->getShape(dx, dy, dw, dh);
+		LOG((CLOG_DEBUG "DAUN - this Running?"));
+		dst->getShape(dx, dy, dw, dh, x, y);
 		assert(x >= dx && y >= dy && x < dx + dw && y < dy + dh);
 	}
 #endif
@@ -532,9 +534,15 @@ Server::switchScreen(BaseClientProxy* dst,
 		++m_seqNum;
 
 		// enter new screen
+		LOG((CLOG_DEBUG "DAUN - entering destination at pos(%d,%d)", x, y));
+		// TODO: DAUN
+		// perhaps we can get 
 		m_active->enter(x, y, m_seqNum,
 								m_primaryClient->getToggleMask(),
 								forScreensaver);
+
+		LOG((CLOG_DEBUG "DAUN - entered destination"));
+
 
 		if (m_enableClipboard) {
 			// send the clipboard data to new active screen
@@ -547,9 +555,14 @@ Server::switchScreen(BaseClientProxy* dst,
 			}
 		}
 
+		LOG((CLOG_DEBUG "DAUN - some clipboard shit done"));
+
+
 		Server::SwitchToScreenInfo* info =
 			Server::SwitchToScreenInfo::alloc(m_active->getName());
+		LOG((CLOG_DEBUG "DAUN - info alloc"));
 		m_events->addEvent(Event(m_events->forServer().screenSwitched(), this, info));
+		LOG((CLOG_DEBUG "DAUN - info event"));
 	}
 	else {
 		m_active->mouseMove(x, y);
@@ -598,7 +611,7 @@ Server::mapToPixel(BaseClientProxy* client,
 				EDirection dir, float f, SInt32& x, SInt32& y) const
 {
 	SInt32 sx, sy, sw, sh;
-	client->getShape(sx, sy, sw, sh);
+	client->getShape(sx, sy, sw, sh, x, y);
 	switch (dir) {
 	case kLeft:
 	case kRight:
@@ -680,6 +693,39 @@ Server::mapToNeighbor(BaseClientProxy* src,
 
 	assert(src != NULL);
 
+	// TODO: DAUN
+	// maybe x and y are still inside source boundary;
+	// if x and y results to a valid destination,
+	// return self.
+
+
+	SInt32 sx, sy, sw, sh, tx, ty, tw, th;
+	SInt32 p_x = x;
+	SInt32 p_y = y;
+	switch (srcSide){
+		case kNoDirection:
+			// NO DIRECTION, return null
+			return NULL;
+		case kLeft:
+			p_x -= 5;
+		case kRight:
+			p_x += 5;
+		case kTop:
+			p_y -= 5;
+		case kBottom:
+			p_y += 5;
+		default:
+			src->getShape(sx, sy, sw, sh, p_x, p_y);
+			src->getShape(tx, ty, tw, th);
+		}
+
+	LOG((CLOG_DEBUG "DAUN - mouse position comparison (%d,%d)", p_x,p_y));
+	if (sx != tx || sy != ty || sw != tw || sh != th){
+		LOG((CLOG_DEBUG "DAUN - still inside source (%d,%d,%d,%d)", sx,sy,sw,sh));
+		LOG((CLOG_DEBUG "DAUN - still inside source (%d,%d,%d,%d)", tx,ty,tw,th));
+		return src;
+	}
+
 	// get the first neighbor
 	BaseClientProxy* dst = getNeighbor(src, srcSide, x, y);
 	if (dst == NULL) {
@@ -698,11 +744,15 @@ Server::mapToNeighbor(BaseClientProxy* src,
 	// actual on exit from the search.
 	switch (srcSide) {
 	case kLeft:
+		LOG((CLOG_DEBUG "Daun - going left"));
 		x -= dx;
-		while (dst != NULL) {
+		LOG((CLOG_DEBUG "Daun - going left; move (%d)", x));
+		while (dst != NULL) {			
+			LOG((CLOG_DEBUG "Daun - going left, dst not null"));
 			lastGoodScreen = dst;
-			lastGoodScreen->getShape(dx, dy, dw, dh);
+			lastGoodScreen->getShape(dx, dy, dw, dh, INT_MIN, y);
 			x += dw;
+			LOG((CLOG_DEBUG "Daun - going left; move (%d)", x));
 			if (x >= 0) {
 				break;
 			}
@@ -711,6 +761,8 @@ Server::mapToNeighbor(BaseClientProxy* src,
 		}
 		assert(lastGoodScreen != NULL);
 		x += dx;
+		
+		LOG((CLOG_DEBUG "Daun - going left; over (%d)", x));
 		break;
 
 	case kRight:
@@ -718,7 +770,7 @@ Server::mapToNeighbor(BaseClientProxy* src,
 		while (dst != NULL) {
 			x -= dw;
 			lastGoodScreen = dst;
-			lastGoodScreen->getShape(dx, dy, dw, dh);
+			lastGoodScreen->getShape(dx, dy, dw, dh, INT_MIN, y);
 			if (x < dw) {
 				break;
 			}
@@ -733,7 +785,7 @@ Server::mapToNeighbor(BaseClientProxy* src,
 		y -= dy;
 		while (dst != NULL) {
 			lastGoodScreen = dst;
-			lastGoodScreen->getShape(dx, dy, dw, dh);
+			lastGoodScreen->getShape(dx, dy, dw, dh, x, INT_MIN);
 			y += dh;
 			if (y >= 0) {
 				break;
@@ -750,7 +802,7 @@ Server::mapToNeighbor(BaseClientProxy* src,
 		while (dst != NULL) {
 			y -= dh;
 			lastGoodScreen = dst;
-			lastGoodScreen->getShape(dx, dy, dw, dh);
+			lastGoodScreen->getShape(dx, dy, dw, dh, x, INT_MIN);
 			if (y < dh) {
 				break;
 			}
@@ -774,8 +826,12 @@ Server::mapToNeighbor(BaseClientProxy* src,
 	// to avoid the jump zone.  if entering a side that doesn't have
 	// a neighbor (i.e. an asymmetrical side) then we don't need to
 	// move inwards because that side can't provoke a jump.
+
+
+	LOG((CLOG_DEBUG "Daun - before avoiding JZ (%d,%d)", x, y));
 	avoidJumpZone(dst, srcSide, x, y);
 
+	LOG((CLOG_DEBUG "Daun - found neighbor (%d,%d)", x, y));
 	return dst;
 }
 
@@ -790,7 +846,7 @@ Server::avoidJumpZone(BaseClientProxy* dst,
 
 	const String dstName(getName(dst));
 	SInt32 dx, dy, dw, dh;
-	dst->getShape(dx, dy, dw, dh);
+	dst->getShape(dx, dy, dw, dh, x, y);
 	float t = mapToFraction(dst, dir, x, y);
 	SInt32 z = getJumpZoneSize(dst);
 
@@ -833,6 +889,7 @@ Server::isSwitchOkay(BaseClientProxy* newScreen,
 				SInt32 xActive, SInt32 yActive)
 {
 	LOG((CLOG_DEBUG1 "try to leave \"%s\" on %s", getName(m_active).c_str(), Config::dirName(dir)));
+	LOG((CLOG_DEBUG "DAUN - try to leave \"%s\" on %s", getName(m_active).c_str(), Config::dirName(dir)));
 
 	// is there a neighbor?
 	if (newScreen == NULL) {
@@ -967,7 +1024,7 @@ Server::armSwitchTwoTap(SInt32 x, SInt32 y)
 			// still time for a double tap.  see if we left the tap
 			// zone and, if so, arm the two tap.
 			SInt32 ax, ay, aw, ah;
-			m_active->getShape(ax, ay, aw, ah);
+			m_active->getShape(ax, ay, aw, ah, x, y);
 			SInt32 tapZone = m_primaryClient->getJumpZoneSize();
 			if (tapZone < m_switchTwoTapZone) {
 				tapZone = m_switchTwoTapZone;
@@ -1057,7 +1114,7 @@ Server::getCorner(BaseClientProxy* client,
 
 	// get client screen shape
 	SInt32 ax, ay, aw, ah;
-	client->getShape(ax, ay, aw, ah);
+	client->getShape(ax, ay, aw, ah, x, y);
 
 	// check for x,y on the left or right
 	SInt32 xSide;
@@ -1385,6 +1442,10 @@ Server::handleMotionSecondaryEvent(const Event& event, void*)
 {
 	IPlatformScreen::MotionInfo* info =
 		static_cast<IPlatformScreen::MotionInfo*>(event.getData());
+	
+	// TODO: DAUN
+	// There is a bug that when window shape goes weird, this info->m_x or info->m_y returns weird.
+	// LOG((CLOG_DEBUG "DAUN - handling motion secondary event (%d,%d)", info->m_x, info->m_y));
 	onMouseMoveSecondary(info->m_x, info->m_y);
 }
 
@@ -1777,7 +1838,7 @@ Server::onMouseUp(ButtonID id)
 bool
 Server::onMouseMovePrimary(SInt32 x, SInt32 y)
 {
-	LOG((CLOG_DEBUG4 "onMouseMovePrimary %d,%d", x, y));
+	// LOG((CLOG_DEBUG "onMouseMovePrimary %d,%d", x, y));
 
 	// mouse move on primary (server's) screen
 	if (m_active != m_primaryClient) {
@@ -1799,8 +1860,12 @@ Server::onMouseMovePrimary(SInt32 x, SInt32 y)
 
 	// get screen shape
 	SInt32 ax, ay, aw, ah;
-	m_active->getShape(ax, ay, aw, ah);
+	m_active->getShape(ax, ay, aw, ah, x, y);
 	SInt32 zoneSize = getJumpZoneSize(m_active);
+
+	// TODO: DAUN - getShape() returns the x, y, width and height of the TOTAL bound of the screen;
+	// this is the issue with the DEAD_ZONE, where jump is not allowed due to limitation.
+	// perhaps we can change getShape function to take in the position of the mouse, and return the size of the screen this mouse is in?
 
 	// clamp position to screen
 	SInt32 xc = x, yc = y;
@@ -1848,6 +1913,7 @@ Server::onMouseMovePrimary(SInt32 x, SInt32 y)
 	EDirection dirs[] = {dirh, dirv};
 	SInt32 xs[] = {xh, x}, ys[] = {y, yv};
 	for (int i = 0; i < 2; ++i) {
+
 		EDirection dir = dirs[i];
 		if (dir == kNoDirection) {
 			continue;
@@ -1855,10 +1921,36 @@ Server::onMouseMovePrimary(SInt32 x, SInt32 y)
 		x = xs[i], y = ys[i];
 
 		// get jump destination
+		LOG((CLOG_DEBUG "DAUN - neighbour's mouse position A (%d,%d)", x, y));
 		BaseClientProxy* newScreen = mapToNeighbor(m_active, dir, x, y);
-
+		LOG((CLOG_DEBUG "DAUN - neighbour's mouse position A (%d,%d)", x, y));
+		if (newScreen == m_active){
+			LOG((CLOG_DEBUG "DAUN - still same screen"));
+			return false;
+		}
+		
 		// should we switch or not?
 		if (isSwitchOkay(newScreen, dir, x, y, xc, yc)) {
+			// TODO: DAUN
+			// jump over dead zones.
+			SInt32 tx, ty, tw, th;
+			if (dir == kLeft || dir == kRight){
+				newScreen->getShape(tx,ty,tw,th,INT_MIN,y);
+				if (dir == kLeft) {
+					x = (tw + tx) - 1;
+				}else{
+					x = tx + 1;
+				}
+			}
+			if (dir == kTop || dir == kBottom){
+				newScreen->getShape(tx,ty,tw,th, x, INT_MIN);
+				if (dir == kTop) {
+					y = (th + ty) - 1;
+				}else{
+					y = ty + 1;
+				}
+			}
+
 			if (m_args.m_enableDragDrop
 				&& m_screen->isDraggingStarted()
 				&& m_active != newScreen
@@ -1873,10 +1965,34 @@ Server::onMouseMovePrimary(SInt32 x, SInt32 y)
 				return false;
 			}
 
+			LOG((CLOG_DEBUG "DAUN - SWITCH - OK! at pos(%d, %d)", x, y));
+
 			// switch screen
-			switchScreen(newScreen, x, y, false);
+			// TODO: DAUN
+			// need to set left and top;
+			// 1. can we get the max size from client on left (or Top)?
+			//	  -> Left: fetch max_width from client on left, warp.
+			// 	  -> Right: fetch max_height from client on top, warp.
+			// if (dirh == kRight){
+			// 	LOG((CLOG_DEBUG "DAUN - Jump right"));
+			// 	switchScreen(newScreen, x, y, false);
+			// }else if (dirv == kBottom){
+			// 	LOG((CLOG_DEBUG "DAUN - Jump bottom"));
+			// 	switchScreen(newScreen, x, y, false);
+			// }else if (dirh == kLeft){
+			// 	LOG((CLOG_DEBUG "DAUN - Jump left"));
+			// 	switchScreen(newScreen, tw-1, y, false);
+			// }else if (dirv == kTop){
+			// 	LOG((CLOG_DEBUG "DAUN - Jump top"));
+			// 	switchScreen(newScreen, x, th-1, false);
+			// }else{
+				switchScreen(newScreen, x, y, false);
+			// }
 			m_waitDragInfoThread = true;
 			return true;
+		}else{
+
+			LOG((CLOG_DEBUG "DAUN - Switch - NOT OK!"));
 		}
 	}
 
@@ -2047,7 +2163,41 @@ Server::onMouseMoveSecondary(SInt32 dx, SInt32 dy)
 		}
 
 		// try to switch screen.  get the neighbor.
+		LOG((CLOG_DEBUG "DAUN - MAPPING NEIGHBOR @(%d,%d)", m_x, m_y));
 		newScreen = mapToNeighbor(m_active, dir, m_x, m_y);
+		LOG((CLOG_DEBUG "DAUN - MAPPED NEIGHBOR"));
+
+		// TODO: DAUN
+		// mapping the neighbor's start position, skipping dead zone
+		if (newScreen != NULL) {
+			LOG((CLOG_DEBUG "DAUN - newScreen exists"));
+			SInt32 tx, ty, tw, th;
+			if (dir == kLeft || dir == kRight){
+				newScreen->getShape(tx,ty,tw,th,INT_MIN,m_y);
+				LOG((CLOG_DEBUG "DAUN - left right received screen (%d,%d,%d,%d)", tx, ty, tw, th));
+				if (dir == kLeft) {
+					m_x = (tw + tx) - 1;
+				}else{
+					m_x = tx + 1;
+				}
+			}
+			else if (dir == kTop || dir == kBottom){
+				newScreen->getShape(tx,ty,tw,th, m_x, INT_MIN);
+				LOG((CLOG_DEBUG "DAUN - up down received screen (%d,%d,%d,%d)", tx, ty, tw, th));
+				if (dir == kTop) {
+					m_y = (th + ty) - 1;
+				}else{
+					m_y = ty + 1;
+				}
+			}else{
+				LOG((CLOG_DEBUG "DAUN - DIRECTION F***ED UP"));
+			}
+		}else{
+			LOG((CLOG_DEBUG "DAUN - newScreen null"));
+		}
+
+		LOG((CLOG_DEBUG "DAUN - neighbour's mouse position B (%d,%d)", m_x, m_y));
+
 
 		// see if we should switch
 		if (!isSwitchOkay(newScreen, dir, m_x, m_y, xc, yc)) {
@@ -2065,7 +2215,15 @@ Server::onMouseMoveSecondary(SInt32 dx, SInt32 dy)
 		SInt32 newX = m_x;
 		SInt32 newY = m_y;
 
+		// TODO: DAUN
+		// newX = 1, newY = -548
+		// if LEFT, RIGHT, find boundary of the monitor on same Y axis
+		// if TOP, BOTTOM, find boundary of the monitor on same X axis
+
+
+
 		// switch screens
+		LOG((CLOG_DEBUG "DAUN - onMouseMoveSecondary jump %d,%d", newX, newY));
 		switchScreen(newScreen, newX, newY, false);
 	}
 	else {

@@ -63,8 +63,8 @@ ClientProxyUnknown::ClientProxyUnknown(
   addStreamHandlers();
 
   LOG((CLOG_DEBUG1 "saying hello"));
-  ProtocolUtil::writef(
-      m_stream, kMsgHello, kProtocolMajorVersion, kProtocolMinorVersion);
+  //ProtocolUtil::writef(m_stream, kMsgHelloSynergy, kProtocolMajorVersion, kProtocolMinorVersion);
+  ProtocolUtil::writef(m_stream, kMsgHelloBarrier, kProtocolMajorVersion, kProtocolMinorVersion);
 }
 
 ClientProxyUnknown::~ClientProxyUnknown() {
@@ -221,7 +221,8 @@ void ClientProxyUnknown::handleData(const Event &, void *) {
 
     // parse the reply to hello
     SInt16 major, minor;
-    if (!ProtocolUtil::readf(m_stream, kMsgHelloBack, &major, &minor, &name)) {
+    if ( !ProtocolUtil::readf(m_stream, kMsgHelloBackBarrier, &major, &minor, &name)) {
+
       throw XBadClient();
     }
 

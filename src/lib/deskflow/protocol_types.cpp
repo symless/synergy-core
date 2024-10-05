@@ -18,9 +18,12 @@
 
 #include "deskflow/protocol_types.h"
 
-// Keep the "Synergy" name for hello to preserve compatibility with Synergy
-const char *const kMsgHello = "Synergy%2i%2i";
-const char *const kMsgHelloBack = "Synergy%2i%2i%s";
+// Use the "Synergy" name for hello to preserve compatibility with Synergy
+const char *const kMsgHelloSynergy = "Synergy%2i%2i";
+const char *const kMsgHelloBackSynergy = "Synergy%2i%2i%s";
+// Use the "Barrier" name for hello to preserve compatibility with Input-leap and Barrier
+const char *const kMsgHelloBarrier = "Barrier%2i%2i";
+const char *const kMsgHelloBackBarrier = "Barrier%2i%2i%s";
 const char *const kMsgCNoop = "CNOP";
 const char *const kMsgCClose = "CBYE";
 const char *const kMsgCEnter = "CINN%2i%2i%4i%2i";

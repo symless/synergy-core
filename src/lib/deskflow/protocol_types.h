@@ -97,14 +97,14 @@ enum EDataReceived { kStart, kNotFinish, kFinish, kError };
 // $1 = protocol major version number supported by server.  $2 =
 // protocol minor version number supported by server. $3 = server
 // keyboard layout list.
-extern const char *const kMsgHello;
-
+extern const char *const kMsgHelloSynergy;
+extern const char *const kMsgHelloBarrier;
 // respond to hello from server;  secondary -> primary
 // $1 = protocol major version number supported by client.  $2 =
 // protocol minor version number supported by client.  $3 = client
 // name.
-extern const char *const kMsgHelloBack;
-
+extern const char *const kMsgHelloBackSynergy;
+extern const char *const kMsgHelloBackBarrier;
 //
 // command codes
 //

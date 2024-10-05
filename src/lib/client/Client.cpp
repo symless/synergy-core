@@ -618,7 +618,13 @@ bool Client::isCompatible(int major, int minor) const {
 
 void Client::handleHello(const Event &, void *) {
   SInt16 major, minor;
-  if (!ProtocolUtil::readf(m_stream, kMsgHello, &major, &minor)) {
+
+  std::string hello;
+  if (ProtocolUtil::readf(m_stream, kMsgHelloSynergy, &major, &minor))
+    hello = "Synergy";
+  else if (ProtocolUtil::readf(m_stream, kMsgHelloBarrier, &major, &minor))
+    hello = "Barrier";
+  else {
     sendConnectionFailedEvent(
         "Protocol error from server, check encryption settings");
     cleanupTimer();
@@ -627,7 +633,8 @@ void Client::handleHello(const Event &, void *) {
   }
 
   // check versions
-  LOG((CLOG_DEBUG1 "got hello version %d.%d", major, minor));
+  LOG((CLOG_DEBUG1 "got hello version %s, %d.%d", hello, major, minor));
+  auto helloBack = hello == "Synergy" ? kMsgHelloBackSynergy : kMsgHelloBackBarrier;
   SInt16 helloBackMajor = kProtocolMajorVersion;
   SInt16 helloBackMinor = kProtocolMinorVersion;
 
@@ -646,9 +653,8 @@ void Client::handleHello(const Event &, void *) {
   }
 
   // say hello back
-  LOG((CLOG_DEBUG1 "say hello version %d.%d", helloBackMajor, helloBackMinor));
-  ProtocolUtil::writef(
-      m_stream, kMsgHelloBack, helloBackMajor, helloBackMinor, &m_name);
+  LOG((CLOG_DEBUG1 "say hello version %s %d.%d", helloBack, helloBackMajor, helloBackMinor));
+  ProtocolUtil::writef(m_stream, helloBack, helloBackMajor, helloBackMinor, &m_name);
 
   // now connected but waiting to complete handshake
   setupScreen();

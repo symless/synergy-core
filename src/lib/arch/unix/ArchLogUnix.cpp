@@ -24,47 +24,57 @@
 // ArchLogUnix
 //
 
-ArchLogUnix::ArchLogUnix() {
-  // do nothing
+ArchLogUnix::ArchLogUnix()
+{
+    // do nothing
 }
 
-ArchLogUnix::~ArchLogUnix() {
-  // do nothing
+ArchLogUnix::~ArchLogUnix()
+{
+    // do nothing
 }
 
-void ArchLogUnix::openLog(const char *name) { openlog(name, 0, LOG_DAEMON); }
-
-void ArchLogUnix::closeLog() { closelog(); }
-
-void ArchLogUnix::showLog(bool) {
-  // do nothing
+void ArchLogUnix::openLog(const char *name)
+{
+    openlog(name, 0, LOG_DAEMON);
 }
 
-void ArchLogUnix::writeLog(ELevel level, const char *msg) {
-  // convert level
-  int priority;
-  switch (level) {
-  case kERROR:
-    priority = LOG_ERR;
-    break;
+void ArchLogUnix::closeLog()
+{
+    closelog();
+}
 
-  case kWARNING:
-    priority = LOG_WARNING;
-    break;
+void ArchLogUnix::showLog(bool)
+{
+    // do nothing
+}
 
-  case kNOTE:
-    priority = LOG_NOTICE;
-    break;
+void ArchLogUnix::writeLog(ELevel level, const char *msg)
+{
+    // convert level
+    int priority;
+    switch (level) {
+    case kERROR:
+        priority = LOG_ERR;
+        break;
 
-  case kINFO:
-    priority = LOG_INFO;
-    break;
+    case kWARNING:
+        priority = LOG_WARNING;
+        break;
 
-  default:
-    priority = LOG_DEBUG;
-    break;
-  }
+    case kNOTE:
+        priority = LOG_NOTICE;
+        break;
 
-  // log it
-  syslog(priority, "%s", msg);
+    case kINFO:
+        priority = LOG_INFO;
+        break;
+
+    default:
+        priority = LOG_DEBUG;
+        break;
+    }
+
+    // log it
+    syslog(priority, "%s", msg);
 }

@@ -28,18 +28,19 @@ namespace deskflow {
 
 namespace linux {
 
-class DeskflowXkbKeyboard {
-  XkbRF_VarDefsRec m_data = {};
+class DeskflowXkbKeyboard
+{
+    XkbRF_VarDefsRec m_data = {};
 
 public:
-  DeskflowXkbKeyboard();
-  DeskflowXkbKeyboard(const DeskflowXkbKeyboard &) = delete;
-  DeskflowXkbKeyboard &operator=(const DeskflowXkbKeyboard &) = delete;
+    DeskflowXkbKeyboard();
+    DeskflowXkbKeyboard(const DeskflowXkbKeyboard &) = delete;
+    DeskflowXkbKeyboard &operator=(const DeskflowXkbKeyboard &) = delete;
 
-  const char *getLayout() const;
-  const char *getVariant() const;
+    const char *getLayout() const;
+    const char *getVariant() const;
 
-  ~DeskflowXkbKeyboard();
+    ~DeskflowXkbKeyboard();
 };
 
 } // namespace linux

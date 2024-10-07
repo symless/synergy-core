@@ -25,37 +25,42 @@
 class QPushButton;
 class QLabel;
 
-enum {
-  kAddClientRight,
-  kAddClientLeft,
-  kAddClientUp,
-  kAddClientDown,
-  kAddClientOther,
-  kAddClientIgnore
+enum
+{
+    kAddClientRight,
+    kAddClientLeft,
+    kAddClientUp,
+    kAddClientDown,
+    kAddClientOther,
+    kAddClientIgnore
 };
 
-class AddClientDialog : public QDialog, public Ui::AddClientDialog {
-  Q_OBJECT
+class AddClientDialog : public QDialog, public Ui::AddClientDialog
+{
+    Q_OBJECT
 public:
-  AddClientDialog(const QString &clientName, QWidget *parent = 0);
-  ~AddClientDialog();
+    AddClientDialog(const QString &clientName, QWidget *parent = 0);
+    ~AddClientDialog();
 
-  int addResult() { return m_AddResult; }
+    int addResult()
+    {
+        return m_AddResult;
+    }
 
 private slots:
-  void handleButtonLeft();
-  void handleButtonUp();
-  void handleButtonRight();
-  void handleButtonDown();
-  void handleButtonAdvanced();
+    void handleButtonLeft();
+    void handleButtonUp();
+    void handleButtonRight();
+    void handleButtonDown();
+    void handleButtonAdvanced();
 
 private:
-  QPushButton *m_pButtonLeft;
-  QPushButton *m_pButtonUp;
-  QPushButton *m_pButtonRight;
-  QPushButton *m_pButtonDown;
-  QLabel *m_pLabelCenter;
-  int m_AddResult;
+    QPushButton *m_pButtonLeft;
+    QPushButton *m_pButtonUp;
+    QPushButton *m_pButtonRight;
+    QPushButton *m_pButtonDown;
+    QLabel *m_pLabelCenter;
+    int m_AddResult;
 };
 
 #endif // ADDCLIENTDIALOG_H

@@ -29,19 +29,19 @@
 
 namespace validators {
 
-class LineEditValidator : public QValidator {
+class LineEditValidator : public QValidator
+{
 public:
-  explicit LineEditValidator(
-      QLineEdit *lineEdit = nullptr, ValidationError *error = nullptr);
-  QValidator::State validate(QString &input, int &pos) const override;
-  void addValidator(std::unique_ptr<IStringValidator> validator);
+    explicit LineEditValidator(QLineEdit *lineEdit = nullptr, ValidationError *error = nullptr);
+    QValidator::State validate(QString &input, int &pos) const override;
+    void addValidator(std::unique_ptr<IStringValidator> validator);
 
 private:
-  ValidationError *m_pError = nullptr;
-  QLineEdit *m_pLineEdit = nullptr;
-  std::vector<std::unique_ptr<IStringValidator>> m_Validators;
+    ValidationError *m_pError = nullptr;
+    QLineEdit *m_pLineEdit = nullptr;
+    std::vector<std::unique_ptr<IStringValidator>> m_Validators;
 
-  void setError(const QString &message) const;
+    void setError(const QString &message) const;
 };
 
 } // namespace validators

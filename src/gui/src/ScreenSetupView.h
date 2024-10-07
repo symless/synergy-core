@@ -29,23 +29,26 @@ class QResizeEvent;
 class QDragEnterEvent;
 class ScreenSetupModel;
 
-class ScreenSetupView : public QTableView {
-  Q_OBJECT
+class ScreenSetupView : public QTableView
+{
+    Q_OBJECT
 
 public:
-  ScreenSetupView(QWidget *parent);
+    ScreenSetupView(QWidget *parent);
 
 public:
-  void setModel(QAbstractItemModel *model) override;
-  ScreenSetupModel *model() const;
+    void setModel(QAbstractItemModel *model) override;
+    ScreenSetupModel *model() const;
 
 protected:
-  void mouseDoubleClickEvent(QMouseEvent *) override;
-  void setTableSize();
-  void resizeEvent(QResizeEvent *) override;
-  void dragEnterEvent(QDragEnterEvent *event) override;
-  void dragMoveEvent(QDragMoveEvent *event) override;
-  void startDrag(Qt::DropActions supportedActions) override;
-  void initViewItemOption(QStyleOptionViewItem *option) const override;
-  void scrollTo(const QModelIndex &, ScrollHint) override {}
+    void mouseDoubleClickEvent(QMouseEvent *) override;
+    void setTableSize();
+    void resizeEvent(QResizeEvent *) override;
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dragMoveEvent(QDragMoveEvent *event) override;
+    void startDrag(Qt::DropActions supportedActions) override;
+    void initViewItemOption(QStyleOptionViewItem *option) const override;
+    void scrollTo(const QModelIndex &, ScrollHint) override
+    {
+    }
 };

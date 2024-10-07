@@ -20,37 +20,47 @@
 namespace deskflow::gui {
 
 ServerMessage::ServerMessage(const QString &message)
-    : m_message(message),
-      m_clientName(parseClientName(message)) {}
-
-bool ServerMessage::isNewClientMessage() const {
-  return m_message.contains("unrecognised client name");
+    : m_message(message)
+    , m_clientName(parseClientName(message))
+{
 }
 
-bool ServerMessage::isExitMessage() const {
-  return m_message.contains("process exited");
+bool ServerMessage::isNewClientMessage() const
+{
+    return m_message.contains("unrecognised client name");
 }
 
-bool ServerMessage::isConnectedMessage() const {
-  return m_message.contains("has connected");
+bool ServerMessage::isExitMessage() const
+{
+    return m_message.contains("process exited");
 }
 
-bool ServerMessage::isDisconnectedMessage() const {
-  return m_message.contains("has disconnected");
+bool ServerMessage::isConnectedMessage() const
+{
+    return m_message.contains("has connected");
 }
 
-const QString &ServerMessage::getClientName() const { return m_clientName; }
+bool ServerMessage::isDisconnectedMessage() const
+{
+    return m_message.contains("has disconnected");
+}
 
-QString ServerMessage::parseClientName(const QString &line) const {
-  QString clientName("Unknown");
-  auto nameStart = line.indexOf('"') + 1;
-  auto nameEnd = line.indexOf('"', nameStart);
+const QString &ServerMessage::getClientName() const
+{
+    return m_clientName;
+}
 
-  if (nameEnd > nameStart) {
-    clientName = line.mid(nameStart, nameEnd - nameStart);
-  }
+QString ServerMessage::parseClientName(const QString &line) const
+{
+    QString clientName("Unknown");
+    auto nameStart = line.indexOf('"') + 1;
+    auto nameEnd = line.indexOf('"', nameStart);
 
-  return clientName;
+    if (nameEnd > nameStart) {
+        clientName = line.mid(nameStart, nameEnd - nameStart);
+    }
+
+    return clientName;
 }
 
 } // namespace deskflow::gui

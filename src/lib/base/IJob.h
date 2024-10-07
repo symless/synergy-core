@@ -24,8 +24,9 @@
 /*!
 A job is an interface for executing some function.
 */
-class IJob : public IInterface {
+class IJob : public IInterface
+{
 public:
-  //! Run the job
-  virtual void run() = 0;
+    //! Run the job
+    virtual void run() = 0;
 };

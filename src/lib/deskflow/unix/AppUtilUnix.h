@@ -24,14 +24,15 @@
 
 class IEventQueue;
 
-class AppUtilUnix : public AppUtil {
+class AppUtilUnix : public AppUtil
+{
 public:
-  AppUtilUnix(IEventQueue *events);
-  virtual ~AppUtilUnix();
+    AppUtilUnix(IEventQueue *events);
+    virtual ~AppUtilUnix();
 
-  int run(int argc, char **argv) override;
-  void startNode() override;
-  std::vector<String> getKeyboardLayoutList() override;
-  String getCurrentLanguageCode() override;
-  void showNotification(const String &title, const String &text) const override;
+    int run(int argc, char **argv) override;
+    void startNode() override;
+    std::vector<String> getKeyboardLayoutList() override;
+    String getCurrentLanguageCode() override;
+    void showNotification(const String &title, const String &text) const override;
 };

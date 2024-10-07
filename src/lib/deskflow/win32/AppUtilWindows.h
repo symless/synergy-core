@@ -27,30 +27,35 @@
 
 class IEventQueue;
 
-enum AppExitMode { kExitModeNormal, kExitModeDaemon };
+enum AppExitMode
+{
+    kExitModeNormal,
+    kExitModeDaemon
+};
 
-class AppUtilWindows : public AppUtil {
+class AppUtilWindows : public AppUtil
+{
 public:
-  AppUtilWindows(IEventQueue *events);
-  virtual ~AppUtilWindows();
+    AppUtilWindows(IEventQueue *events);
+    virtual ~AppUtilWindows();
 
-  static AppUtilWindows &instance();
+    static AppUtilWindows &instance();
 
-  int daemonNTStartup(int, char **);
-  int daemonNTMainLoop(int argc, const char **argv);
-  void debugServiceWait();
-  int run(int argc, char **argv) override;
-  void exitApp(int code) override;
-  void beforeAppExit() override;
-  void startNode() override;
-  std::vector<String> getKeyboardLayoutList() override;
-  String getCurrentLanguageCode() override;
-  HKL getCurrentKeyboardLayout() const;
-  void showNotification(const String &title, const String &text) const override;
+    int daemonNTStartup(int, char **);
+    int daemonNTMainLoop(int argc, const char **argv);
+    void debugServiceWait();
+    int run(int argc, char **argv) override;
+    void exitApp(int code) override;
+    void beforeAppExit() override;
+    void startNode() override;
+    std::vector<String> getKeyboardLayoutList() override;
+    String getCurrentLanguageCode() override;
+    HKL getCurrentKeyboardLayout() const;
+    void showNotification(const String &title, const String &text) const override;
 
 private:
-  AppExitMode m_exitMode;
-  IEventQueue *m_events;
+    AppExitMode m_exitMode;
+    IEventQueue *m_events;
 
-  static BOOL WINAPI consoleHandler(DWORD Event);
+    static BOOL WINAPI consoleHandler(DWORD Event);
 };

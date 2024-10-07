@@ -21,11 +21,12 @@
 #include "deskflow/App.h"
 #include "deskflow/ToolArgs.h"
 
-class ToolApp : public MinimalApp {
+class ToolApp : public MinimalApp
+{
 public:
-  UInt32 run(int argc, char **argv);
-  void help();
+    UInt32 run(int argc, char **argv);
+    void help();
 
 private:
-  ToolArgs m_args;
+    ToolArgs m_args;
 };

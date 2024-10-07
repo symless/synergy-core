@@ -26,19 +26,20 @@
 
 class MainWindow;
 
-class SetupWizard : public QDialog, public Ui::SetupWizardBase {
-  Q_OBJECT
+class SetupWizard : public QDialog, public Ui::SetupWizardBase
+{
+    Q_OBJECT
 
 public:
-  explicit SetupWizard(AppConfig &appConfig);
+    explicit SetupWizard(AppConfig &appConfig);
 
 protected:
-  void accept();
-  void reject();
+    void accept();
+    void reject();
 
 private:
-  AppConfig &m_appConfig;
+    AppConfig &m_appConfig;
 
 public slots:
-  void onLineEditNameChanged(const QString &error);
+    void onLineEditNameChanged(const QString &error);
 };

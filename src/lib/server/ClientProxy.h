@@ -28,73 +28,68 @@ class IStream;
 }
 
 //! Generic proxy for client
-class ClientProxy : public BaseClientProxy {
+class ClientProxy : public BaseClientProxy
+{
 public:
-  /*!
-  \c name is the name of the client.
-  */
-  ClientProxy(const String &name, deskflow::IStream *adoptedStream);
-  ClientProxy(ClientProxy const &) = delete;
-  ClientProxy(ClientProxy &&) = delete;
-  ~ClientProxy();
+    /*!
+    \c name is the name of the client.
+    */
+    ClientProxy(const String &name, deskflow::IStream *adoptedStream);
+    ClientProxy(ClientProxy const &) = delete;
+    ClientProxy(ClientProxy &&) = delete;
+    ~ClientProxy();
 
-  ClientProxy &operator=(ClientProxy const &) = delete;
-  ClientProxy &operator=(ClientProxy &&) = delete;
+    ClientProxy &operator=(ClientProxy const &) = delete;
+    ClientProxy &operator=(ClientProxy &&) = delete;
 
-  //! @name manipulators
-  //@{
+    //! @name manipulators
+    //@{
 
-  //! Disconnect
-  /*!
-  Ask the client to disconnect, using \p msg as the reason.
-  */
-  void close(const char *msg);
+    //! Disconnect
+    /*!
+    Ask the client to disconnect, using \p msg as the reason.
+    */
+    void close(const char *msg);
 
-  //@}
-  //! @name accessors
-  //@{
+    //@}
+    //! @name accessors
+    //@{
 
-  //! Get stream
-  /*!
-  Returns the original stream passed to the c'tor.
-  */
-  deskflow::IStream *getStream() const override;
+    //! Get stream
+    /*!
+    Returns the original stream passed to the c'tor.
+    */
+    deskflow::IStream *getStream() const override;
 
-  //@}
+    //@}
 
-  // IScreen
-  void *getEventTarget() const override;
-  bool getClipboard(ClipboardID id, IClipboard *) const override = 0;
-  void getShape(
-      SInt32 &x, SInt32 &y, SInt32 &width, SInt32 &height) const override = 0;
-  void getCursorPos(SInt32 &x, SInt32 &y) const override = 0;
+    // IScreen
+    void *getEventTarget() const override;
+    bool getClipboard(ClipboardID id, IClipboard *) const override = 0;
+    void getShape(SInt32 &x, SInt32 &y, SInt32 &width, SInt32 &height) const override = 0;
+    void getCursorPos(SInt32 &x, SInt32 &y) const override = 0;
 
-  // IClient overrides
-  void enter(
-      SInt32 xAbs, SInt32 yAbs, UInt32 seqNum, KeyModifierMask mask,
-      bool forScreensaver) override = 0;
-  bool leave() override = 0;
-  void setClipboard(ClipboardID, const IClipboard *) override = 0;
-  void grabClipboard(ClipboardID) override = 0;
-  void setClipboardDirty(ClipboardID, bool) override = 0;
-  void keyDown(KeyID, KeyModifierMask, KeyButton, const String &) override = 0;
-  void keyRepeat(
-      KeyID, KeyModifierMask, SInt32 count, KeyButton,
-      const String &lang) override = 0;
-  void keyUp(KeyID, KeyModifierMask, KeyButton) override = 0;
-  void mouseDown(ButtonID) override = 0;
-  void mouseUp(ButtonID) override = 0;
-  void mouseMove(SInt32 xAbs, SInt32 yAbs) override = 0;
-  void mouseRelativeMove(SInt32 xRel, SInt32 yRel) override = 0;
-  void mouseWheel(SInt32 xDelta, SInt32 yDelta) override = 0;
-  void screensaver(bool activate) override = 0;
-  void resetOptions() override = 0;
-  void setOptions(const OptionsList &options) override = 0;
-  void
-  sendDragInfo(UInt32 fileCount, const char *info, size_t size) override = 0;
-  void fileChunkSending(UInt8 mark, char *data, size_t dataSize) override = 0;
-  void secureInputNotification(const String &app) const override = 0;
+    // IClient overrides
+    void enter(SInt32 xAbs, SInt32 yAbs, UInt32 seqNum, KeyModifierMask mask, bool forScreensaver) override = 0;
+    bool leave() override = 0;
+    void setClipboard(ClipboardID, const IClipboard *) override = 0;
+    void grabClipboard(ClipboardID) override = 0;
+    void setClipboardDirty(ClipboardID, bool) override = 0;
+    void keyDown(KeyID, KeyModifierMask, KeyButton, const String &) override = 0;
+    void keyRepeat(KeyID, KeyModifierMask, SInt32 count, KeyButton, const String &lang) override = 0;
+    void keyUp(KeyID, KeyModifierMask, KeyButton) override = 0;
+    void mouseDown(ButtonID) override = 0;
+    void mouseUp(ButtonID) override = 0;
+    void mouseMove(SInt32 xAbs, SInt32 yAbs) override = 0;
+    void mouseRelativeMove(SInt32 xRel, SInt32 yRel) override = 0;
+    void mouseWheel(SInt32 xDelta, SInt32 yDelta) override = 0;
+    void screensaver(bool activate) override = 0;
+    void resetOptions() override = 0;
+    void setOptions(const OptionsList &options) override = 0;
+    void sendDragInfo(UInt32 fileCount, const char *info, size_t size) override = 0;
+    void fileChunkSending(UInt8 mark, char *data, size_t dataSize) override = 0;
+    void secureInputNotification(const String &app) const override = 0;
 
 private:
-  deskflow::IStream *m_stream;
+    deskflow::IStream *m_stream;
 };

@@ -19,23 +19,36 @@
 #include "ipc/IpcMessage.h"
 #include "common/ipc.h"
 
-IpcMessage::IpcMessage(IpcMessageType type) : m_type(type) {}
+IpcMessage::IpcMessage(IpcMessageType type)
+    : m_type(type)
+{
+}
 
 IpcHelloMessage::IpcHelloMessage(IpcClientType clientType)
-    : IpcMessage(IpcMessageType::Hello),
-      m_clientType(clientType) {}
+    : IpcMessage(IpcMessageType::Hello)
+    , m_clientType(clientType)
+{
+}
 
 IpcHelloBackMessage::IpcHelloBackMessage()
-    : IpcMessage(IpcMessageType::HelloBack) {}
+    : IpcMessage(IpcMessageType::HelloBack)
+{
+}
 
 IpcShutdownMessage::IpcShutdownMessage()
-    : IpcMessage(IpcMessageType::Shutdown) {}
+    : IpcMessage(IpcMessageType::Shutdown)
+{
+}
 
 IpcLogLineMessage::IpcLogLineMessage(const String &logLine)
-    : IpcMessage(IpcMessageType::LogLine),
-      m_logLine(logLine) {}
+    : IpcMessage(IpcMessageType::LogLine)
+    , m_logLine(logLine)
+{
+}
 
 IpcCommandMessage::IpcCommandMessage(const String &command, bool elevate)
-    : IpcMessage(IpcMessageType::Command),
-      m_command(command),
-      m_elevate(elevate) {}
+    : IpcMessage(IpcMessageType::Command)
+    , m_command(command)
+    , m_elevate(elevate)
+{
+}

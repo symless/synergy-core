@@ -31,17 +31,18 @@ namespace deskflow::test {
  * TODO: Switch to regular Clang instead of Apple Clang:
  * https://symless.atlassian.net/browse/S1-1754
  */
-class ExitTimeout {
+class ExitTimeout
+{
 public:
-  ExitTimeout(const int minutes, const std::string_view &name);
-  ~ExitTimeout();
-  void run() const;
+    ExitTimeout(const int minutes, const std::string_view &name);
+    ~ExitTimeout();
+    void run() const;
 
 private:
-  bool m_running = true;
-  int m_minutes = 0;
-  std::string_view m_name;
-  std::unique_ptr<std::thread> m_thread;
+    bool m_running = true;
+    int m_minutes = 0;
+    std::string_view m_name;
+    std::unique_ptr<std::thread> m_thread;
 };
 
 } // namespace deskflow::test

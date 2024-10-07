@@ -25,67 +25,69 @@
 // IPrimaryScreen::ButtonInfo
 //
 
-IPrimaryScreen::ButtonInfo *
-IPrimaryScreen::ButtonInfo::alloc(ButtonID id, KeyModifierMask mask) {
-  ButtonInfo *info = (ButtonInfo *)malloc(sizeof(ButtonInfo));
-  info->m_button = id;
-  info->m_mask = mask;
-  return info;
+IPrimaryScreen::ButtonInfo *IPrimaryScreen::ButtonInfo::alloc(ButtonID id, KeyModifierMask mask)
+{
+    ButtonInfo *info = (ButtonInfo *)malloc(sizeof(ButtonInfo));
+    info->m_button = id;
+    info->m_mask = mask;
+    return info;
 }
 
-IPrimaryScreen::ButtonInfo *
-IPrimaryScreen::ButtonInfo::alloc(const ButtonInfo &x) {
-  ButtonInfo *info = (ButtonInfo *)malloc(sizeof(ButtonInfo));
-  info->m_button = x.m_button;
-  info->m_mask = x.m_mask;
-  return info;
+IPrimaryScreen::ButtonInfo *IPrimaryScreen::ButtonInfo::alloc(const ButtonInfo &x)
+{
+    ButtonInfo *info = (ButtonInfo *)malloc(sizeof(ButtonInfo));
+    info->m_button = x.m_button;
+    info->m_mask = x.m_mask;
+    return info;
 }
 
-bool IPrimaryScreen::ButtonInfo::equal(
-    const ButtonInfo *a, const ButtonInfo *b) {
-  return (a->m_button == b->m_button && a->m_mask == b->m_mask);
+bool IPrimaryScreen::ButtonInfo::equal(const ButtonInfo *a, const ButtonInfo *b)
+{
+    return (a->m_button == b->m_button && a->m_mask == b->m_mask);
 }
 
 //
 // IPrimaryScreen::MotionInfo
 //
 
-IPrimaryScreen::MotionInfo *
-IPrimaryScreen::MotionInfo::alloc(SInt32 x, SInt32 y) {
-  MotionInfo *info = (MotionInfo *)malloc(sizeof(MotionInfo));
-  info->m_x = x;
-  info->m_y = y;
-  return info;
+IPrimaryScreen::MotionInfo *IPrimaryScreen::MotionInfo::alloc(SInt32 x, SInt32 y)
+{
+    MotionInfo *info = (MotionInfo *)malloc(sizeof(MotionInfo));
+    info->m_x = x;
+    info->m_y = y;
+    return info;
 }
 
 //
 // IPrimaryScreen::WheelInfo
 //
 
-IPrimaryScreen::WheelInfo *
-IPrimaryScreen::WheelInfo::alloc(SInt32 xDelta, SInt32 yDelta) {
-  WheelInfo *info = (WheelInfo *)malloc(sizeof(WheelInfo));
-  info->m_xDelta = xDelta;
-  info->m_yDelta = yDelta;
-  return info;
+IPrimaryScreen::WheelInfo *IPrimaryScreen::WheelInfo::alloc(SInt32 xDelta, SInt32 yDelta)
+{
+    WheelInfo *info = (WheelInfo *)malloc(sizeof(WheelInfo));
+    info->m_xDelta = xDelta;
+    info->m_yDelta = yDelta;
+    return info;
 }
 
 //
 // IPrimaryScreen::HotKeyInfo
 //
 
-IPrimaryScreen::HotKeyInfo *IPrimaryScreen::HotKeyInfo::alloc(UInt32 id) {
-  HotKeyInfo *info = (HotKeyInfo *)malloc(sizeof(HotKeyInfo));
-  info->m_id = id;
-  return info;
+IPrimaryScreen::HotKeyInfo *IPrimaryScreen::HotKeyInfo::alloc(UInt32 id)
+{
+    HotKeyInfo *info = (HotKeyInfo *)malloc(sizeof(HotKeyInfo));
+    info->m_id = id;
+    return info;
 }
 
 //
 // IPrimaryScreen::EiConnectInfo
 //
 
-IPrimaryScreen::EiConnectInfo *IPrimaryScreen::EiConnectInfo::alloc(int fd) {
-  EiConnectInfo *info = (EiConnectInfo *)malloc(sizeof(EiConnectInfo));
-  info->m_fd = fd;
-  return info;
+IPrimaryScreen::EiConnectInfo *IPrimaryScreen::EiConnectInfo::alloc(int fd)
+{
+    EiConnectInfo *info = (EiConnectInfo *)malloc(sizeof(EiConnectInfo));
+    info->m_fd = fd;
+    return info;
 }

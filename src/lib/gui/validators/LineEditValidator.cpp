@@ -25,43 +25,43 @@ using namespace deskflow::gui;
 
 namespace validators {
 
-LineEditValidator::LineEditValidator(
-    QLineEdit *lineEdit, ValidationError *error)
-    : m_pError(error),
-      m_pLineEdit(lineEdit) {
-
-  if (!m_pLineEdit) {
-    qFatal("validator line edit not set");
-  }
-}
-
-void LineEditValidator::addValidator(
-    std::unique_ptr<IStringValidator> validator) {
-  m_Validators.push_back(std::move(validator));
-}
-
-QValidator::State LineEditValidator::validate(QString &input, int &pos) const {
-  assert(m_pLineEdit);
-
-  QString errorMessage;
-  for (const auto &validator : m_Validators) {
-    if (!validator->validate(input)) {
-      errorMessage = validator->getMessage();
-      break;
+LineEditValidator::LineEditValidator(QLineEdit *lineEdit, ValidationError *error)
+    : m_pError(error)
+    , m_pLineEdit(lineEdit)
+{
+    if (!m_pLineEdit) {
+        qFatal("validator line edit not set");
     }
-  }
+}
 
-  if (errorMessage.isEmpty()) {
-    m_pLineEdit->setStyleSheet("");
-  } else {
-    m_pLineEdit->setStyleSheet(kStyleLineEditErrorBorder);
-  }
+void LineEditValidator::addValidator(std::unique_ptr<IStringValidator> validator)
+{
+    m_Validators.push_back(std::move(validator));
+}
 
-  if (m_pError) {
-    m_pError->setMessage(errorMessage);
-  }
+QValidator::State LineEditValidator::validate(QString &input, int &pos) const
+{
+    assert(m_pLineEdit);
 
-  return errorMessage.isEmpty() ? Acceptable : Intermediate;
+    QString errorMessage;
+    for (const auto &validator : m_Validators) {
+        if (!validator->validate(input)) {
+            errorMessage = validator->getMessage();
+            break;
+        }
+    }
+
+    if (errorMessage.isEmpty()) {
+        m_pLineEdit->setStyleSheet("");
+    } else {
+        m_pLineEdit->setStyleSheet(kStyleLineEditErrorBorder);
+    }
+
+    if (m_pError) {
+        m_pError->setMessage(errorMessage);
+    }
+
+    return errorMessage.isEmpty() ? Acceptable : Intermediate;
 }
 
 } // namespace validators

@@ -31,41 +31,43 @@
 class IEventQueue;
 
 //! Event queue buffer for X11
-class XWindowsEventQueueBuffer : public IEventQueueBuffer {
+class XWindowsEventQueueBuffer : public IEventQueueBuffer
+{
 public:
-  XWindowsEventQueueBuffer(Display *, Window, IEventQueue *events);
-  XWindowsEventQueueBuffer(XWindowsEventQueueBuffer const &) = delete;
-  XWindowsEventQueueBuffer(XWindowsEventQueueBuffer &&) = delete;
-  virtual ~XWindowsEventQueueBuffer();
+    XWindowsEventQueueBuffer(Display *, Window, IEventQueue *events);
+    XWindowsEventQueueBuffer(XWindowsEventQueueBuffer const &) = delete;
+    XWindowsEventQueueBuffer(XWindowsEventQueueBuffer &&) = delete;
+    virtual ~XWindowsEventQueueBuffer();
 
-  XWindowsEventQueueBuffer &
-  operator=(XWindowsEventQueueBuffer const &) = delete;
-  XWindowsEventQueueBuffer &operator=(XWindowsEventQueueBuffer &&) = delete;
+    XWindowsEventQueueBuffer &operator=(XWindowsEventQueueBuffer const &) = delete;
+    XWindowsEventQueueBuffer &operator=(XWindowsEventQueueBuffer &&) = delete;
 
-  // IEventQueueBuffer overrides
-  virtual void init() {}
-  virtual void waitForEvent(double timeout);
-  virtual Type getEvent(Event &event, UInt32 &dataID);
-  virtual bool addEvent(UInt32 dataID);
-  virtual bool isEmpty() const;
-  virtual EventQueueTimer *newTimer(double duration, bool oneShot) const;
-  virtual void deleteTimer(EventQueueTimer *) const;
-
-private:
-  void flush();
-
-  int getPendingCountLocked();
+    // IEventQueueBuffer overrides
+    virtual void init()
+    {
+    }
+    virtual void waitForEvent(double timeout);
+    virtual Type getEvent(Event &event, UInt32 &dataID);
+    virtual bool addEvent(UInt32 dataID);
+    virtual bool isEmpty() const;
+    virtual EventQueueTimer *newTimer(double duration, bool oneShot) const;
+    virtual void deleteTimer(EventQueueTimer *) const;
 
 private:
-  typedef std::vector<XEvent> EventList;
+    void flush();
 
-  Mutex m_mutex;
-  Display *m_display;
-  Window m_window;
-  Atom m_userEvent;
-  XEvent m_event;
-  EventList m_postedEvents;
-  bool m_waiting;
-  int m_pipefd[2];
-  IEventQueue *m_events;
+    int getPendingCountLocked();
+
+private:
+    typedef std::vector<XEvent> EventList;
+
+    Mutex m_mutex;
+    Display *m_display;
+    Window m_window;
+    Atom m_userEvent;
+    XEvent m_event;
+    EventList m_postedEvents;
+    bool m_waiting;
+    int m_pipefd[2];
+    IEventQueue *m_events;
 };

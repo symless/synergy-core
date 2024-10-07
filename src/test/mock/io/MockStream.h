@@ -24,20 +24,23 @@
 
 class IEventQueue;
 
-class MockStream : public deskflow::IStream {
+class MockStream : public deskflow::IStream
+{
 public:
-  MockStream() {}
-  MOCK_METHOD(void, close, (), (override));
-  MOCK_METHOD(UInt32, read, (void *, UInt32), (override));
-  MOCK_METHOD(void, write, (const void *, UInt32), (override));
-  MOCK_METHOD(void, flush, (), (override));
-  MOCK_METHOD(void, shutdownInput, (), (override));
-  MOCK_METHOD(void, shutdownOutput, (), (override));
-  MOCK_METHOD(Event::Type, getInputReadyEvent, ());
-  MOCK_METHOD(Event::Type, getOutputErrorEvent, ());
-  MOCK_METHOD(Event::Type, getInputShutdownEvent, ());
-  MOCK_METHOD(Event::Type, getOutputShutdownEvent, ());
-  MOCK_METHOD(void *, getEventTarget, (), (const, override));
-  MOCK_METHOD(bool, isReady, (), (const, override));
-  MOCK_METHOD(UInt32, getSize, (), (const, override));
+    MockStream()
+    {
+    }
+    MOCK_METHOD(void, close, (), (override));
+    MOCK_METHOD(UInt32, read, (void *, UInt32), (override));
+    MOCK_METHOD(void, write, (const void *, UInt32), (override));
+    MOCK_METHOD(void, flush, (), (override));
+    MOCK_METHOD(void, shutdownInput, (), (override));
+    MOCK_METHOD(void, shutdownOutput, (), (override));
+    MOCK_METHOD(Event::Type, getInputReadyEvent, ());
+    MOCK_METHOD(Event::Type, getOutputErrorEvent, ());
+    MOCK_METHOD(Event::Type, getInputShutdownEvent, ());
+    MOCK_METHOD(Event::Type, getOutputShutdownEvent, ());
+    MOCK_METHOD(void *, getEventTarget, (), (const, override));
+    MOCK_METHOD(bool, isReady, (), (const, override));
+    MOCK_METHOD(UInt32, getSize, (), (const, override));
 };

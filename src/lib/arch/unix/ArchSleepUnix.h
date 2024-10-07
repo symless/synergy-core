@@ -23,11 +23,12 @@
 #define ARCH_SLEEP ArchSleepUnix
 
 //! Unix implementation of IArchSleep
-class ArchSleepUnix : public IArchSleep {
+class ArchSleepUnix : public IArchSleep
+{
 public:
-  ArchSleepUnix();
-  virtual ~ArchSleepUnix();
+    ArchSleepUnix();
+    virtual ~ArchSleepUnix();
 
-  // IArchSleep overrides
-  virtual void sleep(double timeout);
+    // IArchSleep overrides
+    virtual void sleep(double timeout);
 };

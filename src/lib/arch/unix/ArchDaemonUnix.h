@@ -24,11 +24,12 @@
 #define ARCH_DAEMON ArchDaemonUnix
 
 //! Unix implementation of IArchDaemon
-class ArchDaemonUnix : public ArchDaemonNone {
+class ArchDaemonUnix : public ArchDaemonNone
+{
 public:
-  ArchDaemonUnix();
-  virtual ~ArchDaemonUnix();
+    ArchDaemonUnix();
+    virtual ~ArchDaemonUnix();
 
-  // IArchDaemon overrides
-  virtual int daemonize(const char *name, DaemonFunc func);
+    // IArchDaemon overrides
+    virtual int daemonize(const char *name, DaemonFunc func);
 };

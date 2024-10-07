@@ -39,26 +39,27 @@ XBASE_SUBCLASS_WHAT(XBadClient, XDeskflow);
 /*!
 Thrown when a client attempting to connect has an incompatible version.
 */
-class XIncompatibleClient : public XDeskflow {
+class XIncompatibleClient : public XDeskflow
+{
 public:
-  XIncompatibleClient(int major, int minor);
+    XIncompatibleClient(int major, int minor);
 
-  //! @name accessors
-  //@{
+    //! @name accessors
+    //@{
 
-  //! Get client's major version number
-  int getMajor() const throw();
-  //! Get client's minor version number
-  int getMinor() const throw();
+    //! Get client's major version number
+    int getMajor() const throw();
+    //! Get client's minor version number
+    int getMinor() const throw();
 
-  //@}
+    //@}
 
 protected:
-  virtual String getWhat() const throw();
+    virtual String getWhat() const throw();
 
 private:
-  int m_major;
-  int m_minor;
+    int m_major;
+    int m_minor;
 };
 
 //! Client already connected exception
@@ -66,24 +67,27 @@ private:
 Thrown when a client attempting to connect is using the same name as
 a client that is already connected.
 */
-class XDuplicateClient : public XDeskflow {
+class XDuplicateClient : public XDeskflow
+{
 public:
-  XDuplicateClient(const String &name);
-  virtual ~XDuplicateClient() _NOEXCEPT {}
+    XDuplicateClient(const String &name);
+    virtual ~XDuplicateClient() _NOEXCEPT
+    {
+    }
 
-  //! @name accessors
-  //@{
+    //! @name accessors
+    //@{
 
-  //! Get client's name
-  virtual const String &getName() const throw();
+    //! Get client's name
+    virtual const String &getName() const throw();
 
-  //@}
+    //@}
 
 protected:
-  virtual String getWhat() const throw();
+    virtual String getWhat() const throw();
 
 private:
-  String m_name;
+    String m_name;
 };
 
 //! Client not in map exception
@@ -91,24 +95,27 @@ private:
 Thrown when a client attempting to connect is using a name that is
 unknown to the server.
 */
-class XUnknownClient : public XDeskflow {
+class XUnknownClient : public XDeskflow
+{
 public:
-  XUnknownClient(const String &name);
-  virtual ~XUnknownClient() _NOEXCEPT {}
+    XUnknownClient(const String &name);
+    virtual ~XUnknownClient() _NOEXCEPT
+    {
+    }
 
-  //! @name accessors
-  //@{
+    //! @name accessors
+    //@{
 
-  //! Get the client's name
-  virtual const String &getName() const throw();
+    //! Get the client's name
+    virtual const String &getName() const throw();
 
-  //@}
+    //@}
 
 protected:
-  virtual String getWhat() const throw();
+    virtual String getWhat() const throw();
 
 private:
-  String m_name;
+    String m_name;
 };
 
 //! Generic exit eception
@@ -117,17 +124,20 @@ Thrown when we want to abort, with the opportunity to clean up. This is a
 little bit of a hack, but it's a better way of exiting, than just calling
 exit(int).
 */
-class XExitApp : public XDeskflow {
+class XExitApp : public XDeskflow
+{
 public:
-  XExitApp(int code);
-  virtual ~XExitApp() _NOEXCEPT {}
+    XExitApp(int code);
+    virtual ~XExitApp() _NOEXCEPT
+    {
+    }
 
-  //! Get the exit code
-  int getCode() const throw();
+    //! Get the exit code
+    int getCode() const throw();
 
 protected:
-  virtual String getWhat() const throw();
+    virtual String getWhat() const throw();
 
 private:
-  int m_code;
+    int m_code;
 };

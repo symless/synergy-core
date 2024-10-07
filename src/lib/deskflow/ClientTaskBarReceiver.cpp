@@ -29,90 +29,97 @@
 //
 
 ClientTaskBarReceiver::ClientTaskBarReceiver(IEventQueue *events)
-    : m_state(kNotRunning),
-      m_events(events) {
-  // do nothing
+    : m_state(kNotRunning)
+    , m_events(events)
+{
+    // do nothing
 }
 
-ClientTaskBarReceiver::~ClientTaskBarReceiver() {
-  // do nothing
+ClientTaskBarReceiver::~ClientTaskBarReceiver()
+{
+    // do nothing
 }
 
-void ClientTaskBarReceiver::updateStatus(
-    Client *client, const String &errorMsg) {
-  {
-    // update our status
-    m_errorMessage = errorMsg;
-    if (client == NULL) {
-      if (m_errorMessage.empty()) {
-        m_state = kNotRunning;
-      } else {
-        m_state = kNotWorking;
-      }
-    } else {
-      m_server = client->getServerAddress().getHostname();
+void ClientTaskBarReceiver::updateStatus(Client *client, const String &errorMsg)
+{
+    {
+        // update our status
+        m_errorMessage = errorMsg;
+        if (client == NULL) {
+            if (m_errorMessage.empty()) {
+                m_state = kNotRunning;
+            } else {
+                m_state = kNotWorking;
+            }
+        } else {
+            m_server = client->getServerAddress().getHostname();
 
-      if (client->isConnected()) {
-        m_state = kConnected;
-      } else if (client->isConnecting()) {
-        m_state = kConnecting;
-      } else {
-        m_state = kNotConnected;
-      }
+            if (client->isConnected()) {
+                m_state = kConnected;
+            } else if (client->isConnecting()) {
+                m_state = kConnecting;
+            } else {
+                m_state = kNotConnected;
+            }
+        }
+
+        // let subclasses have a go
+        onStatusChanged(client);
     }
 
-    // let subclasses have a go
-    onStatusChanged(client);
-  }
-
-  // tell task bar
-  ARCH->updateReceiver(this);
+    // tell task bar
+    ARCH->updateReceiver(this);
 }
 
-ClientTaskBarReceiver::EState ClientTaskBarReceiver::getStatus() const {
-  return m_state;
+ClientTaskBarReceiver::EState ClientTaskBarReceiver::getStatus() const
+{
+    return m_state;
 }
 
-const String &ClientTaskBarReceiver::getErrorMessage() const {
-  return m_errorMessage;
+const String &ClientTaskBarReceiver::getErrorMessage() const
+{
+    return m_errorMessage;
 }
 
-void ClientTaskBarReceiver::quit() { m_events->addEvent(Event(Event::kQuit)); }
-
-void ClientTaskBarReceiver::onStatusChanged(Client *) {
-  // do nothing
+void ClientTaskBarReceiver::quit()
+{
+    m_events->addEvent(Event(Event::kQuit));
 }
 
-void ClientTaskBarReceiver::lock() const {
-  // do nothing
+void ClientTaskBarReceiver::onStatusChanged(Client *)
+{
+    // do nothing
 }
 
-void ClientTaskBarReceiver::unlock() const {
-  // do nothing
+void ClientTaskBarReceiver::lock() const
+{
+    // do nothing
 }
 
-std::string ClientTaskBarReceiver::getToolTip() const {
-  switch (m_state) {
-  case kNotRunning:
-    return deskflow::string::sprintf("%s:  Not running", kAppName);
+void ClientTaskBarReceiver::unlock() const
+{
+    // do nothing
+}
 
-  case kNotWorking:
-    return deskflow::string::sprintf(
-        "%s:  %s", kAppName, m_errorMessage.c_str());
+std::string ClientTaskBarReceiver::getToolTip() const
+{
+    switch (m_state) {
+    case kNotRunning:
+        return deskflow::string::sprintf("%s:  Not running", kAppName);
 
-  case kNotConnected:
-    return deskflow::string::sprintf(
-        "%s:  Not connected:  %s", kAppName, m_errorMessage.c_str());
+    case kNotWorking:
+        return deskflow::string::sprintf("%s:  %s", kAppName, m_errorMessage.c_str());
 
-  case kConnecting:
-    return deskflow::string::sprintf(
-        "%s:  Connecting to %s...", kAppName, m_server.c_str());
+    case kNotConnected:
+        return deskflow::string::sprintf("%s:  Not connected:  %s", kAppName, m_errorMessage.c_str());
 
-  case kConnected:
-    return deskflow::string::sprintf(
-        "%s:  Connected to %s", kAppName, m_server.c_str());
+    case kConnecting:
+        return deskflow::string::sprintf("%s:  Connecting to %s...", kAppName, m_server.c_str());
 
-  default:
-    return "";
-  }
+    case kConnected:
+        return deskflow::string::sprintf("%s:  Connected to %s", kAppName, m_server.c_str());
+
+    default:
+        return "";
+    }
 }

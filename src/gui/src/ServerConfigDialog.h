@@ -27,56 +27,69 @@
 
 #include <QDialog>
 
-class ServerConfigDialog : public QDialog, public Ui::ServerConfigDialogBase {
-  Q_OBJECT
+class ServerConfigDialog : public QDialog, public Ui::ServerConfigDialogBase
+{
+    Q_OBJECT
 
 public:
-  ServerConfigDialog(
-      QWidget *parent, ServerConfig &config, AppConfig &appConfig);
-  bool addClient(const QString &clientName);
+    ServerConfigDialog(QWidget *parent, ServerConfig &config, AppConfig &appConfig);
+    bool addClient(const QString &clientName);
 
 public slots:
-  void accept() override;
-  void reject() override;
-  void showEvent(QShowEvent *event) override;
-  void message(const QString &message) { m_Message = message; }
+    void accept() override;
+    void reject() override;
+    void showEvent(QShowEvent *event) override;
+    void message(const QString &message)
+    {
+        m_Message = message;
+    }
 
 protected slots:
-  void on_m_pButtonNewHotkey_clicked();
-  void on_m_pListHotkeys_itemSelectionChanged();
-  void on_m_pButtonEditHotkey_clicked();
-  void on_m_pButtonRemoveHotkey_clicked();
+    void on_m_pButtonNewHotkey_clicked();
+    void on_m_pListHotkeys_itemSelectionChanged();
+    void on_m_pButtonEditHotkey_clicked();
+    void on_m_pButtonRemoveHotkey_clicked();
 
-  void on_m_pButtonNewAction_clicked();
-  void on_m_pListActions_itemSelectionChanged();
-  void on_m_pButtonEditAction_clicked();
-  void on_m_pButtonRemoveAction_clicked();
-  void on_m_pCheckBoxEnableClipboard_stateChanged(int state);
-  void on_m_pButtonAddComputer_clicked();
-  void onScreenRemoved();
-  void on_m_pCheckBoxUseExternalConfig_toggled(bool checked = false);
-  bool on_m_pButtonBrowseConfigFile_clicked();
+    void on_m_pButtonNewAction_clicked();
+    void on_m_pListActions_itemSelectionChanged();
+    void on_m_pButtonEditAction_clicked();
+    void on_m_pButtonRemoveAction_clicked();
+    void on_m_pCheckBoxEnableClipboard_stateChanged(int state);
+    void on_m_pButtonAddComputer_clicked();
+    void onScreenRemoved();
+    void on_m_pCheckBoxUseExternalConfig_toggled(bool checked = false);
+    bool on_m_pButtonBrowseConfigFile_clicked();
 
 protected:
-  bool addComputer(const QString &clientName, bool doSilent);
-  ServerConfig &serverConfig() { return m_ServerConfig; }
-  void setOriginalServerConfig(const ServerConfig &s) {
-    m_OriginalServerConfig = s;
-  }
-  ScreenSetupModel &model() { return m_ScreenSetupModel; }
-  AppConfig &appConfig() { return m_appConfig; }
+    bool addComputer(const QString &clientName, bool doSilent);
+    ServerConfig &serverConfig()
+    {
+        return m_ServerConfig;
+    }
+    void setOriginalServerConfig(const ServerConfig &s)
+    {
+        m_OriginalServerConfig = s;
+    }
+    ScreenSetupModel &model()
+    {
+        return m_ScreenSetupModel;
+    }
+    AppConfig &appConfig()
+    {
+        return m_appConfig;
+    }
 
 private:
-  ServerConfig &m_OriginalServerConfig;
-  ServerConfig m_ServerConfig;
-  bool m_OriginalServerConfigIsExternal;
-  QString m_OriginalServerConfigUsesExternalFile;
-  ScreenSetupModel m_ScreenSetupModel;
-  QString m_Message;
-  AppConfig &m_appConfig;
+    ServerConfig &m_OriginalServerConfig;
+    ServerConfig m_ServerConfig;
+    bool m_OriginalServerConfigIsExternal;
+    QString m_OriginalServerConfigUsesExternalFile;
+    ScreenSetupModel m_ScreenSetupModel;
+    QString m_Message;
+    AppConfig &m_appConfig;
 
 private slots:
-  void onChange();
+    void onChange();
 };
 
 #endif

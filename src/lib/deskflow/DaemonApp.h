@@ -32,30 +32,30 @@ class MSWindowsWatchdog;
 
 extern const char *const kLogFilename;
 
-class DaemonApp {
-
+class DaemonApp
+{
 public:
-  DaemonApp();
-  ~DaemonApp();
-  int run(int argc, char **argv);
-  void mainLoop(bool logToFile, bool foreground = false);
+    DaemonApp();
+    ~DaemonApp();
+    int run(int argc, char **argv);
+    void mainLoop(bool logToFile, bool foreground = false);
 
 private:
-  void daemonize();
-  void foregroundError(const char *message);
-  std::string logFilename();
-  void handleIpcMessage(const Event &, void *);
+    void daemonize();
+    void foregroundError(const char *message);
+    std::string logFilename();
+    void handleIpcMessage(const Event &, void *);
 
 public:
-  static DaemonApp *s_instance;
+    static DaemonApp *s_instance;
 
 #if SYSAPI_WIN32
-  std::unique_ptr<MSWindowsWatchdog> m_watchdog;
+    std::unique_ptr<MSWindowsWatchdog> m_watchdog;
 #endif
 
 private:
-  std::unique_ptr<IpcServer> m_ipcServer;
-  std::unique_ptr<IpcLogOutputter> m_ipcLogOutputter;
-  std::unique_ptr<IEventQueue> m_events;
-  std::unique_ptr<FileLogOutputter> m_fileLogOutputter;
+    std::unique_ptr<IpcServer> m_ipcServer;
+    std::unique_ptr<IpcLogOutputter> m_ipcLogOutputter;
+    std::unique_ptr<IEventQueue> m_events;
+    std::unique_ptr<FileLogOutputter> m_fileLogOutputter;
 };

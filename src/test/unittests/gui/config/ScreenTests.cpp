@@ -26,43 +26,43 @@
 using namespace deskflow::gui::proxy;
 using namespace testing;
 
-class QSettingsProxyMock : public QSettingsProxy {
+class QSettingsProxyMock : public QSettingsProxy
+{
 public:
-  MOCK_METHOD(int, beginReadArray, (const QString &prefix), (override));
-  MOCK_METHOD(void, beginWriteArray, (const QString &prefix), (override));
-  MOCK_METHOD(void, setArrayIndex, (int i), (override));
-  MOCK_METHOD(QVariant, value, (const QString &key), (const, override));
-  MOCK_METHOD(
-      QVariant, value, (const QString &key, const QVariant &defaultValue),
-      (const, override));
-  MOCK_METHOD(void, endArray, (), (override));
-  MOCK_METHOD(
-      void, setValue, (const QString &key, const QVariant &value), (override));
-  MOCK_METHOD(void, beginGroup, (const QString &prefix), (override));
-  MOCK_METHOD(void, endGroup, (), (override));
-  MOCK_METHOD(void, remove, (const QString &key), (override));
-  MOCK_METHOD(bool, isWritable, (), (const, override));
-  MOCK_METHOD(bool, contains, (const QString &key), (const, override));
+    MOCK_METHOD(int, beginReadArray, (const QString &prefix), (override));
+    MOCK_METHOD(void, beginWriteArray, (const QString &prefix), (override));
+    MOCK_METHOD(void, setArrayIndex, (int i), (override));
+    MOCK_METHOD(QVariant, value, (const QString &key), (const, override));
+    MOCK_METHOD(QVariant, value, (const QString &key, const QVariant &defaultValue), (const, override));
+    MOCK_METHOD(void, endArray, (), (override));
+    MOCK_METHOD(void, setValue, (const QString &key, const QVariant &value), (override));
+    MOCK_METHOD(void, beginGroup, (const QString &prefix), (override));
+    MOCK_METHOD(void, endGroup, (), (override));
+    MOCK_METHOD(void, remove, (const QString &key), (override));
+    MOCK_METHOD(bool, isWritable, (), (const, override));
+    MOCK_METHOD(bool, contains, (const QString &key), (const, override));
 };
 
-TEST(ScreenTests, loadSettings_whenHasSetting_readsArray) {
-  TestQtCoreApp app;
-  NiceMock<QSettingsProxyMock> settings;
-  Screen screen;
-  ON_CALL(settings, value(_)).WillByDefault(Return("stub"));
+TEST(ScreenTests, loadSettings_whenHasSetting_readsArray)
+{
+    TestQtCoreApp app;
+    NiceMock<QSettingsProxyMock> settings;
+    Screen screen;
+    ON_CALL(settings, value(_)).WillByDefault(Return("stub"));
 
-  EXPECT_CALL(settings, beginReadArray(_)).Times(4);
+    EXPECT_CALL(settings, beginReadArray(_)).Times(4);
 
-  screen.loadSettings(settings);
+    screen.loadSettings(settings);
 }
 
-TEST(ScreenTests, saveSettings_whenNameIsSet_writesArray) {
-  TestQtCoreApp app;
-  NiceMock<QSettingsProxyMock> settings;
-  Screen screen;
-  screen.setName("stub");
+TEST(ScreenTests, saveSettings_whenNameIsSet_writesArray)
+{
+    TestQtCoreApp app;
+    NiceMock<QSettingsProxyMock> settings;
+    Screen screen;
+    screen.setName("stub");
 
-  EXPECT_CALL(settings, beginWriteArray(_)).Times(4);
+    EXPECT_CALL(settings, beginWriteArray(_)).Times(4);
 
-  screen.saveSettings(settings);
+    screen.saveSettings(settings);
 }

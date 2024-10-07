@@ -20,20 +20,16 @@
 class IEventQueue;
 class SocketMultiplexer;
 
-class InverseSocketFactory : public ISocketFactory {
+class InverseSocketFactory : public ISocketFactory
+{
 public:
-  InverseSocketFactory(
-      IEventQueue *events, SocketMultiplexer *socketMultiplexer);
+    InverseSocketFactory(IEventQueue *events, SocketMultiplexer *socketMultiplexer);
 
-  // ISocketFactory overrides
-  IDataSocket *create(
-      bool secure,
-      IArchNetwork::EAddressFamily family = IArchNetwork::kINET) const override;
-  IListenSocket *createListen(
-      bool secure,
-      IArchNetwork::EAddressFamily family = IArchNetwork::kINET) const override;
+    // ISocketFactory overrides
+    IDataSocket *create(bool secure, IArchNetwork::EAddressFamily family = IArchNetwork::kINET) const override;
+    IListenSocket *createListen(bool secure, IArchNetwork::EAddressFamily family = IArchNetwork::kINET) const override;
 
 private:
-  IEventQueue *m_events = nullptr;
-  SocketMultiplexer *m_socketMultiplexer = nullptr;
+    IEventQueue *m_events = nullptr;
+    SocketMultiplexer *m_socketMultiplexer = nullptr;
 };

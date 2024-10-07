@@ -24,33 +24,42 @@
 // XWindowsClipboardHTMLConverter
 //
 
-XWindowsClipboardHTMLConverter::XWindowsClipboardHTMLConverter(
-    Display *display, const char *name)
-    : m_atom(XInternAtom(display, name, False)) {
-  // do nothing
+XWindowsClipboardHTMLConverter::XWindowsClipboardHTMLConverter(Display *display, const char *name)
+    : m_atom(XInternAtom(display, name, False))
+{
+    // do nothing
 }
 
-XWindowsClipboardHTMLConverter::~XWindowsClipboardHTMLConverter() {
-  // do nothing
+XWindowsClipboardHTMLConverter::~XWindowsClipboardHTMLConverter()
+{
+    // do nothing
 }
 
-IClipboard::EFormat XWindowsClipboardHTMLConverter::getFormat() const {
-  return IClipboard::kHTML;
+IClipboard::EFormat XWindowsClipboardHTMLConverter::getFormat() const
+{
+    return IClipboard::kHTML;
 }
 
-Atom XWindowsClipboardHTMLConverter::getAtom() const { return m_atom; }
-
-int XWindowsClipboardHTMLConverter::getDataSize() const { return 8; }
-
-String
-XWindowsClipboardHTMLConverter::fromIClipboard(const String &data) const {
-  return data;
+Atom XWindowsClipboardHTMLConverter::getAtom() const
+{
+    return m_atom;
 }
 
-String XWindowsClipboardHTMLConverter::toIClipboard(const String &data) const {
-  if (Unicode::isUTF8(data)) {
+int XWindowsClipboardHTMLConverter::getDataSize() const
+{
+    return 8;
+}
+
+String XWindowsClipboardHTMLConverter::fromIClipboard(const String &data) const
+{
     return data;
-  } else {
-    return Unicode::UTF16ToUTF8(data);
-  }
+}
+
+String XWindowsClipboardHTMLConverter::toIClipboard(const String &data) const
+{
+    if (Unicode::isUTF8(data)) {
+        return data;
+    } else {
+        return Unicode::UTF16ToUTF8(data);
+    }
 }

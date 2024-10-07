@@ -28,22 +28,23 @@ class IpcMessage;
 class IpcLogLineMessage;
 class IEventQueue;
 
-class IpcServerProxy {
-  friend class IpcClient;
+class IpcServerProxy
+{
+    friend class IpcClient;
 
 public:
-  IpcServerProxy(deskflow::IStream &stream, IEventQueue *events);
-  IpcServerProxy(IpcServerProxy const &) = delete;
-  virtual ~IpcServerProxy();
+    IpcServerProxy(deskflow::IStream &stream, IEventQueue *events);
+    IpcServerProxy(IpcServerProxy const &) = delete;
+    virtual ~IpcServerProxy();
 
 private:
-  void send(const IpcMessage &message);
+    void send(const IpcMessage &message);
 
-  void handleData(const Event &, void *);
-  IpcLogLineMessage *parseLogLine();
-  void disconnect();
+    void handleData(const Event &, void *);
+    IpcLogLineMessage *parseLogLine();
+    void disconnect();
 
 private:
-  deskflow::IStream &m_stream;
-  IEventQueue *m_events;
+    deskflow::IStream &m_stream;
+    IEventQueue *m_events;
 };

@@ -23,15 +23,17 @@
 
 #include <gmock/gmock.h>
 
-class MockScreen : public deskflow::Screen {
+class MockScreen : public deskflow::Screen
+{
 public:
-  MockScreen() : deskflow::Screen() {}
-  MOCK_METHOD(void, disable, (), (override));
-  MOCK_METHOD(
-      void, getShape, (SInt32 &, SInt32 &, SInt32 &, SInt32 &),
-      (const, override));
-  MOCK_METHOD(void, getCursorPos, (SInt32 &, SInt32 &), (const, override));
-  MOCK_METHOD(void, resetOptions, (), (override));
-  MOCK_METHOD(void, setOptions, (const OptionsList &), (override));
-  MOCK_METHOD(void, enable, (), (override));
+    MockScreen()
+        : deskflow::Screen()
+    {
+    }
+    MOCK_METHOD(void, disable, (), (override));
+    MOCK_METHOD(void, getShape, (SInt32 &, SInt32 &, SInt32 &, SInt32 &), (const, override));
+    MOCK_METHOD(void, getCursorPos, (SInt32 &, SInt32 &), (const, override));
+    MOCK_METHOD(void, resetOptions, (), (override));
+    MOCK_METHOD(void, setOptions, (const OptionsList &), (override));
+    MOCK_METHOD(void, enable, (), (override));
 };

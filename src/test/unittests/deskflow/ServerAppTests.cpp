@@ -26,38 +26,44 @@
 
 using ::testing::NiceMock;
 
-class MockServerApp : public ServerApp {
+class MockServerApp : public ServerApp
+{
 public:
-  MockServerApp() : ServerApp(nullptr, nullptr) {}
+    MockServerApp()
+        : ServerApp(nullptr, nullptr)
+    {
+    }
 };
 
-TEST(ServerAppTests, runInner_will_handle_configuration_lifetime) {
-  NiceMock<MockServerApp> app;
+TEST(ServerAppTests, runInner_will_handle_configuration_lifetime)
+{
+    NiceMock<MockServerApp> app;
 
-  EXPECT_FALSE(app.args().m_config);
+    EXPECT_FALSE(app.args().m_config);
 
-  const char *argv[]{SERVER_BINARY_NAME};
-  app.runInner(
-      1, const_cast<char **>(argv), nullptr, [](int, char **) { return 0; });
+    const char *argv[]{SERVER_BINARY_NAME};
+    app.runInner(1, const_cast<char **>(argv), nullptr, [](int, char **) {
+        return 0;
+    });
 
-  EXPECT_TRUE(app.args().m_config);
+    EXPECT_TRUE(app.args().m_config);
 }
 
-TEST(ServerAppTests, version_printsYear) {
-  NiceMock<MockServerApp> app;
-  std::stringstream buffer;
-  std::streambuf *old = std::cout.rdbuf(buffer.rdbuf());
+TEST(ServerAppTests, version_printsYear)
+{
+    NiceMock<MockServerApp> app;
+    std::stringstream buffer;
+    std::streambuf *old = std::cout.rdbuf(buffer.rdbuf());
 
-  app.version();
+    app.version();
 
-  std::cout.rdbuf(old);
+    std::cout.rdbuf(old);
 
 #ifdef WIN32
-  // regex is god awful on windows, so just check that there is a copyright
-  EXPECT_THAT(buffer.str(), testing::HasSubstr("Symless Ltd."));
+    // regex is god awful on windows, so just check that there is a copyright
+    EXPECT_THAT(buffer.str(), testing::HasSubstr("Symless Ltd."));
 #else
-  std::string expectedPattern =
-      ".*Copyright \\(C\\) [0-9]{4}-[0-9]{4} Symless Ltd.*";
-  EXPECT_THAT(buffer.str(), testing::MatchesRegex(expectedPattern));
+    std::string expectedPattern = ".*Copyright \\(C\\) [0-9]{4}-[0-9]{4} Symless Ltd.*";
+    EXPECT_THAT(buffer.str(), testing::MatchesRegex(expectedPattern));
 #endif // WIN32
 }

@@ -51,136 +51,145 @@
 
 using namespace deskflow::gui;
 
-class QThreadImpl : public QThread {
+class QThreadImpl : public QThread
+{
 public:
-  static void msleep(unsigned long msecs) { QThread::msleep(msecs); }
+    static void msleep(unsigned long msecs)
+    {
+        QThread::msleep(msecs);
+    }
 };
 
 #if defined(Q_OS_MAC)
 bool checkMacAssistiveDevices();
 #endif
 
-bool hasArg(const QString &arg, const QStringList &args) {
-  return std::ranges::any_of(
-      args, [&arg](const QString &a) { return a == arg; });
+bool hasArg(const QString &arg, const QStringList &args)
+{
+    return std::ranges::any_of(args, [&arg](const QString &a) {
+        return a == arg;
+    });
 }
 
-int main(int argc, char *argv[]) {
-
+int main(int argc, char *argv[])
+{
 #if defined(Q_OS_MAC)
-  /* Workaround for QTBUG-40332 - "High ping when QNetworkAccessManager is
-   * instantiated" */
-  ::setenv("QT_BEARER_POLL_TIMEOUT", "-1", 1);
+    /* Workaround for QTBUG-40332 - "High ping when QNetworkAccessManager is
+     * instantiated" */
+    ::setenv("QT_BEARER_POLL_TIMEOUT", "-1", 1);
 #endif
 
-  QCoreApplication::setApplicationName(kAppName);
-  QCoreApplication::setOrganizationName(kAppName);
+    QCoreApplication::setApplicationName(kAppName);
+    QCoreApplication::setOrganizationName(kAppName);
 
-  // used as a prefix for settings paths, and must not be a url.
-  QCoreApplication::setOrganizationDomain(kOrgDomain);
+    // used as a prefix for settings paths, and must not be a url.
+    QCoreApplication::setOrganizationDomain(kOrgDomain);
 
-  DeskflowApplication app(argc, argv);
+    DeskflowApplication app(argc, argv);
 
-  qInstallMessageHandler(deskflow::gui::messages::messageHandler);
-  QString version = QString::fromStdString(deskflow::version());
-  qInfo(DESKFLOW_APP_NAME " v%s", qPrintable(version));
+    qInstallMessageHandler(deskflow::gui::messages::messageHandler);
+    QString version = QString::fromStdString(deskflow::version());
+    qInfo(DESKFLOW_APP_NAME " v%s", qPrintable(version));
 
-  dotenv();
-  Logger::instance().loadEnvVars();
+    dotenv();
+    Logger::instance().loadEnvVars();
 
 #if defined(Q_OS_MAC)
 
-  if (app.applicationDirPath().startsWith("/Volumes/")) {
-    QMessageBox::information(
-        NULL, DESKFLOW_APP_NAME,
-        "Please drag " DESKFLOW_APP_NAME " to the Applications folder, "
-        "and open it from there.");
-    return 1;
-  }
-
-  if (!checkMacAssistiveDevices()) {
-    return 1;
-  }
-#endif
-
-  ConfigScopes configScopes;
-
-  // --no-reset
-  QStringList arguments = QCoreApplication::arguments();
-  const auto noReset = hasArg("--no-reset", arguments);
-  const auto resetEnvVar =
-      strToTrue(qEnvironmentVariable("DESKFLOW_RESET_ALL"));
-  if (resetEnvVar && !noReset) {
-    diagnostic::clearSettings(configScopes, false);
-  }
-
-  AppConfig appConfig(configScopes);
-
-  QObject::connect(
-      &configScopes, &ConfigScopes::saving, &appConfig,
-      [&appConfig]() { appConfig.commit(); }, Qt::DirectConnection);
-
-  if (appConfig.wizardShouldRun()) {
-    SetupWizard wizard(appConfig);
-    auto result = wizard.exec();
-    if (result != QDialog::Accepted) {
-      qInfo("wizard cancelled, exiting");
-      return 0;
+    if (app.applicationDirPath().startsWith("/Volumes/")) {
+        QMessageBox::information(NULL,
+                                 DESKFLOW_APP_NAME,
+                                 "Please drag " DESKFLOW_APP_NAME
+                                 " to the Applications folder, "
+                                 "and open it from there.");
+        return 1;
     }
 
-    configScopes.save();
-  }
-
-  MainWindow mainWindow(configScopes, appConfig);
-
-  QObject::connect(
-      &app, &DeskflowApplication::aboutToQuit, &mainWindow,
-      &MainWindow::onAppAboutToQuit);
-
-  mainWindow.open();
-
-#ifdef DESKFLOW_GUI_HOOK_START
-  DESKFLOW_GUI_HOOK_START
+    if (!checkMacAssistiveDevices()) {
+        return 1;
+    }
 #endif
 
-  return DeskflowApplication::exec();
+    ConfigScopes configScopes;
+
+    // --no-reset
+    QStringList arguments = QCoreApplication::arguments();
+    const auto noReset = hasArg("--no-reset", arguments);
+    const auto resetEnvVar = strToTrue(qEnvironmentVariable("DESKFLOW_RESET_ALL"));
+    if (resetEnvVar && !noReset) {
+        diagnostic::clearSettings(configScopes, false);
+    }
+
+    AppConfig appConfig(configScopes);
+
+    QObject::connect(
+        &configScopes,
+        &ConfigScopes::saving,
+        &appConfig,
+        [&appConfig]() {
+            appConfig.commit();
+        },
+        Qt::DirectConnection);
+
+    if (appConfig.wizardShouldRun()) {
+        SetupWizard wizard(appConfig);
+        auto result = wizard.exec();
+        if (result != QDialog::Accepted) {
+            qInfo("wizard cancelled, exiting");
+            return 0;
+        }
+
+        configScopes.save();
+    }
+
+    MainWindow mainWindow(configScopes, appConfig);
+
+    QObject::connect(&app, &DeskflowApplication::aboutToQuit, &mainWindow, &MainWindow::onAppAboutToQuit);
+
+    mainWindow.open();
+
+#ifdef DESKFLOW_GUI_HOOK_START
+    DESKFLOW_GUI_HOOK_START
+#endif
+
+    return DeskflowApplication::exec();
 }
 
 #if defined(Q_OS_MAC)
-bool checkMacAssistiveDevices() {
+bool checkMacAssistiveDevices()
+{
 #if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1090 // mavericks
 
-  // new in mavericks, applications are trusted individually
-  // with use of the accessibility api. this call will show a
-  // prompt which can show the security/privacy/accessibility
-  // tab, with a list of allowed applications. deskflow should
-  // show up there automatically, but will be unchecked.
+    // new in mavericks, applications are trusted individually
+    // with use of the accessibility api. this call will show a
+    // prompt which can show the security/privacy/accessibility
+    // tab, with a list of allowed applications. deskflow should
+    // show up there automatically, but will be unchecked.
 
-  if (AXIsProcessTrusted()) {
-    return true;
-  }
+    if (AXIsProcessTrusted()) {
+        return true;
+    }
 
-  const void *keys[] = {kAXTrustedCheckOptionPrompt};
-  const void *trueValue[] = {kCFBooleanTrue};
-  CFDictionaryRef options =
-      CFDictionaryCreate(NULL, keys, trueValue, 1, NULL, NULL);
+    const void *keys[] = {kAXTrustedCheckOptionPrompt};
+    const void *trueValue[] = {kCFBooleanTrue};
+    CFDictionaryRef options = CFDictionaryCreate(NULL, keys, trueValue, 1, NULL, NULL);
 
-  bool result = AXIsProcessTrustedWithOptions(options);
-  CFRelease(options);
-  return result;
+    bool result = AXIsProcessTrustedWithOptions(options);
+    CFRelease(options);
+    return result;
 
 #else
 
-  // now deprecated in mavericks.
-  bool result = AXAPIEnabled();
-  if (!result) {
-    QMessageBox::information(
-        NULL, DESKFLOW_APP_NAME,
-        "Please enable access to assistive devices "
-        "System Preferences -> Security & Privacy -> "
-        "Privacy -> Accessibility, then re-open " DESKFLOW_APP_NAME ".");
-  }
-  return result;
+    // now deprecated in mavericks.
+    bool result = AXAPIEnabled();
+    if (!result) {
+        QMessageBox::information(NULL,
+                                 DESKFLOW_APP_NAME,
+                                 "Please enable access to assistive devices "
+                                 "System Preferences -> Security & Privacy -> "
+                                 "Privacy -> Accessibility, then re-open " DESKFLOW_APP_NAME ".");
+    }
+    return result;
 
 #endif
 }

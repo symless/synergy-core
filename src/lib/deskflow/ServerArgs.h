@@ -24,21 +24,22 @@
 
 namespace deskflow {
 
-class ServerArgs : public ArgsBase {
-  using Config = deskflow::server::Config;
+class ServerArgs : public ArgsBase
+{
+    using Config = deskflow::server::Config;
 
 public:
-  ServerArgs();
-  ServerArgs(ServerArgs const &src) = default;
-  ServerArgs(ServerArgs &&) = default;
-  ~ServerArgs() override;
+    ServerArgs();
+    ServerArgs(ServerArgs const &src) = default;
+    ServerArgs(ServerArgs &&) = default;
+    ~ServerArgs() override;
 
-  ServerArgs &operator=(ServerArgs const &) = default;
-  ServerArgs &operator=(ServerArgs &&) = default;
+    ServerArgs &operator=(ServerArgs const &) = default;
+    ServerArgs &operator=(ServerArgs &&) = default;
 
 public:
-  String m_configFile = "";
-  std::shared_ptr<Config> m_config;
+    String m_configFile = "";
+    std::shared_ptr<Config> m_config;
 };
 
 } // namespace deskflow

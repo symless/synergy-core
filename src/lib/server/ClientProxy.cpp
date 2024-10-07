@@ -28,21 +28,31 @@
 //
 
 ClientProxy::ClientProxy(const String &name, deskflow::IStream *stream)
-    : BaseClientProxy(name),
-      m_stream(stream) {}
-
-ClientProxy::~ClientProxy() { delete m_stream; }
-
-void ClientProxy::close(const char *msg) {
-  LOG((CLOG_DEBUG1 "send close \"%s\" to \"%s\"", msg, getName().c_str()));
-  ProtocolUtil::writef(getStream(), msg);
-
-  // force the close to be sent before we return
-  getStream()->flush();
+    : BaseClientProxy(name)
+    , m_stream(stream)
+{
 }
 
-deskflow::IStream *ClientProxy::getStream() const { return m_stream; }
+ClientProxy::~ClientProxy()
+{
+    delete m_stream;
+}
 
-void *ClientProxy::getEventTarget() const {
-  return static_cast<IScreen *>(const_cast<ClientProxy *>(this));
+void ClientProxy::close(const char *msg)
+{
+    LOG((CLOG_DEBUG1 "send close \"%s\" to \"%s\"", msg, getName().c_str()));
+    ProtocolUtil::writef(getStream(), msg);
+
+    // force the close to be sent before we return
+    getStream()->flush();
+}
+
+deskflow::IStream *ClientProxy::getStream() const
+{
+    return m_stream;
+}
+
+void *ClientProxy::getEventTarget() const
+{
+    return static_cast<IScreen *>(const_cast<ClientProxy *>(this));
 }

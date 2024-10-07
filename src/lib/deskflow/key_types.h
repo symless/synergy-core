@@ -105,41 +105,41 @@ static const KeyID kKeyTab = 0xEF09;
 static const KeyID kKeyLinefeed = 0xEF0A; /* Linefeed, LF */
 static const KeyID kKeyClear = 0xEF0B;
 static const KeyID kKeyReturn = 0xEF0D; /* Return, enter */
-static const KeyID kKeyPause = 0xEF13;  /* Pause, hold */
+static const KeyID kKeyPause = 0xEF13; /* Pause, hold */
 static const KeyID kKeyScrollLock = 0xEF14;
 static const KeyID kKeySysReq = 0xEF15;
 static const KeyID kKeyEscape = 0xEF1B;
-static const KeyID kKeyHenkan = 0xEF23;           /* Start/Stop Conversion */
-static const KeyID kKeyKana = 0xEF26;             /* Kana */
+static const KeyID kKeyHenkan = 0xEF23; /* Start/Stop Conversion */
+static const KeyID kKeyKana = 0xEF26; /* Kana */
 static const KeyID kKeyHiraganaKatakana = 0xEF27; /* Hiragana/Katakana toggle */
-static const KeyID kKeyZenkaku = 0xEF2A;          /* Zenkaku/Hankaku */
-static const KeyID kKeyKanzi = 0xEF2A;            /* Kanzi */
-static const KeyID kKeyHangul = 0xEF31;           /* Hangul */
-static const KeyID kKeyHanja = 0xEF34;            /* Hanja */
-static const KeyID kKeyDelete = 0xEFFF;           /* Delete, rubout */
+static const KeyID kKeyZenkaku = 0xEF2A; /* Zenkaku/Hankaku */
+static const KeyID kKeyKanzi = 0xEF2A; /* Kanzi */
+static const KeyID kKeyHangul = 0xEF31; /* Hangul */
+static const KeyID kKeyHanja = 0xEF34; /* Hanja */
+static const KeyID kKeyDelete = 0xEFFF; /* Delete, rubout */
 
 // cursor control
 static const KeyID kKeyHome = 0xEF50;
-static const KeyID kKeyLeft = 0xEF51;  /* Move left, left arrow */
-static const KeyID kKeyUp = 0xEF52;    /* Move up, up arrow */
+static const KeyID kKeyLeft = 0xEF51; /* Move left, left arrow */
+static const KeyID kKeyUp = 0xEF52; /* Move up, up arrow */
 static const KeyID kKeyRight = 0xEF53; /* Move right, right arrow */
-static const KeyID kKeyDown = 0xEF54;  /* Move down, down arrow */
+static const KeyID kKeyDown = 0xEF54; /* Move down, down arrow */
 static const KeyID kKeyPageUp = 0xEF55;
 static const KeyID kKeyPageDown = 0xEF56;
-static const KeyID kKeyEnd = 0xEF57;   /* EOL */
+static const KeyID kKeyEnd = 0xEF57; /* EOL */
 static const KeyID kKeyBegin = 0xEF58; /* BOL */
 
 // misc functions
 static const KeyID kKeySelect = 0xEF60; /* Select, mark */
 static const KeyID kKeyPrint = 0xEF61;
 static const KeyID kKeyExecute = 0xEF62; /* Execute, run, do */
-static const KeyID kKeyInsert = 0xEF63;  /* Insert, insert here */
-static const KeyID kKeyUndo = 0xEF65;    /* Undo, oops */
-static const KeyID kKeyRedo = 0xEF66;    /* redo, again */
+static const KeyID kKeyInsert = 0xEF63; /* Insert, insert here */
+static const KeyID kKeyUndo = 0xEF65; /* Undo, oops */
+static const KeyID kKeyRedo = 0xEF66; /* redo, again */
 static const KeyID kKeyMenu = 0xEF67;
-static const KeyID kKeyFind = 0xEF68;   /* Find, search */
+static const KeyID kKeyFind = 0xEF68; /* Find, search */
 static const KeyID kKeyCancel = 0xEF69; /* Cancel, stop, abort, exit */
-static const KeyID kKeyHelp = 0xEF6A;   /* Help */
+static const KeyID kKeyHelp = 0xEF6A; /* Help */
 static const KeyID kKeyBreak = 0xEF6B;
 static const KeyID kKeyAltGr = 0xEF7E; /* Character set switch */
 static const KeyID kKeyNumLock = 0xEF7F;
@@ -148,7 +148,7 @@ static const KeyID kKeyNumLock = 0xEF7F;
 static const KeyID kKeyKP_Space = 0xEF80; /* space */
 static const KeyID kKeyKP_Tab = 0xEF89;
 static const KeyID kKeyKP_Enter = 0xEF8D; /* enter */
-static const KeyID kKeyKP_F1 = 0xEF91;    /* PF1, KP_A, ... */
+static const KeyID kKeyKP_F1 = 0xEF91; /* PF1, KP_A, ... */
 static const KeyID kKeyKP_F2 = 0xEF92;
 static const KeyID kKeyKP_F3 = 0xEF93;
 static const KeyID kKeyKP_F4 = 0xEF94;
@@ -219,20 +219,20 @@ static const KeyID kKeyF34 = 0xEFDF;
 static const KeyID kKeyF35 = 0xEFE0;
 
 // modifiers
-static const KeyID kKeyShift_L = 0xEFE1;   /* Left shift */
-static const KeyID kKeyShift_R = 0xEFE2;   /* Right shift */
+static const KeyID kKeyShift_L = 0xEFE1; /* Left shift */
+static const KeyID kKeyShift_R = 0xEFE2; /* Right shift */
 static const KeyID kKeyControl_L = 0xEFE3; /* Left control */
 static const KeyID kKeyControl_R = 0xEFE4; /* Right control */
-static const KeyID kKeyCapsLock = 0xEFE5;  /* Caps lock */
+static const KeyID kKeyCapsLock = 0xEFE5; /* Caps lock */
 static const KeyID kKeyShiftLock = 0xEFE6; /* Shift lock */
-static const KeyID kKeyMeta_L = 0xEFE7;    /* Left meta */
-static const KeyID kKeyMeta_R = 0xEFE8;    /* Right meta */
-static const KeyID kKeyAlt_L = 0xEFE9;     /* Left alt */
-static const KeyID kKeyAlt_R = 0xEFEA;     /* Right alt */
-static const KeyID kKeySuper_L = 0xEFEB;   /* Left super */
-static const KeyID kKeySuper_R = 0xEFEC;   /* Right super */
-static const KeyID kKeyHyper_L = 0xEFED;   /* Left hyper */
-static const KeyID kKeyHyper_R = 0xEFEE;   /* Right hyper */
+static const KeyID kKeyMeta_L = 0xEFE7; /* Left meta */
+static const KeyID kKeyMeta_R = 0xEFE8; /* Right meta */
+static const KeyID kKeyAlt_L = 0xEFE9; /* Left alt */
+static const KeyID kKeyAlt_R = 0xEFEA; /* Right alt */
+static const KeyID kKeySuper_L = 0xEFEB; /* Left super */
+static const KeyID kKeySuper_R = 0xEFEC; /* Right super */
+static const KeyID kKeyHyper_L = 0xEFED; /* Left hyper */
+static const KeyID kKeyHyper_R = 0xEFEE; /* Right hyper */
 
 // multi-key character composition
 static const KeyID kKeyCompose = 0xEF20;
@@ -289,13 +289,15 @@ static const KeyID kKeyLaunchpad = 0xE0C1;
 
 //@}
 
-struct KeyNameMapEntry {
-  const char *m_name;
-  KeyID m_id;
+struct KeyNameMapEntry
+{
+    const char *m_name;
+    KeyID m_id;
 };
-struct KeyModifierNameMapEntry {
-  const char *m_name;
-  KeyModifierMask m_mask;
+struct KeyModifierNameMapEntry
+{
+    const char *m_name;
+    KeyModifierMask m_mask;
 };
 
 //! Key name to KeyID table

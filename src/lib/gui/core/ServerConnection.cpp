@@ -30,92 +30,91 @@ namespace deskflow::gui {
 // ServerConnection::Deps
 //
 
-messages::NewClientPromptResult ServerConnection::Deps::showNewClientPrompt(
-    QWidget *parent, const QString &clientName) const {
-  return messages::showNewClientPrompt(parent, clientName);
+messages::NewClientPromptResult ServerConnection::Deps::showNewClientPrompt(QWidget *parent, const QString &clientName) const
+{
+    return messages::showNewClientPrompt(parent, clientName);
 }
 
 //
 // ServerConnection
 //
 
-ServerConnection::ServerConnection(
-    QWidget *parent, IAppConfig &appConfig, IServerConfig &serverConfig,
-    const config::ServerConfigDialogState &serverConfigDialogState,
-    std::shared_ptr<Deps> deps)
-    : m_pParent(parent),
-      m_appConfig(appConfig),
-      m_serverConfig(serverConfig),
-      m_serverConfigDialogState(serverConfigDialogState),
-      m_pDeps(deps) {}
-
-void ServerConnection::handleLogLine(const QString &logLine) {
-  ServerMessage message(logLine);
-
-  if (!message.isNewClientMessage()) {
-    return;
-  }
-
-  if (m_messageShowing) {
-    qDebug("new client message already shown, skipping for now");
-    return;
-  }
-
-  if (m_serverConfigDialogState.isVisible()) {
-    qDebug("server config dialog visible, skipping new client prompt");
-    return;
-  }
-
-  if (m_appConfig.useExternalConfig()) {
-    qDebug("external config enabled, skipping new client prompt");
-    return;
-  }
-
-  const auto client = message.getClientName();
-
-  if (m_receivedClients.contains(client)) {
-    qDebug(
-        "already got request, skipping new client prompt for: %s",
-        qPrintable(client));
-    return;
-  }
-
-  handleNewClient(message.getClientName());
+ServerConnection::ServerConnection(QWidget *parent,
+                                   IAppConfig &appConfig,
+                                   IServerConfig &serverConfig,
+                                   const config::ServerConfigDialogState &serverConfigDialogState,
+                                   std::shared_ptr<Deps> deps)
+    : m_pParent(parent)
+    , m_appConfig(appConfig)
+    , m_serverConfig(serverConfig)
+    , m_serverConfigDialogState(serverConfigDialogState)
+    , m_pDeps(deps)
+{
 }
 
-void ServerConnection::handleNewClient(const QString &clientName) {
-  using enum messages::NewClientPromptResult;
+void ServerConnection::handleLogLine(const QString &logLine)
+{
+    ServerMessage message(logLine);
 
-  m_receivedClients.append(clientName);
+    if (!message.isNewClientMessage()) {
+        return;
+    }
 
-  if (m_serverConfig.isFull()) {
-    qDebug(
-        "server config full, skipping new client prompt for: %s",
-        qPrintable(clientName));
-    return;
-  }
+    if (m_messageShowing) {
+        qDebug("new client message already shown, skipping for now");
+        return;
+    }
 
-  if (m_serverConfig.screenExists(clientName)) {
-    qDebug(
-        "client already added, skipping new client prompt for: %s",
-        qPrintable(clientName));
-    return;
-  }
+    if (m_serverConfigDialogState.isVisible()) {
+        qDebug("server config dialog visible, skipping new client prompt");
+        return;
+    }
 
-  emit messageShowing();
+    if (m_appConfig.useExternalConfig()) {
+        qDebug("external config enabled, skipping new client prompt");
+        return;
+    }
 
-  m_messageShowing = true;
-  const auto result = m_pDeps->showNewClientPrompt(m_pParent, clientName);
-  m_messageShowing = false;
+    const auto client = message.getClientName();
 
-  if (result == Add) {
-    qDebug("accepted dialog, adding client: %s", qPrintable(clientName));
-    emit configureClient(clientName);
-  } else if (result == Ignore) {
-    qDebug("declined dialog, ignoring client: %s", qPrintable(clientName));
-  } else {
-    qFatal("unexpected add client result");
-  }
+    if (m_receivedClients.contains(client)) {
+        qDebug("already got request, skipping new client prompt for: %s", qPrintable(client));
+        return;
+    }
+
+    handleNewClient(message.getClientName());
+}
+
+void ServerConnection::handleNewClient(const QString &clientName)
+{
+    using enum messages::NewClientPromptResult;
+
+    m_receivedClients.append(clientName);
+
+    if (m_serverConfig.isFull()) {
+        qDebug("server config full, skipping new client prompt for: %s", qPrintable(clientName));
+        return;
+    }
+
+    if (m_serverConfig.screenExists(clientName)) {
+        qDebug("client already added, skipping new client prompt for: %s", qPrintable(clientName));
+        return;
+    }
+
+    emit messageShowing();
+
+    m_messageShowing = true;
+    const auto result = m_pDeps->showNewClientPrompt(m_pParent, clientName);
+    m_messageShowing = false;
+
+    if (result == Add) {
+        qDebug("accepted dialog, adding client: %s", qPrintable(clientName));
+        emit configureClient(clientName);
+    } else if (result == Ignore) {
+        qDebug("declined dialog, ignoring client: %s", qPrintable(clientName));
+    } else {
+        qFatal("unexpected add client result");
+    }
 }
 
 } // namespace deskflow::gui

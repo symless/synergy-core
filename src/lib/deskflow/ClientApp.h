@@ -33,77 +33,88 @@ namespace deskflow {
 class ClientArgs;
 }
 
-class ClientApp : public App {
+class ClientApp : public App
+{
 public:
-  ClientApp(
-      IEventQueue *events, CreateTaskBarReceiverFunc createTaskBarReceiver);
-  virtual ~ClientApp();
+    ClientApp(IEventQueue *events, CreateTaskBarReceiverFunc createTaskBarReceiver);
+    virtual ~ClientApp();
 
-  //
-  // IApp overrides
-  //
+    //
+    // IApp overrides
+    //
 
-  void parseArgs(int argc, const char *const *argv) override;
-  void help() override;
-  const char *daemonName() const override;
-  const char *daemonInfo() const override;
-  void loadConfig() override {}
-  bool loadConfig(const String &pathname) override { return false; }
-  int foregroundStartup(int argc, char **argv) override;
-  int standardStartup(int argc, char **argv) override;
-  int runInner(
-      int argc, char **argv, ILogOutputter *outputter,
-      StartupFunc startup) override;
-  deskflow::Screen *createScreen() override;
-  int mainLoop() override;
-  void startNode() override;
+    void parseArgs(int argc, const char *const *argv) override;
+    void help() override;
+    const char *daemonName() const override;
+    const char *daemonInfo() const override;
+    void loadConfig() override
+    {
+    }
+    bool loadConfig(const String &pathname) override
+    {
+        return false;
+    }
+    int foregroundStartup(int argc, char **argv) override;
+    int standardStartup(int argc, char **argv) override;
+    int runInner(int argc, char **argv, ILogOutputter *outputter, StartupFunc startup) override;
+    deskflow::Screen *createScreen() override;
+    int mainLoop() override;
+    void startNode() override;
 
-  //
-  // App overrides
-  //
+    //
+    // App overrides
+    //
 
-  std::string configSection() const override { return "client"; }
+    std::string configSection() const override
+    {
+        return "client";
+    }
 
-  //
-  // Regular functions
-  //
+    //
+    // Regular functions
+    //
 
-  void updateStatus();
-  void updateStatus(const String &msg);
-  void resetRestartTimeout();
-  double nextRestartTimeout();
-  void handleScreenError(const Event &, void *);
-  deskflow::Screen *openClientScreen();
-  void closeClientScreen(deskflow::Screen *screen);
-  void handleClientRestart(const Event &, void *vtimer);
-  void scheduleClientRestart(double retryTime);
-  void handleClientConnected(const Event &, void *);
-  void handleClientFailed(const Event &e, void *);
-  void handleClientRefused(const Event &e, void *);
-  void handleClientDisconnected(const Event &, void *);
-  Client *openClient(
-      const String &name, const NetworkAddress &address,
-      deskflow::Screen *screen);
-  void closeClient(Client *client);
-  bool startClient();
-  void stopClient();
-  Client *getClientPtr() { return m_client; }
+    void updateStatus();
+    void updateStatus(const String &msg);
+    void resetRestartTimeout();
+    double nextRestartTimeout();
+    void handleScreenError(const Event &, void *);
+    deskflow::Screen *openClientScreen();
+    void closeClientScreen(deskflow::Screen *screen);
+    void handleClientRestart(const Event &, void *vtimer);
+    void scheduleClientRestart(double retryTime);
+    void handleClientConnected(const Event &, void *);
+    void handleClientFailed(const Event &e, void *);
+    void handleClientRefused(const Event &e, void *);
+    void handleClientDisconnected(const Event &, void *);
+    Client *openClient(const String &name, const NetworkAddress &address, deskflow::Screen *screen);
+    void closeClient(Client *client);
+    bool startClient();
+    void stopClient();
+    Client *getClientPtr()
+    {
+        return m_client;
+    }
 
-  deskflow::ClientArgs &args() const {
-    return (deskflow::ClientArgs &)argsBase();
-  }
+    deskflow::ClientArgs &args() const
+    {
+        return (deskflow::ClientArgs &)argsBase();
+    }
 
-  //
-  // Static functions
-  //
+    //
+    // Static functions
+    //
 
-  static ClientApp &instance() { return (ClientApp &)App::instance(); }
+    static ClientApp &instance()
+    {
+        return (ClientApp &)App::instance();
+    }
 
 private:
-  ISocketFactory *getSocketFactory() const;
+    ISocketFactory *getSocketFactory() const;
 
-  Client *m_client;
-  deskflow::Screen *m_clientScreen;
-  NetworkAddress *m_serverAddress;
-  size_t m_lastServerAddressIndex = 0;
+    Client *m_client;
+    deskflow::Screen *m_clientScreen;
+    NetworkAddress *m_serverAddress;
+    size_t m_lastServerAddressIndex = 0;
 };

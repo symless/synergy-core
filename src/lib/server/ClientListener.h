@@ -33,71 +33,73 @@ class Server;
 class IEventQueue;
 class IDataSocket;
 
-class ClientListener {
+class ClientListener
+{
 public:
-  // The factories are adopted.
-  ClientListener(
-      const NetworkAddress &, ISocketFactory *, IEventQueue *events,
-      bool enableCrypto);
-  ClientListener(ClientListener const &) = delete;
-  ClientListener(ClientListener &&) = delete;
-  ~ClientListener();
+    // The factories are adopted.
+    ClientListener(const NetworkAddress &, ISocketFactory *, IEventQueue *events, bool enableCrypto);
+    ClientListener(ClientListener const &) = delete;
+    ClientListener(ClientListener &&) = delete;
+    ~ClientListener();
 
-  ClientListener &operator=(ClientListener const &) = delete;
-  ClientListener &operator=(ClientListener &&) = delete;
+    ClientListener &operator=(ClientListener const &) = delete;
+    ClientListener &operator=(ClientListener &&) = delete;
 
-  //! @name manipulators
-  //@{
+    //! @name manipulators
+    //@{
 
-  void setServer(Server *server);
+    void setServer(Server *server);
 
-  //@}
+    //@}
 
-  //! @name accessors
-  //@{
+    //! @name accessors
+    //@{
 
-  //! Get next connected client
-  /*!
-  Returns the next connected client and removes it from the internal
-  list.  The client is responsible for deleting the returned client.
-  Returns NULL if no clients are available.
-  */
-  ClientProxy *getNextClient();
+    //! Get next connected client
+    /*!
+    Returns the next connected client and removes it from the internal
+    list.  The client is responsible for deleting the returned client.
+    Returns NULL if no clients are available.
+    */
+    ClientProxy *getNextClient();
 
-  //! Get server which owns this listener
-  Server *getServer() { return m_server; }
+    //! Get server which owns this listener
+    Server *getServer()
+    {
+        return m_server;
+    }
 
-  //! This method restarts the listener
-  void restart();
+    //! This method restarts the listener
+    void restart();
 
-  //@}
-
-private:
-  // client connection event handlers
-  void handleClientConnecting(const Event &, void *);
-  void handleClientAccepted(const Event &, void *);
-  void handleUnknownClient(const Event &, void *);
-  void handleUnknownClientFailure(const Event &, void *);
-  void handleClientDisconnected(const Event &, void *);
-
-  void cleanupListenSocket();
-  void cleanupClientSockets();
-  void start();
-  void stop();
-  void removeUnknownClient(ClientProxyUnknown *unknownClient);
+    //@}
 
 private:
-  typedef std::set<ClientProxyUnknown *> NewClients;
-  typedef std::deque<ClientProxy *> WaitingClients;
-  typedef std::set<IDataSocket *> ClientSockets;
+    // client connection event handlers
+    void handleClientConnecting(const Event &, void *);
+    void handleClientAccepted(const Event &, void *);
+    void handleUnknownClient(const Event &, void *);
+    void handleUnknownClientFailure(const Event &, void *);
+    void handleClientDisconnected(const Event &, void *);
 
-  IListenSocket *m_listen;
-  ISocketFactory *m_socketFactory;
-  NewClients m_newClients;
-  WaitingClients m_waitingClients;
-  Server *m_server;
-  IEventQueue *m_events;
-  bool m_useSecureNetwork;
-  ClientSockets m_clientSockets;
-  NetworkAddress m_address;
+    void cleanupListenSocket();
+    void cleanupClientSockets();
+    void start();
+    void stop();
+    void removeUnknownClient(ClientProxyUnknown *unknownClient);
+
+private:
+    typedef std::set<ClientProxyUnknown *> NewClients;
+    typedef std::deque<ClientProxy *> WaitingClients;
+    typedef std::set<IDataSocket *> ClientSockets;
+
+    IListenSocket *m_listen;
+    ISocketFactory *m_socketFactory;
+    NewClients m_newClients;
+    WaitingClients m_waitingClients;
+    Server *m_server;
+    IEventQueue *m_events;
+    bool m_useSecureNetwork;
+    ClientSockets m_clientSockets;
+    NetworkAddress m_address;
 };

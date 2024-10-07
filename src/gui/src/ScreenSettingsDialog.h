@@ -28,24 +28,22 @@ class QString;
 class Screen;
 class ScreenList;
 
-class ScreenSettingsDialog : public QDialog,
-                             public Ui::ScreenSettingsDialogBase {
-  Q_OBJECT
+class ScreenSettingsDialog : public QDialog, public Ui::ScreenSettingsDialogBase
+{
+    Q_OBJECT
 
 public:
-  ScreenSettingsDialog(
-      QWidget *parent, Screen *pScreen = nullptr,
-      const ScreenList *pScreens = nullptr);
+    ScreenSettingsDialog(QWidget *parent, Screen *pScreen = nullptr, const ScreenList *pScreens = nullptr);
 
 public slots:
-  void accept();
+    void accept();
 
 private slots:
-  void on_m_pButtonAddAlias_clicked();
-  void on_m_pButtonRemoveAlias_clicked();
-  void on_m_pLineEditAlias_textChanged(const QString &text);
-  void on_m_pListAliases_itemSelectionChanged();
+    void on_m_pButtonAddAlias_clicked();
+    void on_m_pButtonRemoveAlias_clicked();
+    void on_m_pLineEditAlias_textChanged(const QString &text);
+    void on_m_pListAliases_itemSelectionChanged();
 
 private:
-  Screen *m_pScreen;
+    Screen *m_pScreen;
 };

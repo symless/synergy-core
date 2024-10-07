@@ -24,31 +24,31 @@
 // InverseSocketFactory
 //
 
-InverseSocketFactory::InverseSocketFactory(
-    IEventQueue *events, SocketMultiplexer *socketMultiplexer)
-    : m_events(events),
-      m_socketMultiplexer(socketMultiplexer) {}
-
-IDataSocket *InverseSocketFactory::create(
-    bool secure, IArchNetwork::EAddressFamily family) const {
-  if (secure) {
-    auto secureSocket =
-        new SecureClientSocket(m_events, m_socketMultiplexer, family);
-    return secureSocket;
-  } else {
-    return new InverseClientSocket(m_events, m_socketMultiplexer, family);
-  }
+InverseSocketFactory::InverseSocketFactory(IEventQueue *events, SocketMultiplexer *socketMultiplexer)
+    : m_events(events)
+    , m_socketMultiplexer(socketMultiplexer)
+{
 }
 
-IListenSocket *InverseSocketFactory::createListen(
-    bool secure, IArchNetwork::EAddressFamily family) const {
-  IListenSocket *socket = nullptr;
+IDataSocket *InverseSocketFactory::create(bool secure, IArchNetwork::EAddressFamily family) const
+{
+    if (secure) {
+        auto secureSocket = new SecureClientSocket(m_events, m_socketMultiplexer, family);
+        return secureSocket;
+    } else {
+        return new InverseClientSocket(m_events, m_socketMultiplexer, family);
+    }
+}
 
-  if (secure) {
-    socket = new SecureServerSocket(m_events, m_socketMultiplexer, family);
-  } else {
-    socket = new InverseServerSocket(m_events, m_socketMultiplexer, family);
-  }
+IListenSocket *InverseSocketFactory::createListen(bool secure, IArchNetwork::EAddressFamily family) const
+{
+    IListenSocket *socket = nullptr;
 
-  return socket;
+    if (secure) {
+        socket = new SecureServerSocket(m_events, m_socketMultiplexer, family);
+    } else {
+        socket = new InverseServerSocket(m_events, m_socketMultiplexer, family);
+    }
+
+    return socket;
 }

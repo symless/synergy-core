@@ -23,11 +23,12 @@
 #define ARCH_SLEEP ArchSleepWindows
 
 //! Win32 implementation of IArchSleep
-class ArchSleepWindows : public IArchSleep {
+class ArchSleepWindows : public IArchSleep
+{
 public:
-  ArchSleepWindows();
-  virtual ~ArchSleepWindows();
+    ArchSleepWindows();
+    virtual ~ArchSleepWindows();
 
-  // IArchSleep overrides
-  virtual void sleep(double timeout);
+    // IArchSleep overrides
+    virtual void sleep(double timeout);
 };

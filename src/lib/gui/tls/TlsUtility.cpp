@@ -24,37 +24,45 @@
 
 namespace deskflow::gui {
 
-TlsUtility::TlsUtility(const IAppConfig &appConfig) : m_appConfig(appConfig) {}
-
-bool TlsUtility::isEnabled() const {
-  const auto &config = m_appConfig;
-  return config.tlsEnabled();
+TlsUtility::TlsUtility(const IAppConfig &appConfig)
+    : m_appConfig(appConfig)
+{
 }
 
-bool TlsUtility::generateCertificate() {
-  qDebug("generating tls certificate, "
-         "all clients must trust the new fingerprint");
-
-  if (!isEnabled()) {
-    qCritical("unable to generate tls certificate, "
-              "tls is either not available or not enabled");
-    return false;
-  }
-
-  auto length = m_appConfig.tlsKeyLength();
-
-  return m_certificate.generateCertificate(m_appConfig.tlsCertPath(), length);
+bool TlsUtility::isEnabled() const
+{
+    const auto &config = m_appConfig;
+    return config.tlsEnabled();
 }
 
-bool TlsUtility::persistCertificate() {
-  qDebug("persisting tls certificate");
+bool TlsUtility::generateCertificate()
+{
+    qDebug(
+        "generating tls certificate, "
+        "all clients must trust the new fingerprint");
 
-  if (QFile::exists(m_appConfig.tlsCertPath())) {
-    qDebug("tls certificate already exists");
-    return true;
-  }
+    if (!isEnabled()) {
+        qCritical(
+            "unable to generate tls certificate, "
+            "tls is either not available or not enabled");
+        return false;
+    }
 
-  return generateCertificate();
+    auto length = m_appConfig.tlsKeyLength();
+
+    return m_certificate.generateCertificate(m_appConfig.tlsCertPath(), length);
+}
+
+bool TlsUtility::persistCertificate()
+{
+    qDebug("persisting tls certificate");
+
+    if (QFile::exists(m_appConfig.tlsCertPath())) {
+        qDebug("tls certificate already exists");
+        return true;
+    }
+
+    return generateCertificate();
 }
 
 } // namespace deskflow::gui

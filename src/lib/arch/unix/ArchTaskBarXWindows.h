@@ -23,13 +23,14 @@
 #define ARCH_TASKBAR ArchTaskBarXWindows
 
 //! X11 implementation of IArchTaskBar
-class ArchTaskBarXWindows : public IArchTaskBar {
+class ArchTaskBarXWindows : public IArchTaskBar
+{
 public:
-  ArchTaskBarXWindows();
-  virtual ~ArchTaskBarXWindows();
+    ArchTaskBarXWindows();
+    virtual ~ArchTaskBarXWindows();
 
-  // IArchTaskBar overrides
-  virtual void addReceiver(IArchTaskBarReceiver *);
-  virtual void removeReceiver(IArchTaskBarReceiver *);
-  virtual void updateReceiver(IArchTaskBarReceiver *);
+    // IArchTaskBar overrides
+    virtual void addReceiver(IArchTaskBarReceiver *);
+    virtual void removeReceiver(IArchTaskBarReceiver *);
+    virtual void updateReceiver(IArchTaskBarReceiver *);
 };

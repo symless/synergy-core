@@ -33,16 +33,17 @@ This outputter performs no output and returns false from \c write(),
 causing the logger to stop traversing the outputter chain.  Insert
 this to prevent already inserted outputters from writing.
 */
-class StopLogOutputter : public ILogOutputter {
+class StopLogOutputter : public ILogOutputter
+{
 public:
-  StopLogOutputter();
-  virtual ~StopLogOutputter();
+    StopLogOutputter();
+    virtual ~StopLogOutputter();
 
-  // ILogOutputter overrides
-  virtual void open(const char *title);
-  virtual void close();
-  virtual void show(bool showIfEmpty);
-  virtual bool write(ELevel level, const char *message);
+    // ILogOutputter overrides
+    virtual void open(const char *title);
+    virtual void close();
+    virtual void show(bool showIfEmpty);
+    virtual bool write(ELevel level, const char *message);
 };
 
 //! Write log to console
@@ -50,17 +51,18 @@ public:
 This outputter writes output to the console.  The level for each
 message is ignored.
 */
-class ConsoleLogOutputter : public ILogOutputter {
+class ConsoleLogOutputter : public ILogOutputter
+{
 public:
-  ConsoleLogOutputter();
-  virtual ~ConsoleLogOutputter();
+    ConsoleLogOutputter();
+    virtual ~ConsoleLogOutputter();
 
-  // ILogOutputter overrides
-  virtual void open(const char *title);
-  virtual void close();
-  virtual void show(bool showIfEmpty);
-  virtual bool write(ELevel level, const char *message);
-  virtual void flush();
+    // ILogOutputter overrides
+    virtual void open(const char *title);
+    virtual void close();
+    virtual void show(bool showIfEmpty);
+    virtual bool write(ELevel level, const char *message);
+    virtual void flush();
 };
 
 //! Write log to file
@@ -69,37 +71,39 @@ This outputter writes output to the file.  The level for each
 message is ignored.
 */
 
-class FileLogOutputter : public ILogOutputter {
+class FileLogOutputter : public ILogOutputter
+{
 public:
-  FileLogOutputter(const char *logFile);
-  virtual ~FileLogOutputter();
+    FileLogOutputter(const char *logFile);
+    virtual ~FileLogOutputter();
 
-  // ILogOutputter overrides
-  virtual void open(const char *title);
-  virtual void close();
-  virtual void show(bool showIfEmpty);
-  virtual bool write(ELevel level, const char *message);
+    // ILogOutputter overrides
+    virtual void open(const char *title);
+    virtual void close();
+    virtual void show(bool showIfEmpty);
+    virtual bool write(ELevel level, const char *message);
 
-  void setLogFilename(const char *title);
+    void setLogFilename(const char *title);
 
 private:
-  std::string m_fileName;
+    std::string m_fileName;
 };
 
 //! Write log to system log
 /*!
 This outputter writes output to the system log.
 */
-class SystemLogOutputter : public ILogOutputter {
+class SystemLogOutputter : public ILogOutputter
+{
 public:
-  SystemLogOutputter();
-  virtual ~SystemLogOutputter();
+    SystemLogOutputter();
+    virtual ~SystemLogOutputter();
 
-  // ILogOutputter overrides
-  virtual void open(const char *title);
-  virtual void close();
-  virtual void show(bool showIfEmpty);
-  virtual bool write(ELevel level, const char *message);
+    // ILogOutputter overrides
+    virtual void open(const char *title);
+    virtual void close();
+    virtual void show(bool showIfEmpty);
+    virtual bool write(ELevel level, const char *message);
 };
 
 //! Write log to system log only
@@ -110,53 +114,55 @@ outputters.  Add one of these to any scope that needs to write to
 the system log (only) and restore the old outputters when exiting
 the scope.
 */
-class SystemLogger {
+class SystemLogger
+{
 public:
-  SystemLogger(const char *title, bool blockConsole);
-  SystemLogger(SystemLogger const &) = delete;
-  SystemLogger(SystemLogger &&) = delete;
-  ~SystemLogger();
+    SystemLogger(const char *title, bool blockConsole);
+    SystemLogger(SystemLogger const &) = delete;
+    SystemLogger(SystemLogger &&) = delete;
+    ~SystemLogger();
 
-  SystemLogger &operator=(SystemLogger const &) = delete;
-  SystemLogger &operator=(SystemLogger &&) = delete;
+    SystemLogger &operator=(SystemLogger const &) = delete;
+    SystemLogger &operator=(SystemLogger &&) = delete;
 
 private:
-  ILogOutputter *m_syslog;
-  ILogOutputter *m_stop;
+    ILogOutputter *m_syslog;
+    ILogOutputter *m_stop;
 };
 
 //! Save log history
 /*!
 This outputter records the last N log messages.
 */
-class BufferedLogOutputter : public ILogOutputter {
+class BufferedLogOutputter : public ILogOutputter
+{
 private:
-  typedef std::deque<String> Buffer;
+    typedef std::deque<String> Buffer;
 
 public:
-  typedef Buffer::const_iterator const_iterator;
+    typedef Buffer::const_iterator const_iterator;
 
-  BufferedLogOutputter(UInt32 maxBufferSize);
-  virtual ~BufferedLogOutputter();
+    BufferedLogOutputter(UInt32 maxBufferSize);
+    virtual ~BufferedLogOutputter();
 
-  //! @name accessors
-  //@{
+    //! @name accessors
+    //@{
 
-  //! Get start of buffer
-  const_iterator begin() const;
+    //! Get start of buffer
+    const_iterator begin() const;
 
-  //! Get end of buffer
-  const_iterator end() const;
+    //! Get end of buffer
+    const_iterator end() const;
 
-  //@}
+    //@}
 
-  // ILogOutputter overrides
-  virtual void open(const char *title);
-  virtual void close();
-  virtual void show(bool showIfEmpty);
-  virtual bool write(ELevel level, const char *message);
+    // ILogOutputter overrides
+    virtual void open(const char *title);
+    virtual void close();
+    virtual void show(bool showIfEmpty);
+    virtual bool write(ELevel level, const char *message);
 
 private:
-  UInt32 m_maxBufferSize;
-  Buffer m_buffer;
+    UInt32 m_maxBufferSize;
+    Buffer m_buffer;
 };

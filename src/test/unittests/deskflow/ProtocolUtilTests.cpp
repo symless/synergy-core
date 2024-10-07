@@ -31,103 +31,117 @@ using ::testing::SetArgPointee;
 using ::testing::StrEq;
 using ::testing::TypedEq;
 
-ACTION_P2(SetValueToVoidPointerArg0, value, size) { memcpy(arg0, value, size); }
-
-MATCHER_P(EqVoidPointeeInt8, expected, "") {
-  const UInt8 Actual8 = (*static_cast<const UInt8 *>(arg));
-  return (expected == Actual8);
+ACTION_P2(SetValueToVoidPointerArg0, value, size)
+{
+    memcpy(arg0, value, size);
 }
 
-MATCHER_P(EqVoidPointeeInt16, expected, "") {
-  const UInt16 Actual16 = (*static_cast<const UInt16 *>(arg));
-  return (expected == (Actual16 >> 8));
+MATCHER_P(EqVoidPointeeInt8, expected, "")
+{
+    const UInt8 Actual8 = (*static_cast<const UInt8 *>(arg));
+    return (expected == Actual8);
 }
 
-MATCHER_P(EqVoidPointeeInt32, expected, "") {
-  const UInt32 Actual32 = (*static_cast<const UInt32 *>(arg));
-  return (expected == (Actual32 >> 24));
+MATCHER_P(EqVoidPointeeInt16, expected, "")
+{
+    const UInt16 Actual16 = (*static_cast<const UInt16 *>(arg));
+    return (expected == (Actual16 >> 8));
 }
 
-MATCHER_P(EqVoidVectorInt1byte, expected, "") {
-  bool Result = true;
-  const UInt8 *Actual = (static_cast<const UInt8 *>(arg)) + 4;
-  const size_t Size = *(Actual - 1);
+MATCHER_P(EqVoidPointeeInt32, expected, "")
+{
+    const UInt32 Actual32 = (*static_cast<const UInt32 *>(arg));
+    return (expected == (Actual32 >> 24));
+}
 
-  if (Size == expected.size()) {
-    for (size_t i = 0; i < expected.size(); ++i) {
-      if (expected[i] != Actual[i]) {
+MATCHER_P(EqVoidVectorInt1byte, expected, "")
+{
+    bool Result = true;
+    const UInt8 *Actual = (static_cast<const UInt8 *>(arg)) + 4;
+    const size_t Size = *(Actual - 1);
+
+    if (Size == expected.size()) {
+        for (size_t i = 0; i < expected.size(); ++i) {
+            if (expected[i] != Actual[i]) {
+                Result = false;
+                break;
+            }
+        }
+    } else {
         Result = false;
-        break;
-      }
     }
-  } else {
-    Result = false;
-  }
 
-  return Result;
+    return Result;
 }
 
-MATCHER_P(EqVoidVectorInt2bytes, expected, "") {
-  bool Result = true;
-  const UInt16 *Actual = (static_cast<const UInt16 *>(arg)) + 2;
-  const size_t Size = *(Actual - 1) >> 8;
+MATCHER_P(EqVoidVectorInt2bytes, expected, "")
+{
+    bool Result = true;
+    const UInt16 *Actual = (static_cast<const UInt16 *>(arg)) + 2;
+    const size_t Size = *(Actual - 1) >> 8;
 
-  if (Size == expected.size()) {
-    for (size_t i = 0; i < expected.size(); ++i) {
-      if (expected[i] != (Actual[i] >> 8)) {
+    if (Size == expected.size()) {
+        for (size_t i = 0; i < expected.size(); ++i) {
+            if (expected[i] != (Actual[i] >> 8)) {
+                Result = false;
+                break;
+            }
+        }
+    } else {
         Result = false;
-        break;
-      }
     }
-  } else {
-    Result = false;
-  }
 
-  return Result;
+    return Result;
 }
 
-MATCHER_P(EqVoidVectorInt4bytes, expected, "") {
-  bool Result = true;
-  const UInt32 *Actual = (static_cast<const UInt32 *>(arg)) + 1;
-  const size_t Size = *(Actual - 1) >> 24;
+MATCHER_P(EqVoidVectorInt4bytes, expected, "")
+{
+    bool Result = true;
+    const UInt32 *Actual = (static_cast<const UInt32 *>(arg)) + 1;
+    const size_t Size = *(Actual - 1) >> 24;
 
-  if (Size == expected.size()) {
-    for (size_t i = 0; i < expected.size(); ++i) {
-      if (expected[i] != (Actual[i] >> 24)) {
+    if (Size == expected.size()) {
+        for (size_t i = 0; i < expected.size(); ++i) {
+            if (expected[i] != (Actual[i] >> 24)) {
+                Result = false;
+                break;
+            }
+        }
+    } else {
         Result = false;
-        break;
-      }
     }
-  } else {
-    Result = false;
-  }
 
-  return Result;
+    return Result;
 }
 
-MATCHER_P(EqVectorSymbols, expected, "") {
-  bool Result = true;
-  const UInt8 *Actual = (static_cast<const UInt8 *>(arg));
+MATCHER_P(EqVectorSymbols, expected, "")
+{
+    bool Result = true;
+    const UInt8 *Actual = (static_cast<const UInt8 *>(arg));
 
-  for (size_t i = 0; i < expected.size(); ++i) {
-    if (expected[i] != (Actual[i])) {
-      Result = false;
-      break;
+    for (size_t i = 0; i < expected.size(); ++i) {
+        if (expected[i] != (Actual[i])) {
+            Result = false;
+            break;
+        }
     }
-  }
 
-  return Result;
+    return Result;
 }
 
-ACTION(ThrowBadAlloc) { throw std::bad_alloc(); }
+ACTION(ThrowBadAlloc)
+{
+    throw std::bad_alloc();
+}
 
-class ProtocolUtilTests : public ::testing::Test {
+class ProtocolUtilTests : public ::testing::Test
+{
 public:
-  MockStream stream;
-  UInt8 ActualInt8 = 0;
-  UInt16 ActualInt16 = 0;
-  UInt32 ActualInt32 = 0;
-  std::string ActualString;
+    MockStream stream;
+    UInt8 ActualInt8 = 0;
+    UInt16 ActualInt16 = 0;
+    UInt32 ActualInt32 = 0;
+    std::string ActualString;
 };
 
 // TODO: fix tests causing segmentation fault

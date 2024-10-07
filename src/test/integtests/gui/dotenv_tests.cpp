@@ -22,36 +22,38 @@
 
 #include <gtest/gtest.h>
 
-TEST(dotenv_tests, dotenv_fileDoesNotExist_doesNotLoadEnvVar) {
-  const QString envFile = "tmp/test/.env";
+TEST(dotenv_tests, dotenv_fileDoesNotExist_doesNotLoadEnvVar)
+{
+    const QString envFile = "tmp/test/.env";
 
-  deskflow::gui::dotenv(envFile);
+    deskflow::gui::dotenv(envFile);
 
-  const QString actualValue = qEnvironmentVariable("TEST_ENV_VAR");
-  EXPECT_TRUE(actualValue.isEmpty());
+    const QString actualValue = qEnvironmentVariable("TEST_ENV_VAR");
+    EXPECT_TRUE(actualValue.isEmpty());
 }
 
-TEST(dotenv_tests, dotenv_envFileWithEntry_loadsEnvVar) {
-  const QString envFile = "tmp/test/.env";
-  QFile file(envFile);
-  if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-    FAIL() << "Failed to create: " << envFile.toStdString();
-  }
+TEST(dotenv_tests, dotenv_envFileWithEntry_loadsEnvVar)
+{
+    const QString envFile = "tmp/test/.env";
+    QFile file(envFile);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        FAIL() << "Failed to create: " << envFile.toStdString();
+    }
 
-  const QString key = "TEST_ENV_VAR";
-  const QString value = R"("test value")";
-  const QString entry = key + " = " + value;
+    const QString key = "TEST_ENV_VAR";
+    const QString value = R"("test value")";
+    const QString entry = key + " = " + value;
 
-  QTextStream out(&file);
-  out << " # Comment" << Qt::endl;
-  out << "FOOBAR" << Qt::endl;
-  out << entry << Qt::endl;
-  file.close();
+    QTextStream out(&file);
+    out << " # Comment" << Qt::endl;
+    out << "FOOBAR" << Qt::endl;
+    out << entry << Qt::endl;
+    file.close();
 
-  deskflow::gui::dotenv(envFile);
+    deskflow::gui::dotenv(envFile);
 
-  const QString actualValue = qEnvironmentVariable(qPrintable(key));
-  EXPECT_EQ("test value", actualValue.toStdString());
+    const QString actualValue = qEnvironmentVariable(qPrintable(key));
+    EXPECT_EQ("test value", actualValue.toStdString());
 
-  QFile::remove(envFile);
+    QFile::remove(envFile);
 }

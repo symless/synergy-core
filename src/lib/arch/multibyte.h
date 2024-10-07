@@ -37,14 +37,16 @@
 // implementations.  hopefully at least the C++ compiler has
 // a built-in wchar_t type.
 
-static inline int mbtowc(wchar_t *dst, const char *src, int n) {
-  *dst = static_cast<wchar_t>(*src);
-  return 1;
+static inline int mbtowc(wchar_t *dst, const char *src, int n)
+{
+    *dst = static_cast<wchar_t>(*src);
+    return 1;
 }
 
-static inline int wctomb(char *dst, wchar_t src) {
-  *dst = static_cast<char>(src);
-  return 1;
+static inline int wctomb(char *dst, wchar_t src)
+{
+    *dst = static_cast<char>(src);
+    return 1;
 }
 
 #endif

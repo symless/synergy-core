@@ -51,396 +51,419 @@ HICON ArchMiscWindows::s_largeIcon = NULL;
 HICON ArchMiscWindows::s_smallIcon = NULL;
 HINSTANCE ArchMiscWindows::s_instanceWin32 = NULL;
 
-void ArchMiscWindows::cleanup() { delete s_dialogs; }
-
-void ArchMiscWindows::init() {
-  // stop windows system error dialogs from showing.
-  SetErrorMode(SEM_FAILCRITICALERRORS);
-
-  s_dialogs = new Dialogs;
+void ArchMiscWindows::cleanup()
+{
+    delete s_dialogs;
 }
 
-void ArchMiscWindows::setIcons(HICON largeIcon, HICON smallIcon) {
-  s_largeIcon = largeIcon;
-  s_smallIcon = smallIcon;
+void ArchMiscWindows::init()
+{
+    // stop windows system error dialogs from showing.
+    SetErrorMode(SEM_FAILCRITICALERRORS);
+
+    s_dialogs = new Dialogs;
 }
 
-void ArchMiscWindows::getIcons(HICON &largeIcon, HICON &smallIcon) {
-  largeIcon = s_largeIcon;
-  smallIcon = s_smallIcon;
+void ArchMiscWindows::setIcons(HICON largeIcon, HICON smallIcon)
+{
+    s_largeIcon = largeIcon;
+    s_smallIcon = smallIcon;
 }
 
-int ArchMiscWindows::runDaemon(RunFunc runFunc) {
-  return ArchDaemonWindows::runDaemon(runFunc);
+void ArchMiscWindows::getIcons(HICON &largeIcon, HICON &smallIcon)
+{
+    largeIcon = s_largeIcon;
+    smallIcon = s_smallIcon;
 }
 
-void ArchMiscWindows::daemonRunning(bool running) {
-  ArchDaemonWindows::daemonRunning(running);
+int ArchMiscWindows::runDaemon(RunFunc runFunc)
+{
+    return ArchDaemonWindows::runDaemon(runFunc);
 }
 
-void ArchMiscWindows::daemonFailed(int result) {
-  ArchDaemonWindows::daemonFailed(result);
+void ArchMiscWindows::daemonRunning(bool running)
+{
+    ArchDaemonWindows::daemonRunning(running);
 }
 
-UINT ArchMiscWindows::getDaemonQuitMessage() {
-  return ArchDaemonWindows::getDaemonQuitMessage();
+void ArchMiscWindows::daemonFailed(int result)
+{
+    ArchDaemonWindows::daemonFailed(result);
 }
 
-HKEY ArchMiscWindows::openKey(HKEY key, const TCHAR *keyName) {
-  return openKey(key, keyName, false);
+UINT ArchMiscWindows::getDaemonQuitMessage()
+{
+    return ArchDaemonWindows::getDaemonQuitMessage();
 }
 
-HKEY ArchMiscWindows::openKey(HKEY key, const TCHAR *const *keyNames) {
-  return openKey(key, keyNames, false);
+HKEY ArchMiscWindows::openKey(HKEY key, const TCHAR *keyName)
+{
+    return openKey(key, keyName, false);
 }
 
-HKEY ArchMiscWindows::addKey(HKEY key, const TCHAR *keyName) {
-  return openKey(key, keyName, true);
+HKEY ArchMiscWindows::openKey(HKEY key, const TCHAR *const *keyNames)
+{
+    return openKey(key, keyNames, false);
 }
 
-HKEY ArchMiscWindows::addKey(HKEY key, const TCHAR *const *keyNames) {
-  return openKey(key, keyNames, true);
+HKEY ArchMiscWindows::addKey(HKEY key, const TCHAR *keyName)
+{
+    return openKey(key, keyName, true);
 }
 
-HKEY ArchMiscWindows::openKey(HKEY key, const TCHAR *keyName, bool create) {
-  // ignore if parent is NULL
-  if (key == NULL) {
-    return NULL;
-  }
-
-  // open next key
-  HKEY newKey;
-  LSTATUS result =
-      RegOpenKeyEx(key, keyName, 0, KEY_WRITE | KEY_QUERY_VALUE, &newKey);
-  if (result != ERROR_SUCCESS && create) {
-    DWORD disp;
-    result = RegCreateKeyEx(
-        key, keyName, 0, NULL, 0, KEY_WRITE | KEY_QUERY_VALUE, NULL, &newKey,
-        &disp);
-  }
-  if (result != ERROR_SUCCESS) {
-    RegCloseKey(key);
-    return NULL;
-  }
-
-  // switch to new key
-  RegCloseKey(key);
-  return newKey;
+HKEY ArchMiscWindows::addKey(HKEY key, const TCHAR *const *keyNames)
+{
+    return openKey(key, keyNames, true);
 }
 
-HKEY ArchMiscWindows::openKey(
-    HKEY key, const TCHAR *const *keyNames, bool create) {
-  for (size_t i = 0; key != NULL && keyNames[i] != NULL; ++i) {
+HKEY ArchMiscWindows::openKey(HKEY key, const TCHAR *keyName, bool create)
+{
+    // ignore if parent is NULL
+    if (key == NULL) {
+        return NULL;
+    }
+
     // open next key
-    key = openKey(key, keyNames[i], create);
-  }
-  return key;
+    HKEY newKey;
+    LSTATUS result = RegOpenKeyEx(key, keyName, 0, KEY_WRITE | KEY_QUERY_VALUE, &newKey);
+    if (result != ERROR_SUCCESS && create) {
+        DWORD disp;
+        result = RegCreateKeyEx(key, keyName, 0, NULL, 0, KEY_WRITE | KEY_QUERY_VALUE, NULL, &newKey, &disp);
+    }
+    if (result != ERROR_SUCCESS) {
+        RegCloseKey(key);
+        return NULL;
+    }
+
+    // switch to new key
+    RegCloseKey(key);
+    return newKey;
 }
 
-void ArchMiscWindows::closeKey(HKEY key) {
-  assert(key != NULL);
-  if (key == NULL)
-    return;
-  RegCloseKey(key);
+HKEY ArchMiscWindows::openKey(HKEY key, const TCHAR *const *keyNames, bool create)
+{
+    for (size_t i = 0; key != NULL && keyNames[i] != NULL; ++i) {
+        // open next key
+        key = openKey(key, keyNames[i], create);
+    }
+    return key;
 }
 
-void ArchMiscWindows::deleteKey(HKEY key, const TCHAR *name) {
-  assert(key != NULL);
-  assert(name != NULL);
-  if (key == NULL || name == NULL)
-    return;
-  RegDeleteKey(key, name);
+void ArchMiscWindows::closeKey(HKEY key)
+{
+    assert(key != NULL);
+    if (key == NULL)
+        return;
+    RegCloseKey(key);
 }
 
-void ArchMiscWindows::deleteValue(HKEY key, const TCHAR *name) {
-  assert(key != NULL);
-  assert(name != NULL);
-  if (key == NULL || name == NULL)
-    return;
-  RegDeleteValue(key, name);
+void ArchMiscWindows::deleteKey(HKEY key, const TCHAR *name)
+{
+    assert(key != NULL);
+    assert(name != NULL);
+    if (key == NULL || name == NULL)
+        return;
+    RegDeleteKey(key, name);
 }
 
-bool ArchMiscWindows::hasValue(HKEY key, const TCHAR *name) {
-  DWORD type;
-  LONG result = RegQueryValueEx(key, name, 0, &type, NULL, NULL);
-  return (result == ERROR_SUCCESS && (type == REG_DWORD || type == REG_SZ));
+void ArchMiscWindows::deleteValue(HKEY key, const TCHAR *name)
+{
+    assert(key != NULL);
+    assert(name != NULL);
+    if (key == NULL || name == NULL)
+        return;
+    RegDeleteValue(key, name);
 }
 
-ArchMiscWindows::EValueType
-ArchMiscWindows::typeOfValue(HKEY key, const TCHAR *name) {
-  DWORD type;
-  LONG result = RegQueryValueEx(key, name, 0, &type, NULL, NULL);
-  if (result != ERROR_SUCCESS) {
-    return kNO_VALUE;
-  }
-  switch (type) {
-  case REG_DWORD:
-    return kUINT;
-
-  case REG_SZ:
-    return kSTRING;
-
-  case REG_BINARY:
-    return kBINARY;
-
-  default:
-    return kUNKNOWN;
-  }
+bool ArchMiscWindows::hasValue(HKEY key, const TCHAR *name)
+{
+    DWORD type;
+    LONG result = RegQueryValueEx(key, name, 0, &type, NULL, NULL);
+    return (result == ERROR_SUCCESS && (type == REG_DWORD || type == REG_SZ));
 }
 
-void ArchMiscWindows::setValue(
-    HKEY key, const TCHAR *name, const std::string &value) {
-  assert(key != NULL);
-  if (key == NULL) {
-    // TODO: throw exception
-    return;
-  }
-  RegSetValueEx(
-      key, name, 0, REG_SZ, reinterpret_cast<const BYTE *>(value.c_str()),
-      (DWORD)value.size() + 1);
+ArchMiscWindows::EValueType ArchMiscWindows::typeOfValue(HKEY key, const TCHAR *name)
+{
+    DWORD type;
+    LONG result = RegQueryValueEx(key, name, 0, &type, NULL, NULL);
+    if (result != ERROR_SUCCESS) {
+        return kNO_VALUE;
+    }
+    switch (type) {
+    case REG_DWORD:
+        return kUINT;
+
+    case REG_SZ:
+        return kSTRING;
+
+    case REG_BINARY:
+        return kBINARY;
+
+    default:
+        return kUNKNOWN;
+    }
 }
 
-void ArchMiscWindows::setValue(HKEY key, const TCHAR *name, DWORD value) {
-  assert(key != NULL);
-  if (key == NULL) {
-    // TODO: throw exception
-    return;
-  }
-  RegSetValueEx(
-      key, name, 0, REG_DWORD, reinterpret_cast<CONST BYTE *>(&value),
-      sizeof(DWORD));
+void ArchMiscWindows::setValue(HKEY key, const TCHAR *name, const std::string &value)
+{
+    assert(key != NULL);
+    if (key == NULL) {
+        // TODO: throw exception
+        return;
+    }
+    RegSetValueEx(key, name, 0, REG_SZ, reinterpret_cast<const BYTE *>(value.c_str()), (DWORD)value.size() + 1);
 }
 
-void ArchMiscWindows::setValueBinary(
-    HKEY key, const TCHAR *name, const std::string &value) {
-  assert(key != NULL);
-  assert(name != NULL);
-  if (key == NULL || name == NULL) {
-    // TODO: throw exception
-    return;
-  }
-  RegSetValueEx(
-      key, name, 0, REG_BINARY, reinterpret_cast<const BYTE *>(value.data()),
-      (DWORD)value.size());
+void ArchMiscWindows::setValue(HKEY key, const TCHAR *name, DWORD value)
+{
+    assert(key != NULL);
+    if (key == NULL) {
+        // TODO: throw exception
+        return;
+    }
+    RegSetValueEx(key, name, 0, REG_DWORD, reinterpret_cast<CONST BYTE *>(&value), sizeof(DWORD));
 }
 
-std::string
-ArchMiscWindows::readBinaryOrString(HKEY key, const TCHAR *name, DWORD type) {
-  // get the size of the string
-  DWORD actualType;
-  DWORD size = 0;
-  LONG result = RegQueryValueEx(key, name, 0, &actualType, NULL, &size);
-  if (result != ERROR_SUCCESS || actualType != type) {
-    return std::string();
-  }
+void ArchMiscWindows::setValueBinary(HKEY key, const TCHAR *name, const std::string &value)
+{
+    assert(key != NULL);
+    assert(name != NULL);
+    if (key == NULL || name == NULL) {
+        // TODO: throw exception
+        return;
+    }
+    RegSetValueEx(key, name, 0, REG_BINARY, reinterpret_cast<const BYTE *>(value.data()), (DWORD)value.size());
+}
 
-  // if zero size then return empty string
-  if (size == 0) {
-    return std::string();
-  }
+std::string ArchMiscWindows::readBinaryOrString(HKEY key, const TCHAR *name, DWORD type)
+{
+    // get the size of the string
+    DWORD actualType;
+    DWORD size = 0;
+    LONG result = RegQueryValueEx(key, name, 0, &actualType, NULL, &size);
+    if (result != ERROR_SUCCESS || actualType != type) {
+        return std::string();
+    }
 
-  // allocate space
-  char *buffer = new char[size];
+    // if zero size then return empty string
+    if (size == 0) {
+        return std::string();
+    }
 
-  // read it
-  result = RegQueryValueEx(
-      key, name, 0, &actualType, reinterpret_cast<BYTE *>(buffer), &size);
-  if (result != ERROR_SUCCESS || actualType != type) {
+    // allocate space
+    char *buffer = new char[size];
+
+    // read it
+    result = RegQueryValueEx(key, name, 0, &actualType, reinterpret_cast<BYTE *>(buffer), &size);
+    if (result != ERROR_SUCCESS || actualType != type) {
+        delete[] buffer;
+        return std::string();
+    }
+
+    // clean up and return value
+    if (type == REG_SZ && buffer[size - 1] == '\0') {
+        // don't include terminating nul;  std::string will add one.
+        --size;
+    }
+    std::string value(buffer, size);
     delete[] buffer;
-    return std::string();
-  }
-
-  // clean up and return value
-  if (type == REG_SZ && buffer[size - 1] == '\0') {
-    // don't include terminating nul;  std::string will add one.
-    --size;
-  }
-  std::string value(buffer, size);
-  delete[] buffer;
-  return value;
+    return value;
 }
 
-std::string ArchMiscWindows::readValueString(HKEY key, const TCHAR *name) {
-  return readBinaryOrString(key, name, REG_SZ);
+std::string ArchMiscWindows::readValueString(HKEY key, const TCHAR *name)
+{
+    return readBinaryOrString(key, name, REG_SZ);
 }
 
-std::string ArchMiscWindows::readValueBinary(HKEY key, const TCHAR *name) {
-  return readBinaryOrString(key, name, REG_BINARY);
+std::string ArchMiscWindows::readValueBinary(HKEY key, const TCHAR *name)
+{
+    return readBinaryOrString(key, name, REG_BINARY);
 }
 
 DWORD
-ArchMiscWindows::readValueInt(HKEY key, const TCHAR *name) {
-  DWORD type;
-  DWORD value;
-  DWORD size = sizeof(value);
-  LONG result = RegQueryValueEx(
-      key, name, 0, &type, reinterpret_cast<BYTE *>(&value), &size);
-  if (result != ERROR_SUCCESS || type != REG_DWORD) {
+ArchMiscWindows::readValueInt(HKEY key, const TCHAR *name)
+{
+    DWORD type;
+    DWORD value;
+    DWORD size = sizeof(value);
+    LONG result = RegQueryValueEx(key, name, 0, &type, reinterpret_cast<BYTE *>(&value), &size);
+    if (result != ERROR_SUCCESS || type != REG_DWORD) {
+        return 0;
+    }
+    return value;
+}
+
+void ArchMiscWindows::addDialog(HWND hwnd)
+{
+    s_dialogs->insert(hwnd);
+}
+
+void ArchMiscWindows::removeDialog(HWND hwnd)
+{
+    s_dialogs->erase(hwnd);
+}
+
+bool ArchMiscWindows::processDialog(MSG *msg)
+{
+    for (Dialogs::const_iterator index = s_dialogs->begin(); index != s_dialogs->end(); ++index) {
+        if (IsDialogMessage(*index, msg)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void ArchMiscWindows::addBusyState(DWORD busyModes)
+{
+    s_busyState |= busyModes;
+    setThreadExecutionState(s_busyState);
+}
+
+void ArchMiscWindows::removeBusyState(DWORD busyModes)
+{
+    s_busyState &= ~busyModes;
+    setThreadExecutionState(s_busyState);
+}
+
+void ArchMiscWindows::setThreadExecutionState(DWORD busyModes)
+{
+    // look up function dynamically so we work on older systems
+    if (s_stes == NULL) {
+        HINSTANCE kernel = LoadLibrary("kernel32.dll");
+        if (kernel != NULL) {
+            s_stes = reinterpret_cast<STES_t>(GetProcAddress(kernel, "SetThreadExecutionState"));
+        }
+        if (s_stes == NULL) {
+            s_stes = &ArchMiscWindows::dummySetThreadExecutionState;
+        }
+    }
+
+    // convert to STES form
+    EXECUTION_STATE state = 0;
+    if ((busyModes & kSYSTEM) != 0) {
+        state |= ES_SYSTEM_REQUIRED;
+    }
+    if ((busyModes & kDISPLAY) != 0) {
+        state |= ES_DISPLAY_REQUIRED;
+    }
+    if (state != 0) {
+        state |= ES_CONTINUOUS;
+    }
+
+    // do it
+    s_stes(state);
+}
+
+DWORD
+ArchMiscWindows::dummySetThreadExecutionState(DWORD)
+{
+    // do nothing
     return 0;
-  }
-  return value;
 }
 
-void ArchMiscWindows::addDialog(HWND hwnd) { s_dialogs->insert(hwnd); }
+void ArchMiscWindows::wakeupDisplay()
+{
+    // We can't use ::setThreadExecutionState here because it sets
+    // ES_CONTINUOUS, which we don't want.
 
-void ArchMiscWindows::removeDialog(HWND hwnd) { s_dialogs->erase(hwnd); }
-
-bool ArchMiscWindows::processDialog(MSG *msg) {
-  for (Dialogs::const_iterator index = s_dialogs->begin();
-       index != s_dialogs->end(); ++index) {
-    if (IsDialogMessage(*index, msg)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-void ArchMiscWindows::addBusyState(DWORD busyModes) {
-  s_busyState |= busyModes;
-  setThreadExecutionState(s_busyState);
-}
-
-void ArchMiscWindows::removeBusyState(DWORD busyModes) {
-  s_busyState &= ~busyModes;
-  setThreadExecutionState(s_busyState);
-}
-
-void ArchMiscWindows::setThreadExecutionState(DWORD busyModes) {
-  // look up function dynamically so we work on older systems
-  if (s_stes == NULL) {
-    HINSTANCE kernel = LoadLibrary("kernel32.dll");
-    if (kernel != NULL) {
-      s_stes = reinterpret_cast<STES_t>(
-          GetProcAddress(kernel, "SetThreadExecutionState"));
-    }
     if (s_stes == NULL) {
-      s_stes = &ArchMiscWindows::dummySetThreadExecutionState;
+        HINSTANCE kernel = LoadLibrary("kernel32.dll");
+        if (kernel != NULL) {
+            s_stes = reinterpret_cast<STES_t>(GetProcAddress(kernel, "SetThreadExecutionState"));
+        }
+        if (s_stes == NULL) {
+            s_stes = &ArchMiscWindows::dummySetThreadExecutionState;
+        }
     }
-  }
 
-  // convert to STES form
-  EXECUTION_STATE state = 0;
-  if ((busyModes & kSYSTEM) != 0) {
-    state |= ES_SYSTEM_REQUIRED;
-  }
-  if ((busyModes & kDISPLAY) != 0) {
-    state |= ES_DISPLAY_REQUIRED;
-  }
-  if (state != 0) {
-    state |= ES_CONTINUOUS;
-  }
+    s_stes(ES_DISPLAY_REQUIRED);
 
-  // do it
-  s_stes(state);
+    // restore the original execution states
+    setThreadExecutionState(s_busyState);
 }
 
-DWORD
-ArchMiscWindows::dummySetThreadExecutionState(DWORD) {
-  // do nothing
-  return 0;
-}
-
-void ArchMiscWindows::wakeupDisplay() {
-  // We can't use ::setThreadExecutionState here because it sets
-  // ES_CONTINUOUS, which we don't want.
-
-  if (s_stes == NULL) {
-    HINSTANCE kernel = LoadLibrary("kernel32.dll");
-    if (kernel != NULL) {
-      s_stes = reinterpret_cast<STES_t>(
-          GetProcAddress(kernel, "SetThreadExecutionState"));
+bool ArchMiscWindows::wasLaunchedAsService()
+{
+    String name;
+    if (!getParentProcessName(name)) {
+        LOG((CLOG_ERR "cannot determine if process was launched as service"));
+        return false;
     }
-    if (s_stes == NULL) {
-      s_stes = &ArchMiscWindows::dummySetThreadExecutionState;
+
+    return (name == SERVICE_LAUNCHER);
+}
+
+bool ArchMiscWindows::getParentProcessName(String &name)
+{
+    PROCESSENTRY32 parentEntry;
+    if (!getParentProcessEntry(parentEntry)) {
+        LOG((CLOG_ERR "could not get entry for parent process"));
+        return false;
     }
-  }
 
-  s_stes(ES_DISPLAY_REQUIRED);
-
-  // restore the original execution states
-  setThreadExecutionState(s_busyState);
+    name = parentEntry.szExeFile;
+    return true;
 }
 
-bool ArchMiscWindows::wasLaunchedAsService() {
-  String name;
-  if (!getParentProcessName(name)) {
-    LOG((CLOG_ERR "cannot determine if process was launched as service"));
-    return false;
-  }
-
-  return (name == SERVICE_LAUNCHER);
+BOOL WINAPI ArchMiscWindows::getSelfProcessEntry(PROCESSENTRY32 &entry)
+{
+    // get entry from current PID
+    return getProcessEntry(entry, GetCurrentProcessId());
 }
 
-bool ArchMiscWindows::getParentProcessName(String &name) {
-  PROCESSENTRY32 parentEntry;
-  if (!getParentProcessEntry(parentEntry)) {
-    LOG((CLOG_ERR "could not get entry for parent process"));
-    return false;
-  }
+BOOL WINAPI ArchMiscWindows::getParentProcessEntry(PROCESSENTRY32 &entry)
+{
+    // get the current process, so we can get parent PID
+    PROCESSENTRY32 selfEntry;
+    if (!getSelfProcessEntry(selfEntry)) {
+        return FALSE;
+    }
 
-  name = parentEntry.szExeFile;
-  return true;
+    // get entry from parent PID
+    return getProcessEntry(entry, selfEntry.th32ParentProcessID);
 }
 
-BOOL WINAPI ArchMiscWindows::getSelfProcessEntry(PROCESSENTRY32 &entry) {
-  // get entry from current PID
-  return getProcessEntry(entry, GetCurrentProcessId());
-}
+BOOL WINAPI ArchMiscWindows::getProcessEntry(PROCESSENTRY32 &entry, DWORD processID)
+{
+    // first we need to take a snapshot of the running processes
+    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (snapshot == INVALID_HANDLE_VALUE) {
+        LOG((CLOG_ERR "could not get process snapshot (error: %i)", GetLastError()));
+        return FALSE;
+    }
 
-BOOL WINAPI ArchMiscWindows::getParentProcessEntry(PROCESSENTRY32 &entry) {
-  // get the current process, so we can get parent PID
-  PROCESSENTRY32 selfEntry;
-  if (!getSelfProcessEntry(selfEntry)) {
+    entry.dwSize = sizeof(PROCESSENTRY32);
+
+    // get the first process, and if we can't do that then it's
+    // unlikely we can go any further
+    BOOL gotEntry = Process32First(snapshot, &entry);
+    if (!gotEntry) {
+        LOG((CLOG_ERR "could not get first process entry (error: %i)", GetLastError()));
+        return FALSE;
+    }
+
+    while (gotEntry) {
+        if (entry.th32ProcessID == processID) {
+            // found current process
+            return TRUE;
+        }
+
+        // now move on to the next entry (when we reach end, loop will stop)
+        gotEntry = Process32Next(snapshot, &entry);
+    }
+
     return FALSE;
-  }
-
-  // get entry from parent PID
-  return getProcessEntry(entry, selfEntry.th32ParentProcessID);
-}
-
-BOOL WINAPI
-ArchMiscWindows::getProcessEntry(PROCESSENTRY32 &entry, DWORD processID) {
-  // first we need to take a snapshot of the running processes
-  HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-  if (snapshot == INVALID_HANDLE_VALUE) {
-    LOG((
-        CLOG_ERR "could not get process snapshot (error: %i)", GetLastError()));
-    return FALSE;
-  }
-
-  entry.dwSize = sizeof(PROCESSENTRY32);
-
-  // get the first process, and if we can't do that then it's
-  // unlikely we can go any further
-  BOOL gotEntry = Process32First(snapshot, &entry);
-  if (!gotEntry) {
-    LOG(
-        (CLOG_ERR "could not get first process entry (error: %i)",
-         GetLastError()));
-    return FALSE;
-  }
-
-  while (gotEntry) {
-
-    if (entry.th32ProcessID == processID) {
-      // found current process
-      return TRUE;
-    }
-
-    // now move on to the next entry (when we reach end, loop will stop)
-    gotEntry = Process32Next(snapshot, &entry);
-  }
-
-  return FALSE;
 }
 
 HINSTANCE
-ArchMiscWindows::instanceWin32() {
-  assert(s_instanceWin32 != NULL);
-  return s_instanceWin32;
+ArchMiscWindows::instanceWin32()
+{
+    assert(s_instanceWin32 != NULL);
+    return s_instanceWin32;
 }
 
-void ArchMiscWindows::setInstanceWin32(HINSTANCE instance) {
-  assert(instance != NULL);
-  s_instanceWin32 = instance;
+void ArchMiscWindows::setInstanceWin32(HINSTANCE instance)
+{
+    assert(instance != NULL);
+    s_instanceWin32 = instance;
 }

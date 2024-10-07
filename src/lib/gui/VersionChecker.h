@@ -27,33 +27,32 @@ class QNetworkAccessManager;
 class QNetworkReply;
 class VersionCheckerTests;
 
-class VersionChecker : public QObject {
-  using QNetworkAccessManagerProxy =
-      deskflow::gui::proxy::QNetworkAccessManagerProxy;
+class VersionChecker : public QObject
+{
+    using QNetworkAccessManagerProxy = deskflow::gui::proxy::QNetworkAccessManagerProxy;
 
-  Q_OBJECT
+    Q_OBJECT
 
-  friend class VersionCheckerTests;
+    friend class VersionCheckerTests;
 
 public:
-  explicit VersionChecker(
-      std::shared_ptr<QNetworkAccessManagerProxy> network = nullptr);
-  void checkLatest() const;
+    explicit VersionChecker(std::shared_ptr<QNetworkAccessManagerProxy> network = nullptr);
+    void checkLatest() const;
 public slots:
-  void replyFinished(QNetworkReply *reply);
+    void replyFinished(QNetworkReply *reply);
 signals:
-  void updateFound(const QString &version);
+    void updateFound(const QString &version);
 
 private:
-  static int compareVersions(const QString &left, const QString &right);
+    static int compareVersions(const QString &left, const QString &right);
 
-  /**
-   * \brief Converts a string stage to a integer value
-   * \param stage The string containing the stage version
-   * \return An integer representation of the stage, the higher the number the
-   * more recent the version
-   */
-  static int getStageVersion(QString stage);
+    /**
+     * \brief Converts a string stage to a integer value
+     * \param stage The string containing the stage version
+     * \return An integer representation of the stage, the higher the number the
+     * more recent the version
+     */
+    static int getStageVersion(QString stage);
 
-  std::shared_ptr<QNetworkAccessManagerProxy> m_network;
+    std::shared_ptr<QNetworkAccessManagerProxy> m_network;
 };

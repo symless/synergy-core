@@ -22,22 +22,25 @@
 // XIOClosed
 //
 
-String XIOClosed::getWhat() const throw() {
-  return format("XIOClosed", "already closed");
+String XIOClosed::getWhat() const throw()
+{
+    return format("XIOClosed", "already closed");
 }
 
 //
 // XIOEndOfStream
 //
 
-String XIOEndOfStream::getWhat() const throw() {
-  return format("XIOEndOfStream", "reached end of stream");
+String XIOEndOfStream::getWhat() const throw()
+{
+    return format("XIOEndOfStream", "reached end of stream");
 }
 
 //
 // XIOWouldBlock
 //
 
-String XIOWouldBlock::getWhat() const throw() {
-  return format("XIOWouldBlock", "stream operation would block");
+String XIOWouldBlock::getWhat() const throw()
+{
+    return format("XIOWouldBlock", "stream operation would block");
 }

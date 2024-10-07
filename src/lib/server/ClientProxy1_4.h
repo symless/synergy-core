@@ -23,29 +23,28 @@
 class Server;
 
 //! Proxy for client implementing protocol version 1.4
-class ClientProxy1_4 : public ClientProxy1_3 {
+class ClientProxy1_4 : public ClientProxy1_3
+{
 public:
-  ClientProxy1_4(
-      const String &name, deskflow::IStream *adoptedStream, Server *server,
-      IEventQueue *events);
-  ~ClientProxy1_4();
+    ClientProxy1_4(const String &name, deskflow::IStream *adoptedStream, Server *server, IEventQueue *events);
+    ~ClientProxy1_4();
 
-  //! @name accessors
-  //@{
+    //! @name accessors
+    //@{
 
-  //! get server pointer
-  Server *getServer() { return m_server; }
+    //! get server pointer
+    Server *getServer()
+    {
+        return m_server;
+    }
 
-  //@}
+    //@}
 
-  // IClient overrides
-  virtual void
-  keyDown(KeyID key, KeyModifierMask mask, KeyButton button, const String &);
-  virtual void keyRepeat(
-      KeyID key, KeyModifierMask mask, SInt32 count, KeyButton button,
-      const String &lang);
-  virtual void keyUp(KeyID key, KeyModifierMask mask, KeyButton button);
-  virtual void keepAlive();
+    // IClient overrides
+    virtual void keyDown(KeyID key, KeyModifierMask mask, KeyButton button, const String &);
+    virtual void keyRepeat(KeyID key, KeyModifierMask mask, SInt32 count, KeyButton button, const String &lang);
+    virtual void keyUp(KeyID key, KeyModifierMask mask, KeyButton button);
+    virtual void keepAlive();
 
-  Server *m_server;
+    Server *m_server;
 };

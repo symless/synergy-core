@@ -31,129 +31,135 @@ The primary screen does not have a client associated with it.  This
 class provides a pseudo-client to allow the primary screen to be
 treated as if it was a client.
 */
-class PrimaryClient : public BaseClientProxy {
+class PrimaryClient : public BaseClientProxy
+{
 public:
-  /*!
-  \c name is the name of the server and \p screen is primary screen.
-  */
-  PrimaryClient(const String &name, deskflow::Screen *screen);
-  ~PrimaryClient();
+    /*!
+    \c name is the name of the server and \p screen is primary screen.
+    */
+    PrimaryClient(const String &name, deskflow::Screen *screen);
+    ~PrimaryClient();
 
 #ifdef TEST_ENV
-  PrimaryClient() : BaseClientProxy("") {}
+    PrimaryClient()
+        : BaseClientProxy("")
+    {
+    }
 #endif
 
-  //! @name manipulators
-  //@{
+    //! @name manipulators
+    //@{
 
-  //! Update configuration
-  /*!
-  Handles reconfiguration of jump zones.
-  */
-  virtual void reconfigure(UInt32 activeSides);
+    //! Update configuration
+    /*!
+    Handles reconfiguration of jump zones.
+    */
+    virtual void reconfigure(UInt32 activeSides);
 
-  //! Register a system hotkey
-  /*!
-  Registers a system-wide hotkey for key \p key with modifiers \p mask.
-  Returns an id used to unregister the hotkey.
-  */
-  virtual UInt32 registerHotKey(KeyID key, KeyModifierMask mask);
+    //! Register a system hotkey
+    /*!
+    Registers a system-wide hotkey for key \p key with modifiers \p mask.
+    Returns an id used to unregister the hotkey.
+    */
+    virtual UInt32 registerHotKey(KeyID key, KeyModifierMask mask);
 
-  //! Unregister a system hotkey
-  /*!
-  Unregisters a previously registered hot key.
-  */
-  virtual void unregisterHotKey(UInt32 id);
+    //! Unregister a system hotkey
+    /*!
+    Unregisters a previously registered hot key.
+    */
+    virtual void unregisterHotKey(UInt32 id);
 
-  //! Prepare to synthesize input on primary screen
-  /*!
-  Prepares the primary screen to receive synthesized input.  We do not
-  want to receive this synthesized input as user input so this method
-  ensures that we ignore it.  Calls to \c fakeInputBegin() and
-  \c fakeInputEnd() may be nested;  only the outermost have an effect.
-  */
-  void fakeInputBegin();
+    //! Prepare to synthesize input on primary screen
+    /*!
+    Prepares the primary screen to receive synthesized input.  We do not
+    want to receive this synthesized input as user input so this method
+    ensures that we ignore it.  Calls to \c fakeInputBegin() and
+    \c fakeInputEnd() may be nested;  only the outermost have an effect.
+    */
+    void fakeInputBegin();
 
-  //! Done synthesizing input on primary screen
-  /*!
-  Undoes whatever \c fakeInputBegin() did.
-  */
-  void fakeInputEnd();
+    //! Done synthesizing input on primary screen
+    /*!
+    Undoes whatever \c fakeInputBegin() did.
+    */
+    void fakeInputEnd();
 
-  //@}
-  //! @name accessors
-  //@{
+    //@}
+    //! @name accessors
+    //@{
 
-  //! Get jump zone size
-  /*!
-  Return the jump zone size, the size of the regions on the edges of
-  the screen that cause the cursor to jump to another screen.
-  */
-  SInt32 getJumpZoneSize() const;
+    //! Get jump zone size
+    /*!
+    Return the jump zone size, the size of the regions on the edges of
+    the screen that cause the cursor to jump to another screen.
+    */
+    SInt32 getJumpZoneSize() const;
 
-  //! Get cursor center position
-  /*!
-  Return the cursor center position which is where we park the
-  cursor to compute cursor motion deltas and should be far from
-  the edges of the screen, typically the center.
-  */
-  void getCursorCenter(SInt32 &x, SInt32 &y) const;
+    //! Get cursor center position
+    /*!
+    Return the cursor center position which is where we park the
+    cursor to compute cursor motion deltas and should be far from
+    the edges of the screen, typically the center.
+    */
+    void getCursorCenter(SInt32 &x, SInt32 &y) const;
 
-  //! Get toggle key state
-  /*!
-  Returns the primary screen's current toggle modifier key state.
-  */
-  virtual KeyModifierMask getToggleMask() const;
+    //! Get toggle key state
+    /*!
+    Returns the primary screen's current toggle modifier key state.
+    */
+    virtual KeyModifierMask getToggleMask() const;
 
-  //! Get screen lock state
-  /*!
-  Returns true if the user is locked to the screen.
-  */
-  bool isLockedToScreen() const;
+    //! Get screen lock state
+    /*!
+    Returns true if the user is locked to the screen.
+    */
+    bool isLockedToScreen() const;
 
-  //@}
+    //@}
 
-  // FIXME -- these probably belong on IScreen
-  virtual void enable();
-  virtual void disable();
+    // FIXME -- these probably belong on IScreen
+    virtual void enable();
+    virtual void disable();
 
-  // IScreen overrides
-  void *getEventTarget() const override;
-  bool getClipboard(ClipboardID id, IClipboard *) const override;
-  void
-  getShape(SInt32 &x, SInt32 &y, SInt32 &width, SInt32 &height) const override;
-  void getCursorPos(SInt32 &x, SInt32 &y) const override;
+    // IScreen overrides
+    void *getEventTarget() const override;
+    bool getClipboard(ClipboardID id, IClipboard *) const override;
+    void getShape(SInt32 &x, SInt32 &y, SInt32 &width, SInt32 &height) const override;
+    void getCursorPos(SInt32 &x, SInt32 &y) const override;
 
-  // IClient overrides
-  void enter(
-      SInt32 xAbs, SInt32 yAbs, UInt32 seqNum, KeyModifierMask mask,
-      bool forScreensaver) override;
-  bool leave() override;
-  void setClipboard(ClipboardID, const IClipboard *) override;
-  void grabClipboard(ClipboardID) override;
-  void setClipboardDirty(ClipboardID, bool) override;
-  void keyDown(KeyID, KeyModifierMask, KeyButton, const String &) override;
-  void keyRepeat(
-      KeyID, KeyModifierMask, SInt32 count, KeyButton, const String &) override;
-  void keyUp(KeyID, KeyModifierMask, KeyButton) override;
-  void mouseDown(ButtonID) override;
-  void mouseUp(ButtonID) override;
-  void mouseMove(SInt32 xAbs, SInt32 yAbs) override;
-  void mouseRelativeMove(SInt32 xRel, SInt32 yRel) override;
-  void mouseWheel(SInt32 xDelta, SInt32 yDelta) override;
-  void screensaver(bool activate) override;
-  void resetOptions() override;
-  void setOptions(const OptionsList &options) override;
-  void sendDragInfo(UInt32 fileCount, const char *info, size_t size) override;
-  void fileChunkSending(UInt8 mark, char *data, size_t dataSize) override;
-  String getSecureInputApp() const override;
-  void secureInputNotification(const String &app) const override;
+    // IClient overrides
+    void enter(SInt32 xAbs, SInt32 yAbs, UInt32 seqNum, KeyModifierMask mask, bool forScreensaver) override;
+    bool leave() override;
+    void setClipboard(ClipboardID, const IClipboard *) override;
+    void grabClipboard(ClipboardID) override;
+    void setClipboardDirty(ClipboardID, bool) override;
+    void keyDown(KeyID, KeyModifierMask, KeyButton, const String &) override;
+    void keyRepeat(KeyID, KeyModifierMask, SInt32 count, KeyButton, const String &) override;
+    void keyUp(KeyID, KeyModifierMask, KeyButton) override;
+    void mouseDown(ButtonID) override;
+    void mouseUp(ButtonID) override;
+    void mouseMove(SInt32 xAbs, SInt32 yAbs) override;
+    void mouseRelativeMove(SInt32 xRel, SInt32 yRel) override;
+    void mouseWheel(SInt32 xDelta, SInt32 yDelta) override;
+    void screensaver(bool activate) override;
+    void resetOptions() override;
+    void setOptions(const OptionsList &options) override;
+    void sendDragInfo(UInt32 fileCount, const char *info, size_t size) override;
+    void fileChunkSending(UInt8 mark, char *data, size_t dataSize) override;
+    String getSecureInputApp() const override;
+    void secureInputNotification(const String &app) const override;
 
-  deskflow::IStream *getStream() const override { return nullptr; }
-  bool isPrimary() const override { return true; }
+    deskflow::IStream *getStream() const override
+    {
+        return nullptr;
+    }
+    bool isPrimary() const override
+    {
+        return true;
+    }
 
 private:
-  deskflow::Screen *m_screen;
-  bool m_clipboardDirty[kClipboardEnd];
-  SInt32 m_fakeInputCount;
+    deskflow::Screen *m_screen;
+    bool m_clipboardDirty[kClipboardEnd];
+    SInt32 m_fakeInputCount;
 };

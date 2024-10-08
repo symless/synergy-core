@@ -22,18 +22,20 @@
 #include <QtGui>
 
 HotkeyDialog::HotkeyDialog(QWidget *parent, Hotkey &hotkey)
-    : QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint),
-      Ui::HotkeyDialogBase(),
-      m_Hotkey(hotkey) {
-  setupUi(this);
+    : QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint)
+    , Ui::HotkeyDialogBase()
+    , m_Hotkey(hotkey)
+{
+    setupUi(this);
 
-  m_pKeySequenceWidgetHotkey->setText(m_Hotkey.text());
+    m_pKeySequenceWidgetHotkey->setText(m_Hotkey.text());
 }
 
-void HotkeyDialog::accept() {
-  if (!sequenceWidget()->valid())
-    return;
+void HotkeyDialog::accept()
+{
+    if (!sequenceWidget()->valid())
+        return;
 
-  hotkey().setKeySequence(sequenceWidget()->keySequence());
-  QDialog::accept();
+    hotkey().setKeySequence(sequenceWidget()->keySequence());
+    QDialog::accept();
 }

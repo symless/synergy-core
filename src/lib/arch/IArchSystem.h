@@ -25,36 +25,36 @@
 /*!
 This interface defines operations for querying system info.
 */
-class IArchSystem : public IInterface {
+class IArchSystem : public IInterface
+{
 public:
-  //! @name accessors
-  //@{
+    //! @name accessors
+    //@{
 
-  //! Identify the OS
-  /*!
-  Returns a string identifying the operating system.
-  */
-  virtual std::string getOSName() const = 0;
+    //! Identify the OS
+    /*!
+    Returns a string identifying the operating system.
+    */
+    virtual std::string getOSName() const = 0;
 
-  //! Identify the platform
-  /*!
-  Returns a string identifying the platform this OS is running on.
-  */
-  virtual std::string getPlatformName() const = 0;
-  //@}
+    //! Identify the platform
+    /*!
+    Returns a string identifying the platform this OS is running on.
+    */
+    virtual std::string getPlatformName() const = 0;
+    //@}
 
-  //! Get a Deskflow setting
-  /*!
-  Reads a Deskflow setting from the system.
-  */
-  virtual std::string setting(const std::string &valueName) const = 0;
-  //@}
+    //! Get a Deskflow setting
+    /*!
+    Reads a Deskflow setting from the system.
+    */
+    virtual std::string setting(const std::string &valueName) const = 0;
+    //@}
 
-  //! Set a Deskflow setting
-  /*!
-  Writes a Deskflow setting from the system.
-  */
-  virtual void setting(
-      const std::string &valueName, const std::string &valueString) const = 0;
-  //@}
+    //! Set a Deskflow setting
+    /*!
+    Writes a Deskflow setting from the system.
+    */
+    virtual void setting(const std::string &valueName, const std::string &valueString) const = 0;
+    //@}
 };

@@ -19,45 +19,62 @@
 
 namespace deskflow::gui::proxy {
 
-void QProcessProxy::create() {
-  m_pProcess = std::make_unique<QProcess>();
+void QProcessProxy::create()
+{
+    m_pProcess = std::make_unique<QProcess>();
 
-  connect(
-      m_pProcess.get(), &QProcess::finished, this,
-      [this](int exitCode, QProcess::ExitStatus exitStatus) {
+    connect(m_pProcess.get(), &QProcess::finished, this, [this](int exitCode, QProcess::ExitStatus exitStatus) {
         emit finished(exitCode, exitStatus);
-      });
+    });
 
-  connect(
-      m_pProcess.get(), &QProcess::readyReadStandardOutput, //
-      this, [this]() { emit readyReadStandardOutput(); });
+    connect(m_pProcess.get(),
+            &QProcess::readyReadStandardOutput, //
+            this,
+            [this]() {
+                emit readyReadStandardOutput();
+            });
 
-  connect(
-      m_pProcess.get(), &QProcess::readyReadStandardError, //
-      this, [this]() { emit readyReadStandardError(); });
+    connect(m_pProcess.get(),
+            &QProcess::readyReadStandardError, //
+            this,
+            [this]() {
+                emit readyReadStandardError();
+            });
 }
 
-QProcessProxy::operator bool() const { return m_pProcess.get(); }
-
-void QProcessProxy::start(
-    const QString &program, const QStringList &arguments) {
-  m_pProcess->start(program, arguments);
+QProcessProxy::operator bool() const
+{
+    return m_pProcess.get();
 }
 
-bool QProcessProxy::waitForStarted() { return m_pProcess->waitForStarted(); }
-
-QProcess::ProcessState QProcessProxy::state() const {
-  return m_pProcess->state();
+void QProcessProxy::start(const QString &program, const QStringList &arguments)
+{
+    m_pProcess->start(program, arguments);
 }
 
-void QProcessProxy::close() { m_pProcess->close(); }
-
-QString QProcessProxy::readAllStandardOutput() {
-  return m_pProcess->readAllStandardOutput();
+bool QProcessProxy::waitForStarted()
+{
+    return m_pProcess->waitForStarted();
 }
 
-QString QProcessProxy::readAllStandardError() {
-  return m_pProcess->readAllStandardError();
+QProcess::ProcessState QProcessProxy::state() const
+{
+    return m_pProcess->state();
+}
+
+void QProcessProxy::close()
+{
+    m_pProcess->close();
+}
+
+QString QProcessProxy::readAllStandardOutput()
+{
+    return m_pProcess->readAllStandardOutput();
+}
+
+QString QProcessProxy::readAllStandardError()
+{
+    return m_pProcess->readAllStandardError();
 }
 
 } // namespace deskflow::gui::proxy

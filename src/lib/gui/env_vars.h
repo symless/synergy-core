@@ -22,11 +22,12 @@
 
 namespace deskflow::gui::env_vars {
 
-inline QString versionUrl() {
-  if (QString(DESKFLOW_VERSION_URL).isEmpty()) {
-    qFatal("version url is not set");
-  }
-  return qEnvironmentVariable("DESKFLOW_VERSION_URL", DESKFLOW_VERSION_URL);
+inline QString versionUrl()
+{
+    if (QString(DESKFLOW_VERSION_URL).isEmpty()) {
+        qFatal("version url is not set");
+    }
+    return qEnvironmentVariable("DESKFLOW_VERSION_URL", DESKFLOW_VERSION_URL);
 }
 
 } // namespace deskflow::gui::env_vars

@@ -23,11 +23,12 @@
 #define ARCH_TIME ArchTimeUnix
 
 //! Generic Unix implementation of IArchTime
-class ArchTimeUnix : public IArchTime {
+class ArchTimeUnix : public IArchTime
+{
 public:
-  ArchTimeUnix();
-  virtual ~ArchTimeUnix();
+    ArchTimeUnix();
+    virtual ~ArchTimeUnix();
 
-  // IArchTime overrides
-  virtual double time();
+    // IArchTime overrides
+    virtual double time();
 };

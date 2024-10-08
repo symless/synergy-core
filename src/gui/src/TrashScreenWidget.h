@@ -26,18 +26,22 @@ class QWidget;
 class QDragEnterEvent;
 class QDropEvent;
 
-class TrashScreenWidget : public QLabel {
-  Q_OBJECT
+class TrashScreenWidget : public QLabel
+{
+    Q_OBJECT
 
 public:
-  TrashScreenWidget(QWidget *parent) : QLabel(parent) {}
+    TrashScreenWidget(QWidget *parent)
+        : QLabel(parent)
+    {
+    }
 
 public:
-  void dragEnterEvent(QDragEnterEvent *event);
-  void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
 
 signals:
-  void screenRemoved();
+    void screenRemoved();
 };
 
 #endif

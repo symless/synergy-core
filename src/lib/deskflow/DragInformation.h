@@ -24,31 +24,45 @@
 class DragInformation;
 typedef std::vector<DragInformation> DragFileList;
 
-class DragInformation {
+class DragInformation
+{
 public:
-  DragInformation();
-  ~DragInformation() {}
+    DragInformation();
+    ~DragInformation()
+    {
+    }
 
-  String &getFilename() { return m_filename; }
-  void setFilename(String &name) { m_filename = name; }
-  size_t getFilesize() { return m_filesize; }
-  void setFilesize(size_t size) { m_filesize = size; }
+    String &getFilename()
+    {
+        return m_filename;
+    }
+    void setFilename(String &name)
+    {
+        m_filename = name;
+    }
+    size_t getFilesize()
+    {
+        return m_filesize;
+    }
+    void setFilesize(size_t size)
+    {
+        m_filesize = size;
+    }
 
-  static void
-  parseDragInfo(DragFileList &dragFileList, UInt32 fileNum, String data);
-  static String getDragFileExtension(String filename);
-  // helper function to setup drag info
-  // example: filename1,filesize1,filename2,filesize2,
-  // return file count
-  static int setupDragInfo(DragFileList &fileList, String &output);
+    static void parseDragInfo(DragFileList &dragFileList, UInt32 fileNum, String data);
+    static String getDragFileExtension(String filename);
+    // helper function to setup drag info
+    // example: filename1,filesize1,filename2,filesize2,
+    // return file count
+    static int setupDragInfo(DragFileList &fileList, String &output);
 
-  static bool isFileValid(String filename);
+    static bool isFileValid(String filename);
 
 private:
-  static size_t stringToNum(String &str);
-  static String getFileSize(String &filename);
+    static size_t stringToNum(String &str);
+    static String getFileSize(String &filename);
 
 private:
-  String m_filename;
-  size_t m_filesize;
+    String m_filename;
+    size_t m_filesize;
 };

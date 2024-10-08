@@ -54,29 +54,42 @@ static const double kHeartRate = -1.0;
 static const double kHeartBeatsUntilDeath = 3.0;
 
 // direction constants
-enum EDirection {
-  kNoDirection,
-  kLeft,
-  kRight,
-  kTop,
-  kBottom,
-  kFirstDirection = kLeft,
-  kLastDirection = kBottom,
-  kNumDirections = kLastDirection - kFirstDirection + 1
+enum EDirection
+{
+    kNoDirection,
+    kLeft,
+    kRight,
+    kTop,
+    kBottom,
+    kFirstDirection = kLeft,
+    kLastDirection = kBottom,
+    kNumDirections = kLastDirection - kFirstDirection + 1
 };
-enum EDirectionMask {
-  kNoDirMask = 0,
-  kLeftMask = 1 << kLeft,
-  kRightMask = 1 << kRight,
-  kTopMask = 1 << kTop,
-  kBottomMask = 1 << kBottom
+enum EDirectionMask
+{
+    kNoDirMask = 0,
+    kLeftMask = 1 << kLeft,
+    kRightMask = 1 << kRight,
+    kTopMask = 1 << kTop,
+    kBottomMask = 1 << kBottom
 };
 
 // Data transfer constants
-enum EDataTransfer { kDataStart = 1, kDataChunk = 2, kDataEnd = 3 };
+enum EDataTransfer
+{
+    kDataStart = 1,
+    kDataChunk = 2,
+    kDataEnd = 3
+};
 
 // Data received constants
-enum EDataReceived { kStart, kNotFinish, kFinish, kError };
+enum EDataReceived
+{
+    kStart,
+    kNotFinish,
+    kFinish,
+    kError
+};
 
 //
 // message codes (trailing NUL is not part of code).  in comments, $n
@@ -317,27 +330,28 @@ extern const char *const kMsgEBad;
 /*!
 This class contains information about a screen.
 */
-class ClientInfo {
+class ClientInfo
+{
 public:
-  //! Screen position
-  /*!
-  The position of the upper-left corner of the screen.  This is
-  typically 0,0.
-  */
-  SInt32 m_x, m_y;
+    //! Screen position
+    /*!
+    The position of the upper-left corner of the screen.  This is
+    typically 0,0.
+    */
+    SInt32 m_x, m_y;
 
-  //! Screen size
-  /*!
-  The size of the screen in pixels.
-  */
-  SInt32 m_w, m_h;
+    //! Screen size
+    /*!
+    The size of the screen in pixels.
+    */
+    SInt32 m_w, m_h;
 
-  //! Obsolete (jump zone size)
-  SInt32 obsolete1;
+    //! Obsolete (jump zone size)
+    SInt32 obsolete1;
 
-  //! Mouse position
-  /*!
-  The current location of the mouse cursor.
-  */
-  SInt32 m_mx, m_my;
+    //! Mouse position
+    /*!
+    The current location of the mouse cursor.
+    */
+    SInt32 m_mx, m_my;
 };

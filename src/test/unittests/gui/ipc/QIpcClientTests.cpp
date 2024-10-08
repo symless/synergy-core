@@ -23,20 +23,22 @@
 using testing::_;
 using testing::StrEq;
 
-class MockStream : public QDataStreamProxy {
+class MockStream : public QDataStreamProxy
+{
 public:
-  MOCK_METHOD(qint64, writeRawData, (const char *, int), (override));
+    MOCK_METHOD(qint64, writeRawData, (const char *, int), (override));
 };
 
-TEST(QIpcClientTests, sendCommand_anyCommand_commandSent) {
-  auto mockStream = std::make_shared<MockStream>();
-  QIpcClient::StreamProvider streamProvider = [&mockStream]() {
-    return mockStream;
-  };
+TEST(QIpcClientTests, sendCommand_anyCommand_commandSent)
+{
+    auto mockStream = std::make_shared<MockStream>();
+    QIpcClient::StreamProvider streamProvider = [&mockStream]() {
+        return mockStream;
+    };
 
-  EXPECT_CALL(*mockStream, writeRawData(_, _)).Times(3);
-  EXPECT_CALL(*mockStream, writeRawData(StrEq("test"), 4)).Times(1);
+    EXPECT_CALL(*mockStream, writeRawData(_, _)).Times(3);
+    EXPECT_CALL(*mockStream, writeRawData(StrEq("test"), 4)).Times(1);
 
-  QIpcClient ipcClient(streamProvider);
-  ipcClient.sendCommand("test", ElevateMode::kAutomatic);
+    QIpcClient ipcClient(streamProvider);
+    ipcClient.sendCommand("test", ElevateMode::kAutomatic);
 }

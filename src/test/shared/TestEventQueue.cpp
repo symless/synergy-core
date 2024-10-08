@@ -20,23 +20,26 @@
 #include "base/TMethodEventJob.h"
 #include "common/stdexcept.h"
 
-void TestEventQueue::raiseQuitEvent() { addEvent(Event(Event::kQuit)); }
-
-void TestEventQueue::initQuitTimeout(double timeout) {
-  assert(m_pQuitTimeoutTimer == nullptr);
-  m_pQuitTimeoutTimer = newOneShotTimer(timeout, NULL);
-  adoptHandler(
-      Event::kTimer, m_pQuitTimeoutTimer,
-      new TMethodEventJob<TestEventQueue>(
-          this, &TestEventQueue::handleQuitTimeout));
+void TestEventQueue::raiseQuitEvent()
+{
+    addEvent(Event(Event::kQuit));
 }
 
-void TestEventQueue::cleanupQuitTimeout() {
-  removeHandler(Event::kTimer, m_pQuitTimeoutTimer);
-  deleteTimer(m_pQuitTimeoutTimer);
-  m_pQuitTimeoutTimer = nullptr;
+void TestEventQueue::initQuitTimeout(double timeout)
+{
+    assert(m_pQuitTimeoutTimer == nullptr);
+    m_pQuitTimeoutTimer = newOneShotTimer(timeout, NULL);
+    adoptHandler(Event::kTimer, m_pQuitTimeoutTimer, new TMethodEventJob<TestEventQueue>(this, &TestEventQueue::handleQuitTimeout));
 }
 
-void TestEventQueue::handleQuitTimeout(const Event &, void *vclient) {
-  throw std::runtime_error("test event queue timeout");
+void TestEventQueue::cleanupQuitTimeout()
+{
+    removeHandler(Event::kTimer, m_pQuitTimeoutTimer);
+    deleteTimer(m_pQuitTimeoutTimer);
+    m_pQuitTimeoutTimer = nullptr;
+}
+
+void TestEventQueue::handleQuitTimeout(const Event &, void *vclient)
+{
+    throw std::runtime_error("test event queue timeout");
 }

@@ -20,15 +20,14 @@
 #include "server/ClientProxy1_6.h"
 
 //! Proxy for client implementing protocol version 1.7
-class ClientProxy1_7 : public ClientProxy1_6 {
+class ClientProxy1_7 : public ClientProxy1_6
+{
 public:
-  ClientProxy1_7(
-      const String &name, deskflow::IStream *adoptedStream, Server *server,
-      IEventQueue *events);
-  ~ClientProxy1_7() override = default;
+    ClientProxy1_7(const String &name, deskflow::IStream *adoptedStream, Server *server, IEventQueue *events);
+    ~ClientProxy1_7() override = default;
 
-  void secureInputNotification(const String &app) const override;
+    void secureInputNotification(const String &app) const override;
 
 private:
-  IEventQueue *m_events;
+    IEventQueue *m_events;
 };

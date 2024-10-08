@@ -23,27 +23,31 @@
 
 namespace deskflow::gui::core {
 
-class WaylandWarnings {
+class WaylandWarnings
+{
 public:
-  struct Deps {
-    virtual ~Deps() = default;
-    virtual void showWaylandExperimental(QWidget *parent);
-    virtual void showWaylandLibraryError(QWidget *parent);
-  };
+    struct Deps
+    {
+        virtual ~Deps() = default;
+        virtual void showWaylandExperimental(QWidget *parent);
+        virtual void showWaylandLibraryError(QWidget *parent);
+    };
 
-  explicit WaylandWarnings(
-      std::shared_ptr<Deps> deps = std::make_shared<Deps>())
-      : m_pDeps(deps) {}
+    explicit WaylandWarnings(std::shared_ptr<Deps> deps = std::make_shared<Deps>())
+        : m_pDeps(deps)
+    {
+    }
 
-  void showOnce(
-      QWidget *parent, CoreProcess::Mode mode, bool hasEi = platform::kHasEi,
-      bool hasPortal = platform::kHasPortal,
-      bool hasPortalInputCapture = platform::kHasPortalInputCapture);
+    void showOnce(QWidget *parent,
+                  CoreProcess::Mode mode,
+                  bool hasEi = platform::kHasEi,
+                  bool hasPortal = platform::kHasPortal,
+                  bool hasPortalInputCapture = platform::kHasPortalInputCapture);
 
 private:
-  bool m_errorShown{false};
-  bool m_warningShown{false};
-  std::shared_ptr<Deps> m_pDeps;
+    bool m_errorShown{false};
+    bool m_warningShown{false};
+    std::shared_ptr<Deps> m_pDeps;
 };
 
 } // namespace deskflow::gui::core

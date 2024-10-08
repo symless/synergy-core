@@ -23,11 +23,10 @@
 
 namespace validators {
 
-class ScreenNameValidator : public LineEditValidator {
+class ScreenNameValidator : public LineEditValidator
+{
 public:
-  explicit ScreenNameValidator(
-      QLineEdit *lineEdit = nullptr, ValidationError *error = nullptr,
-      const ScreenList *pScreens = nullptr);
+    explicit ScreenNameValidator(QLineEdit *lineEdit = nullptr, ValidationError *error = nullptr, const ScreenList *pScreens = nullptr);
 };
 
 } // namespace validators

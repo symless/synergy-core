@@ -31,32 +31,48 @@ class HotkeyDialog;
 class ServerConfigDialog;
 class QSettings;
 
-class Hotkey {
-  friend class HotkeyDialog;
-  friend class ServerConfigDialog;
-  friend QTextStream &operator<<(QTextStream &outStream, const Hotkey &hotkey);
+class Hotkey
+{
+    friend class HotkeyDialog;
+    friend class ServerConfigDialog;
+    friend QTextStream &operator<<(QTextStream &outStream, const Hotkey &hotkey);
 
 public:
-  Hotkey();
+    Hotkey();
 
 public:
-  QString text() const;
-  const KeySequence &keySequence() const { return m_KeySequence; }
-  const ActionList &actions() const { return m_Actions; }
+    QString text() const;
+    const KeySequence &keySequence() const
+    {
+        return m_KeySequence;
+    }
+    const ActionList &actions() const
+    {
+        return m_Actions;
+    }
 
-  void loadSettings(QSettings &settings);
-  void saveSettings(QSettings &settings) const;
+    void loadSettings(QSettings &settings);
+    void saveSettings(QSettings &settings) const;
 
-  bool operator==(const Hotkey &hk) const;
+    bool operator==(const Hotkey &hk) const;
 
 protected:
-  KeySequence &keySequence() { return m_KeySequence; }
-  void setKeySequence(const KeySequence &seq) { m_KeySequence = seq; }
-  ActionList &actions() { return m_Actions; }
+    KeySequence &keySequence()
+    {
+        return m_KeySequence;
+    }
+    void setKeySequence(const KeySequence &seq)
+    {
+        m_KeySequence = seq;
+    }
+    ActionList &actions()
+    {
+        return m_Actions;
+    }
 
 private:
-  KeySequence m_KeySequence;
-  ActionList m_Actions;
+    KeySequence m_KeySequence;
+    ActionList m_Actions;
 };
 
 typedef QList<Hotkey> HotkeyList;

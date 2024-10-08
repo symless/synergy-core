@@ -22,71 +22,88 @@
 // Clipboard
 //
 
-Clipboard::Clipboard() : m_open(false), m_owner(false) {
-  open(0);
-  empty();
-  close();
+Clipboard::Clipboard()
+    : m_open(false)
+    , m_owner(false)
+{
+    open(0);
+    empty();
+    close();
 }
 
-Clipboard::~Clipboard() {
-  // do nothing
+Clipboard::~Clipboard()
+{
+    // do nothing
 }
 
-bool Clipboard::empty() {
-  assert(m_open);
+bool Clipboard::empty()
+{
+    assert(m_open);
 
-  // clear all data
-  for (SInt32 index = 0; index < kNumFormats; ++index) {
-    m_data[index] = "";
-    m_added[index] = false;
-  }
+    // clear all data
+    for (SInt32 index = 0; index < kNumFormats; ++index) {
+        m_data[index] = "";
+        m_added[index] = false;
+    }
 
-  // save time
-  m_timeOwned = m_time;
+    // save time
+    m_timeOwned = m_time;
 
-  // we're the owner now
-  m_owner = true;
+    // we're the owner now
+    m_owner = true;
 
-  return true;
+    return true;
 }
 
-void Clipboard::add(EFormat format, const String &data) {
-  assert(m_open);
-  assert(m_owner);
+void Clipboard::add(EFormat format, const String &data)
+{
+    assert(m_open);
+    assert(m_owner);
 
-  m_data[format] = data;
-  m_added[format] = true;
+    m_data[format] = data;
+    m_added[format] = true;
 }
 
-bool Clipboard::open(Time time) const {
-  assert(!m_open);
+bool Clipboard::open(Time time) const
+{
+    assert(!m_open);
 
-  m_open = true;
-  m_time = time;
+    m_open = true;
+    m_time = time;
 
-  return true;
+    return true;
 }
 
-void Clipboard::close() const {
-  assert(m_open);
+void Clipboard::close() const
+{
+    assert(m_open);
 
-  m_open = false;
+    m_open = false;
 }
 
-Clipboard::Time Clipboard::getTime() const { return m_timeOwned; }
-
-bool Clipboard::has(EFormat format) const {
-  assert(m_open);
-  return m_added[format];
+Clipboard::Time Clipboard::getTime() const
+{
+    return m_timeOwned;
 }
 
-String Clipboard::get(EFormat format) const {
-  assert(m_open);
-  return m_data[format];
+bool Clipboard::has(EFormat format) const
+{
+    assert(m_open);
+    return m_added[format];
 }
 
-void Clipboard::unmarshall(const String &data, Time time) {
-  IClipboard::unmarshall(this, data, time);
+String Clipboard::get(EFormat format) const
+{
+    assert(m_open);
+    return m_data[format];
 }
 
-String Clipboard::marshall() const { return IClipboard::marshall(this); }
+void Clipboard::unmarshall(const String &data, Time time)
+{
+    IClipboard::unmarshall(this, data, time);
+}
+
+String Clipboard::marshall() const
+{
+    return IClipboard::marshall(this);
+}

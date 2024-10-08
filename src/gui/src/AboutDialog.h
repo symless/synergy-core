@@ -27,16 +27,17 @@
 class QWidget;
 class QString;
 
-class AboutDialog : public QDialog, public Ui::AboutDialogBase {
-  Q_OBJECT
+class AboutDialog : public QDialog, public Ui::AboutDialogBase
+{
+    Q_OBJECT
 public:
-  explicit AboutDialog(MainWindow *parent);
-  int exec() override;
+    explicit AboutDialog(MainWindow *parent);
+    int exec() override;
 
 private:
-  VersionChecker m_versionChecker;
-  void updateLogo() const;
-  void setLogo(const char *const &filename) const;
+    VersionChecker m_versionChecker;
+    void updateLogo() const;
+    void setLogo(const char *const &filename) const;
 
-  virtual QString importantDevelopers() const;
+    virtual QString importantDevelopers() const;
 };

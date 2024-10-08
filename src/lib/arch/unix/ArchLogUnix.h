@@ -23,14 +23,15 @@
 #define ARCH_LOG ArchLogUnix
 
 //! Unix implementation of IArchLog
-class ArchLogUnix : public IArchLog {
+class ArchLogUnix : public IArchLog
+{
 public:
-  ArchLogUnix();
-  virtual ~ArchLogUnix();
+    ArchLogUnix();
+    virtual ~ArchLogUnix();
 
-  // IArchLog overrides
-  virtual void openLog(const char *name);
-  virtual void closeLog();
-  virtual void showLog(bool);
-  virtual void writeLog(ELevel, const char *);
+    // IArchLog overrides
+    virtual void openLog(const char *name);
+    virtual void closeLog();
+    virtual void showLog(bool);
+    virtual void writeLog(ELevel, const char *);
 };

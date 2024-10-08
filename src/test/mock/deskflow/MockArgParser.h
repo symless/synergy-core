@@ -23,10 +23,14 @@
 
 #include <gmock/gmock.h>
 
-class MockArgParser : public ArgParser {
+class MockArgParser : public ArgParser
+{
 public:
-  MockArgParser() : ArgParser(NULL) {}
+    MockArgParser()
+        : ArgParser(NULL)
+    {
+    }
 
-  MOCK_METHOD(bool, parseGenericArgs, (int, const char *const *, int &));
-  MOCK_METHOD(bool, checkUnexpectedArgs, ());
+    MOCK_METHOD(bool, parseGenericArgs, (int, const char *const *, int &));
+    MOCK_METHOD(bool, checkUnexpectedArgs, ());
 };

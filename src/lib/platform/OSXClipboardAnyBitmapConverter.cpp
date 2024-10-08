@@ -19,23 +19,27 @@
 #include "platform/OSXClipboardAnyBitmapConverter.h"
 #include <algorithm>
 
-OSXClipboardAnyBitmapConverter::OSXClipboardAnyBitmapConverter() {
-  // do nothing
+OSXClipboardAnyBitmapConverter::OSXClipboardAnyBitmapConverter()
+{
+    // do nothing
 }
 
-OSXClipboardAnyBitmapConverter::~OSXClipboardAnyBitmapConverter() {
-  // do nothing
+OSXClipboardAnyBitmapConverter::~OSXClipboardAnyBitmapConverter()
+{
+    // do nothing
 }
 
-IClipboard::EFormat OSXClipboardAnyBitmapConverter::getFormat() const {
-  return IClipboard::kBitmap;
+IClipboard::EFormat OSXClipboardAnyBitmapConverter::getFormat() const
+{
+    return IClipboard::kBitmap;
 }
 
-String
-OSXClipboardAnyBitmapConverter::fromIClipboard(const String &data) const {
-  return doFromIClipboard(data);
+String OSXClipboardAnyBitmapConverter::fromIClipboard(const String &data) const
+{
+    return doFromIClipboard(data);
 }
 
-String OSXClipboardAnyBitmapConverter::toIClipboard(const String &data) const {
-  return doToIClipboard(data);
+String OSXClipboardAnyBitmapConverter::toIClipboard(const String &data) const
+{
+    return doToIClipboard(data);
 }

@@ -24,16 +24,17 @@
 /*!
 An event job class that invokes a function.
 */
-class FunctionEventJob : public IEventJob {
+class FunctionEventJob : public IEventJob
+{
 public:
-  //! run() invokes \c func(arg)
-  FunctionEventJob(void (*func)(const Event &, void *), void *arg = NULL);
-  virtual ~FunctionEventJob();
+    //! run() invokes \c func(arg)
+    FunctionEventJob(void (*func)(const Event &, void *), void *arg = NULL);
+    virtual ~FunctionEventJob();
 
-  // IEventJob overrides
-  virtual void run(const Event &);
+    // IEventJob overrides
+    virtual void run(const Event &);
 
 private:
-  void (*m_func)(const Event &, void *);
-  void *m_arg;
+    void (*m_func)(const Event &, void *);
+    void *m_arg;
 };

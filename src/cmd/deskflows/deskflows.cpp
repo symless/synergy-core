@@ -35,18 +35,19 @@
 #error Platform not supported.
 #endif
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 #if SYSAPI_WIN32
-  // record window instance for tray icon, etc
-  ArchMiscWindows::setInstanceWin32(GetModuleHandle(NULL));
+    // record window instance for tray icon, etc
+    ArchMiscWindows::setInstanceWin32(GetModuleHandle(NULL));
 #endif
 
-  Arch arch;
-  arch.init();
+    Arch arch;
+    arch.init();
 
-  Log log;
-  EventQueue events;
+    Log log;
+    EventQueue events;
 
-  ServerApp app(&events, createTaskBarReceiver);
-  return app.run(argc, argv);
+    ServerApp app(&events, createTaskBarReceiver);
+    return app.run(argc, argv);
 }

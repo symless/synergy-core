@@ -22,31 +22,41 @@
 // XScreenOpenFailure
 //
 
-String XScreenOpenFailure::getWhat() const throw() {
-  return format("XScreenOpenFailure", "unable to open screen");
+String XScreenOpenFailure::getWhat() const throw()
+{
+    return format("XScreenOpenFailure", "unable to open screen");
 }
 
 //
 // XScreenXInputFailure
 //
 
-String XScreenXInputFailure::getWhat() const throw() { return ""; }
+String XScreenXInputFailure::getWhat() const throw()
+{
+    return "";
+}
 
 //
 // XScreenUnavailable
 //
 
 XScreenUnavailable::XScreenUnavailable(double timeUntilRetry)
-    : m_timeUntilRetry(timeUntilRetry) {
-  // do nothing
+    : m_timeUntilRetry(timeUntilRetry)
+{
+    // do nothing
 }
 
-XScreenUnavailable::~XScreenUnavailable() _NOEXCEPT {
-  // do nothing
+XScreenUnavailable::~XScreenUnavailable() _NOEXCEPT
+{
+    // do nothing
 }
 
-double XScreenUnavailable::getRetryTime() const { return m_timeUntilRetry; }
+double XScreenUnavailable::getRetryTime() const
+{
+    return m_timeUntilRetry;
+}
 
-String XScreenUnavailable::getWhat() const throw() {
-  return format("XScreenUnavailable", "unable to open screen");
+String XScreenUnavailable::getWhat() const throw()
+{
+    return format("XScreenUnavailable", "unable to open screen");
 }

@@ -25,17 +25,18 @@
 This interface defines the time operations required by
 deskflow.  Each architecture must implement this interface.
 */
-class IArchTime : public IInterface {
+class IArchTime : public IInterface
+{
 public:
-  //! @name manipulators
-  //@{
+    //! @name manipulators
+    //@{
 
-  //! Get the current time
-  /*!
-  Returns the number of seconds since some arbitrary starting time.
-  This should return as high a precision as reasonable.
-  */
-  virtual double time() = 0;
+    //! Get the current time
+    /*!
+    Returns the number of seconds since some arbitrary starting time.
+    This should return as high a precision as reasonable.
+    */
+    virtual double time() = 0;
 
-  //@}
+    //@}
 };

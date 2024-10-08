@@ -21,11 +21,18 @@
 #include <stdexcept>
 #include <string>
 
-class DisplayInvalidException : public std::runtime_error {
+class DisplayInvalidException : public std::runtime_error
+{
 public:
-  DisplayInvalidException(const char *msg) : std::runtime_error(msg) {}
+    DisplayInvalidException(const char *msg)
+        : std::runtime_error(msg)
+    {
+    }
 
-  DisplayInvalidException(std::string msg) : std::runtime_error(msg) {}
+    DisplayInvalidException(std::string msg)
+        : std::runtime_error(msg)
+    {
+    }
 };
 
 #endif // DESKFLOW_DISPLAYINVALIDEXCEPTION_H

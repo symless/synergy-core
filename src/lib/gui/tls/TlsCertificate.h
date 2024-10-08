@@ -21,20 +21,21 @@
 
 #include <QObject>
 
-class TlsCertificate : public QObject {
-  Q_OBJECT
+class TlsCertificate : public QObject
+{
+    Q_OBJECT
 
 public:
-  explicit TlsCertificate(QObject *parent = nullptr);
+    explicit TlsCertificate(QObject *parent = nullptr);
 
-  bool generateCertificate(const QString &path, int keyLength);
-  int getCertKeyLength(const QString &path);
-
-private:
-  bool runTool(const QStringList &args);
-  bool generateFingerprint(const QString &certificateFilename);
+    bool generateCertificate(const QString &path, int keyLength);
+    int getCertKeyLength(const QString &path);
 
 private:
-  QString m_toolStdout;
-  [[no_unique_address]] CoreTool m_coreTool;
+    bool runTool(const QStringList &args);
+    bool generateFingerprint(const QString &certificateFilename);
+
+private:
+    QString m_toolStdout;
+    [[no_unique_address]] CoreTool m_coreTool;
 };

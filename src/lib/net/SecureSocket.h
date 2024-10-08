@@ -30,64 +30,64 @@ struct Ssl;
 /*!
 A secure socket using SSL.
 */
-class SecureSocket : public TCPSocket {
+class SecureSocket : public TCPSocket
+{
 public:
-  SecureSocket(
-      IEventQueue *events, SocketMultiplexer *socketMultiplexer,
-      IArchNetwork::EAddressFamily family);
-  SecureSocket(
-      IEventQueue *events, SocketMultiplexer *socketMultiplexer,
-      ArchSocket socket);
-  SecureSocket(SecureSocket const &) = delete;
-  SecureSocket(SecureSocket &&) = delete;
-  ~SecureSocket();
+    SecureSocket(IEventQueue *events, SocketMultiplexer *socketMultiplexer, IArchNetwork::EAddressFamily family);
+    SecureSocket(IEventQueue *events, SocketMultiplexer *socketMultiplexer, ArchSocket socket);
+    SecureSocket(SecureSocket const &) = delete;
+    SecureSocket(SecureSocket &&) = delete;
+    ~SecureSocket();
 
-  SecureSocket &operator=(SecureSocket const &) = delete;
-  SecureSocket &operator=(SecureSocket &&) = delete;
+    SecureSocket &operator=(SecureSocket const &) = delete;
+    SecureSocket &operator=(SecureSocket &&) = delete;
 
-  // ISocket overrides
-  void close() override;
+    // ISocket overrides
+    void close() override;
 
-  // IDataSocket overrides
-  virtual void connect(const NetworkAddress &) override;
+    // IDataSocket overrides
+    virtual void connect(const NetworkAddress &) override;
 
-  ISocketMultiplexerJob *newJob() override;
-  bool isFatal() const override { return m_fatal; }
-  void isFatal(bool b) { m_fatal = b; }
-  bool isSecureReady();
-  void secureConnect();
-  void secureAccept();
-  int secureRead(void *buffer, int size, int &read);
-  int secureWrite(const void *buffer, int size, int &wrote);
-  EJobResult doRead() override;
-  EJobResult doWrite() override;
-  void initSsl(bool server);
-  bool loadCertificates(String &CertFile);
-
-private:
-  // SSL
-  void initContext(bool server);
-  void createSSL();
-  void freeSSL();
-  int secureAccept(int s);
-  int secureConnect(int s);
-  bool showCertificate() const;
-  void checkResult(int n, int &retry);
-  void disconnect();
-  void formatFingerprint(
-      String &fingerprint, bool hex = true, bool separator = true);
-  bool verifyCertFingerprint();
-
-  ISocketMultiplexerJob *
-  serviceConnect(ISocketMultiplexerJob *, bool, bool, bool);
-
-  ISocketMultiplexerJob *
-  serviceAccept(ISocketMultiplexerJob *, bool, bool, bool);
-
-  void handleTCPConnected(const Event &event, void *);
+    ISocketMultiplexerJob *newJob() override;
+    bool isFatal() const override
+    {
+        return m_fatal;
+    }
+    void isFatal(bool b)
+    {
+        m_fatal = b;
+    }
+    bool isSecureReady();
+    void secureConnect();
+    void secureAccept();
+    int secureRead(void *buffer, int size, int &read);
+    int secureWrite(const void *buffer, int size, int &wrote);
+    EJobResult doRead() override;
+    EJobResult doWrite() override;
+    void initSsl(bool server);
+    bool loadCertificates(String &CertFile);
 
 private:
-  Ssl *m_ssl;
-  bool m_secureReady;
-  bool m_fatal;
+    // SSL
+    void initContext(bool server);
+    void createSSL();
+    void freeSSL();
+    int secureAccept(int s);
+    int secureConnect(int s);
+    bool showCertificate() const;
+    void checkResult(int n, int &retry);
+    void disconnect();
+    void formatFingerprint(String &fingerprint, bool hex = true, bool separator = true);
+    bool verifyCertFingerprint();
+
+    ISocketMultiplexerJob *serviceConnect(ISocketMultiplexerJob *, bool, bool, bool);
+
+    ISocketMultiplexerJob *serviceAccept(ISocketMultiplexerJob *, bool, bool, bool);
+
+    void handleTCPConnected(const Event &event, void *);
+
+private:
+    Ssl *m_ssl;
+    bool m_secureReady;
+    bool m_fatal;
 };

@@ -23,9 +23,13 @@
 
 #include <gmock/gmock.h>
 
-class MockConfig : public Config {
+class MockConfig : public Config
+{
 public:
-  MockConfig() : Config() {}
-  MOCK_METHOD(InputFilter *, getInputFilter, (), (override));
-  MOCK_METHOD(bool, isScreen, (const String &), (const, override));
+    MockConfig()
+        : Config()
+    {
+    }
+    MOCK_METHOD(InputFilter *, getInputFilter, (), (override));
+    MOCK_METHOD(bool, isScreen, (const String &), (const, override));
 };

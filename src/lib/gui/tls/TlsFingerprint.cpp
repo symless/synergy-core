@@ -28,102 +28,115 @@ static const char kTrustedServersFilename[] = "TrustedServers.txt";
 static const char kTrustedClientsFilename[] = "TrustedClients.txt";
 
 TlsFingerprint::TlsFingerprint(const QString &filename)
-    : m_Filename(filename) {}
-
-void TlsFingerprint::trust(const QString &fingerprintText, bool append) const {
-  TlsFingerprint::persistDirectory();
-
-  QIODevice::OpenMode openMode;
-  if (append) {
-    openMode = QIODevice::Append;
-  } else {
-    openMode = QIODevice::WriteOnly;
-  }
-
-  QFile file(filePath());
-  if (file.open(openMode)) {
-    QTextStream out(&file);
-    out << fingerprintText << "\n";
-    file.close();
-  }
+    : m_Filename(filename)
+{
 }
 
-bool TlsFingerprint::fileExists() const {
-  QString dirName = TlsFingerprint::directoryPath();
-  if (!QDir(dirName).exists()) {
+void TlsFingerprint::trust(const QString &fingerprintText, bool append) const
+{
+    TlsFingerprint::persistDirectory();
+
+    QIODevice::OpenMode openMode;
+    if (append) {
+        openMode = QIODevice::Append;
+    } else {
+        openMode = QIODevice::WriteOnly;
+    }
+
+    QFile file(filePath());
+    if (file.open(openMode)) {
+        QTextStream out(&file);
+        out << fingerprintText << "\n";
+        file.close();
+    }
+}
+
+bool TlsFingerprint::fileExists() const
+{
+    QString dirName = TlsFingerprint::directoryPath();
+    if (!QDir(dirName).exists()) {
+        return false;
+    }
+
+    QFile file(filePath());
+    return file.exists();
+}
+
+bool TlsFingerprint::isTrusted(const QString &fingerprintText) const
+{
+    QStringList list = readList();
+    foreach (QString trusted, list) {
+        if (trusted == fingerprintText) {
+            return true;
+        }
+    }
     return false;
-  }
-
-  QFile file(filePath());
-  return file.exists();
 }
 
-bool TlsFingerprint::isTrusted(const QString &fingerprintText) const {
-  QStringList list = readList();
-  foreach (QString trusted, list) {
-    if (trusted == fingerprintText) {
-      return true;
+QStringList TlsFingerprint::readList(const int readTo) const
+{
+    QStringList list;
+
+    QString dirName = TlsFingerprint::directoryPath();
+    if (!QDir(dirName).exists()) {
+        return list;
     }
-  }
-  return false;
-}
 
-QStringList TlsFingerprint::readList(const int readTo) const {
-  QStringList list;
+    QFile file(filePath());
 
-  QString dirName = TlsFingerprint::directoryPath();
-  if (!QDir(dirName).exists()) {
+    if (file.open(QIODevice::ReadOnly)) {
+        QTextStream in(&file);
+        while (!in.atEnd()) {
+            list.append(in.readLine());
+            if (list.size() == readTo) {
+                break;
+            }
+        }
+        file.close();
+    }
+
     return list;
-  }
+}
 
-  QFile file(filePath());
+QString TlsFingerprint::readFirst() const
+{
+    QStringList list = readList(1);
+    return list.at(0);
+}
 
-  if (file.open(QIODevice::ReadOnly)) {
-    QTextStream in(&file);
-    while (!in.atEnd()) {
-      list.append(in.readLine());
-      if (list.size() == readTo) {
-        break;
-      }
+QString TlsFingerprint::filePath() const
+{
+    QString dir = TlsFingerprint::directoryPath();
+    return QString("%1/%2").arg(dir).arg(m_Filename);
+}
+
+void TlsFingerprint::persistDirectory()
+{
+    QDir dir(TlsFingerprint::directoryPath());
+    if (!dir.exists()) {
+        dir.mkpath(".");
     }
-    file.close();
-  }
-
-  return list;
 }
 
-QString TlsFingerprint::readFirst() const {
-  QStringList list = readList(1);
-  return list.at(0);
+QString TlsFingerprint::directoryPath()
+{
+    CoreTool coreTool;
+    QString profileDir = coreTool.getProfileDir();
+
+    return QString("%1/%2").arg(profileDir).arg(kDirName);
 }
 
-QString TlsFingerprint::filePath() const {
-  QString dir = TlsFingerprint::directoryPath();
-  return QString("%1/%2").arg(dir).arg(m_Filename);
+TlsFingerprint TlsFingerprint::local()
+{
+    return TlsFingerprint(kLocalFilename);
 }
 
-void TlsFingerprint::persistDirectory() {
-  QDir dir(TlsFingerprint::directoryPath());
-  if (!dir.exists()) {
-    dir.mkpath(".");
-  }
+TlsFingerprint TlsFingerprint::trustedServers()
+{
+    return TlsFingerprint(kTrustedServersFilename);
 }
 
-QString TlsFingerprint::directoryPath() {
-  CoreTool coreTool;
-  QString profileDir = coreTool.getProfileDir();
-
-  return QString("%1/%2").arg(profileDir).arg(kDirName);
-}
-
-TlsFingerprint TlsFingerprint::local() {
-  return TlsFingerprint(kLocalFilename);
-}
-
-TlsFingerprint TlsFingerprint::trustedServers() {
-  return TlsFingerprint(kTrustedServersFilename);
-}
-
-TlsFingerprint TlsFingerprint::trustedClients() {
-  return TlsFingerprint(kTrustedClientsFilename);
+TlsFingerprint TlsFingerprint::trustedClients()
+{
+    return TlsFingerprint(kTrustedClientsFilename);
 }

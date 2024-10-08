@@ -20,10 +20,13 @@
 namespace validators {
 
 EmptyStringValidator::EmptyStringValidator(const QString &message)
-    : IStringValidator(message) {}
+    : IStringValidator(message)
+{
+}
 
-bool EmptyStringValidator::validate(const QString &input) const {
-  return !input.isEmpty();
+bool EmptyStringValidator::validate(const QString &input) const
+{
+    return !input.isEmpty();
 }
 
 } // namespace validators

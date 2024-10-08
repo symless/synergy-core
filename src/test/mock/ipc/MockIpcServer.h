@@ -28,39 +28,47 @@ using ::testing::Invoke;
 
 class IEventQueue;
 
-class MockIpcServer : public IpcServer {
+class MockIpcServer : public IpcServer
+{
 public:
-  MockIpcServer()
-      : m_sendCond(ARCH->newCondVar()),
-        m_sendMutex(ARCH->newMutex()) {}
-
-  ~MockIpcServer() {
-    if (m_sendCond != NULL) {
-      ARCH->closeCondVar(m_sendCond);
+    MockIpcServer()
+        : m_sendCond(ARCH->newCondVar())
+        , m_sendMutex(ARCH->newMutex())
+    {
     }
 
-    if (m_sendMutex != NULL) {
-      ARCH->closeMutex(m_sendMutex);
+    ~MockIpcServer()
+    {
+        if (m_sendCond != NULL) {
+            ARCH->closeCondVar(m_sendCond);
+        }
+
+        if (m_sendMutex != NULL) {
+            ARCH->closeMutex(m_sendMutex);
+        }
     }
-  }
 
-  MOCK_METHOD(void, listen, (), (override));
-  MOCK_METHOD(void, send, (const IpcMessage &, IpcClientType), (override));
-  MOCK_METHOD(bool, hasClients, (IpcClientType), (const, override));
+    MOCK_METHOD(void, listen, (), (override));
+    MOCK_METHOD(void, send, (const IpcMessage &, IpcClientType), (override));
+    MOCK_METHOD(bool, hasClients, (IpcClientType), (const, override));
 
-  void delegateToFake() {
-    ON_CALL(*this, send(_, _))
-        .WillByDefault(Invoke(this, &MockIpcServer::mockSend));
-  }
+    void delegateToFake()
+    {
+        ON_CALL(*this, send(_, _)).WillByDefault(Invoke(this, &MockIpcServer::mockSend));
+    }
 
-  void waitForSend() { ARCH->waitCondVar(m_sendCond, m_sendMutex, 5); }
+    void waitForSend()
+    {
+        ARCH->waitCondVar(m_sendCond, m_sendMutex, 5);
+    }
 
 private:
-  void mockSend(const IpcMessage &, IpcClientType) {
-    ArchMutexLock lock(m_sendMutex);
-    ARCH->broadcastCondVar(m_sendCond);
-  }
+    void mockSend(const IpcMessage &, IpcClientType)
+    {
+        ArchMutexLock lock(m_sendMutex);
+        ARCH->broadcastCondVar(m_sendCond);
+    }
 
-  ArchCond m_sendCond;
-  ArchMutex m_sendMutex;
+    ArchCond m_sendCond;
+    ArchMutex m_sendMutex;
 };

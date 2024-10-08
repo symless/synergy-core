@@ -22,26 +22,27 @@
 
 class QTcpSocket;
 
-class IpcReader : public QObject {
-  Q_OBJECT;
+class IpcReader : public QObject
+{
+    Q_OBJECT;
 
 public:
-  explicit IpcReader(QTcpSocket *socket);
-  ~IpcReader() override = default;
-  void start() const;
-  void stop() const;
+    explicit IpcReader(QTcpSocket *socket);
+    ~IpcReader() override = default;
+    void start() const;
+    void stop() const;
 
 signals:
-  void read(const QString &text);
-  void helloBack();
+    void read(const QString &text);
+    void helloBack();
 
 private:
-  bool readStream(char *buffer, int length);
+    bool readStream(char *buffer, int length);
 
 private slots:
-  void onSocketReadyRead();
+    void onSocketReadyRead();
 
 private:
-  QTcpSocket *m_Socket;
-  QMutex m_Mutex;
+    QTcpSocket *m_Socket;
+    QMutex m_Mutex;
 };

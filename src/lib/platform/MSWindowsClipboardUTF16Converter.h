@@ -21,17 +21,17 @@
 #include "platform/MSWindowsClipboardAnyTextConverter.h"
 
 //! Convert to/from UTF-16 encoding
-class MSWindowsClipboardUTF16Converter
-    : public MSWindowsClipboardAnyTextConverter {
+class MSWindowsClipboardUTF16Converter : public MSWindowsClipboardAnyTextConverter
+{
 public:
-  MSWindowsClipboardUTF16Converter();
-  virtual ~MSWindowsClipboardUTF16Converter();
+    MSWindowsClipboardUTF16Converter();
+    virtual ~MSWindowsClipboardUTF16Converter();
 
-  // IMSWindowsClipboardConverter overrides
-  virtual UINT getWin32Format() const;
+    // IMSWindowsClipboardConverter overrides
+    virtual UINT getWin32Format() const;
 
 protected:
-  // MSWindowsClipboardAnyTextConverter overrides
-  virtual String doFromIClipboard(const String &) const;
-  virtual String doToIClipboard(const String &) const;
+    // MSWindowsClipboardAnyTextConverter overrides
+    virtual String doFromIClipboard(const String &) const;
+    virtual String doToIClipboard(const String &) const;
 };

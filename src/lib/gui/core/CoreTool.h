@@ -19,10 +19,11 @@
 
 #include <QString>
 
-class CoreTool {
+class CoreTool
+{
 public:
-  QString getProfileDir() const;
-  QString getInstalledDir() const;
-  QString getArch() const;
-  QString run(const QStringList &args, const QString &input = "") const;
+    QString getProfileDir() const;
+    QString getInstalledDir() const;
+    QString getArch() const;
+    QString run(const QStringList &args, const QString &input = "") const;
 };

@@ -41,156 +41,160 @@
 
 const int kTestPort = 24802;
 
-class IpcTests : public ::testing::Test {
+class IpcTests : public ::testing::Test
+{
 public:
-  IpcTests();
-  virtual ~IpcTests();
+    IpcTests();
+    virtual ~IpcTests();
 
-  void connectToServer_handleMessageReceived(const Event &, void *);
-  void sendMessageToServer_serverHandleMessageReceived(const Event &, void *);
-  void sendMessageToClient_serverHandleClientConnected(const Event &, void *);
-  void sendMessageToClient_clientHandleMessageReceived(const Event &, void *);
+    void connectToServer_handleMessageReceived(const Event &, void *);
+    void sendMessageToServer_serverHandleMessageReceived(const Event &, void *);
+    void sendMessageToClient_serverHandleClientConnected(const Event &, void *);
+    void sendMessageToClient_clientHandleMessageReceived(const Event &, void *);
 
 public:
-  SocketMultiplexer m_multiplexer;
-  bool m_connectToServer_helloMessageReceived;
-  bool m_connectToServer_hasClientNode;
-  IpcServer *m_connectToServer_server;
-  String m_sendMessageToServer_receivedString;
-  String m_sendMessageToClient_receivedString;
-  IpcClient *m_sendMessageToServer_client;
-  IpcServer *m_sendMessageToClient_server;
-  TestEventQueue m_events;
+    SocketMultiplexer m_multiplexer;
+    bool m_connectToServer_helloMessageReceived;
+    bool m_connectToServer_hasClientNode;
+    IpcServer *m_connectToServer_server;
+    String m_sendMessageToServer_receivedString;
+    String m_sendMessageToClient_receivedString;
+    IpcClient *m_sendMessageToServer_client;
+    IpcServer *m_sendMessageToClient_server;
+    TestEventQueue m_events;
 };
 
-TEST_F(IpcTests, connectToServer) {
-  SocketMultiplexer socketMultiplexer;
-  IpcServer server(&m_events, &socketMultiplexer, kTestPort);
-  server.listen();
-  m_connectToServer_server = &server;
+TEST_F(IpcTests, connectToServer)
+{
+    SocketMultiplexer socketMultiplexer;
+    IpcServer server(&m_events, &socketMultiplexer, kTestPort);
+    server.listen();
+    m_connectToServer_server = &server;
 
-  m_events.adoptHandler(
-      m_events.forIpcServer().messageReceived(), &server,
-      new TMethodEventJob<IpcTests>(
-          this, &IpcTests::connectToServer_handleMessageReceived));
+    m_events.adoptHandler(m_events.forIpcServer().messageReceived(),
+                          &server,
+                          new TMethodEventJob<IpcTests>(this, &IpcTests::connectToServer_handleMessageReceived));
 
-  IpcClient client(&m_events, &socketMultiplexer, kTestPort);
-  client.connect();
+    IpcClient client(&m_events, &socketMultiplexer, kTestPort);
+    client.connect();
 
-  m_events.initQuitTimeout(5);
-  m_events.loop();
-  m_events.removeHandler(m_events.forIpcServer().messageReceived(), &server);
-  m_events.cleanupQuitTimeout();
+    m_events.initQuitTimeout(5);
+    m_events.loop();
+    m_events.removeHandler(m_events.forIpcServer().messageReceived(), &server);
+    m_events.cleanupQuitTimeout();
 
-  EXPECT_EQ(true, m_connectToServer_helloMessageReceived);
-  EXPECT_EQ(true, m_connectToServer_hasClientNode);
+    EXPECT_EQ(true, m_connectToServer_helloMessageReceived);
+    EXPECT_EQ(true, m_connectToServer_hasClientNode);
 }
 
-TEST_F(IpcTests, sendMessageToServer) {
-  SocketMultiplexer socketMultiplexer;
-  IpcServer server(&m_events, &socketMultiplexer, kTestPort);
-  server.listen();
+TEST_F(IpcTests, sendMessageToServer)
+{
+    SocketMultiplexer socketMultiplexer;
+    IpcServer server(&m_events, &socketMultiplexer, kTestPort);
+    server.listen();
 
-  // event handler sends "test" command to server.
-  m_events.adoptHandler(
-      m_events.forIpcServer().messageReceived(), &server,
-      new TMethodEventJob<IpcTests>(
-          this, &IpcTests::sendMessageToServer_serverHandleMessageReceived));
+    // event handler sends "test" command to server.
+    m_events.adoptHandler(m_events.forIpcServer().messageReceived(),
+                          &server,
+                          new TMethodEventJob<IpcTests>(this, &IpcTests::sendMessageToServer_serverHandleMessageReceived));
 
-  IpcClient client(&m_events, &socketMultiplexer, kTestPort);
-  client.connect();
-  m_sendMessageToServer_client = &client;
+    IpcClient client(&m_events, &socketMultiplexer, kTestPort);
+    client.connect();
+    m_sendMessageToServer_client = &client;
 
-  m_events.initQuitTimeout(5);
-  m_events.loop();
-  m_events.removeHandler(m_events.forIpcServer().messageReceived(), &server);
-  m_events.cleanupQuitTimeout();
+    m_events.initQuitTimeout(5);
+    m_events.loop();
+    m_events.removeHandler(m_events.forIpcServer().messageReceived(), &server);
+    m_events.cleanupQuitTimeout();
 
-  EXPECT_EQ("test", m_sendMessageToServer_receivedString);
+    EXPECT_EQ("test", m_sendMessageToServer_receivedString);
 }
 
-TEST_F(IpcTests, sendMessageToClient) {
-  SocketMultiplexer socketMultiplexer;
-  IpcServer server(&m_events, &socketMultiplexer, kTestPort);
-  server.listen();
-  m_sendMessageToClient_server = &server;
+TEST_F(IpcTests, sendMessageToClient)
+{
+    SocketMultiplexer socketMultiplexer;
+    IpcServer server(&m_events, &socketMultiplexer, kTestPort);
+    server.listen();
+    m_sendMessageToClient_server = &server;
 
-  // event handler sends "test" log line to client.
-  m_events.adoptHandler(
-      m_events.forIpcServer().messageReceived(), &server,
-      new TMethodEventJob<IpcTests>(
-          this, &IpcTests::sendMessageToClient_serverHandleClientConnected));
+    // event handler sends "test" log line to client.
+    m_events.adoptHandler(m_events.forIpcServer().messageReceived(),
+                          &server,
+                          new TMethodEventJob<IpcTests>(this, &IpcTests::sendMessageToClient_serverHandleClientConnected));
 
-  IpcClient client(&m_events, &socketMultiplexer, kTestPort);
-  client.connect();
+    IpcClient client(&m_events, &socketMultiplexer, kTestPort);
+    client.connect();
 
-  m_events.adoptHandler(
-      m_events.forIpcClient().messageReceived(), &client,
-      new TMethodEventJob<IpcTests>(
-          this, &IpcTests::sendMessageToClient_clientHandleMessageReceived));
+    m_events.adoptHandler(m_events.forIpcClient().messageReceived(),
+                          &client,
+                          new TMethodEventJob<IpcTests>(this, &IpcTests::sendMessageToClient_clientHandleMessageReceived));
 
-  m_events.initQuitTimeout(5);
-  m_events.loop();
-  m_events.removeHandler(m_events.forIpcServer().messageReceived(), &server);
-  m_events.removeHandler(m_events.forIpcClient().messageReceived(), &client);
-  m_events.cleanupQuitTimeout();
+    m_events.initQuitTimeout(5);
+    m_events.loop();
+    m_events.removeHandler(m_events.forIpcServer().messageReceived(), &server);
+    m_events.removeHandler(m_events.forIpcClient().messageReceived(), &client);
+    m_events.cleanupQuitTimeout();
 
-  EXPECT_EQ("test", m_sendMessageToClient_receivedString);
+    EXPECT_EQ("test", m_sendMessageToClient_receivedString);
 }
 
 IpcTests::IpcTests()
-    : m_connectToServer_helloMessageReceived(false),
-      m_connectToServer_hasClientNode(false),
-      m_connectToServer_server(nullptr),
-      m_sendMessageToClient_server(nullptr),
-      m_sendMessageToServer_client(nullptr) {}
-
-IpcTests::~IpcTests() {}
-
-void IpcTests::connectToServer_handleMessageReceived(const Event &e, void *) {
-  IpcMessage *m = static_cast<IpcMessage *>(e.getDataObject());
-  if (m->type() == IpcMessageType::Hello) {
-    m_connectToServer_hasClientNode =
-        m_connectToServer_server->hasClients(IpcClientType::Node);
-    m_connectToServer_helloMessageReceived = true;
-    m_events.raiseQuitEvent();
-  }
+    : m_connectToServer_helloMessageReceived(false)
+    , m_connectToServer_hasClientNode(false)
+    , m_connectToServer_server(nullptr)
+    , m_sendMessageToClient_server(nullptr)
+    , m_sendMessageToServer_client(nullptr)
+{
 }
 
-void IpcTests::sendMessageToServer_serverHandleMessageReceived(
-    const Event &e, void *) {
-  IpcMessage *m = static_cast<IpcMessage *>(e.getDataObject());
-  if (m->type() == IpcMessageType::Hello) {
-    LOG((CLOG_DEBUG "client said hello, sending test to server"));
-    IpcCommandMessage m("test", true);
-    m_sendMessageToServer_client->send(m);
-  } else if (m->type() == IpcMessageType::Command) {
-    IpcCommandMessage *cm = static_cast<IpcCommandMessage *>(m);
-    LOG((CLOG_DEBUG "got ipc command message, %d", cm->command().c_str()));
-    m_sendMessageToServer_receivedString = cm->command();
-    m_events.raiseQuitEvent();
-  }
+IpcTests::~IpcTests()
+{
 }
 
-void IpcTests::sendMessageToClient_serverHandleClientConnected(
-    const Event &e, void *) {
-  IpcMessage *m = static_cast<IpcMessage *>(e.getDataObject());
-  if (m->type() == IpcMessageType::Hello) {
-    LOG((CLOG_DEBUG "client said hello, sending test to client"));
-    IpcLogLineMessage m("test");
-    m_sendMessageToClient_server->send(m, IpcClientType::Node);
-  }
+void IpcTests::connectToServer_handleMessageReceived(const Event &e, void *)
+{
+    IpcMessage *m = static_cast<IpcMessage *>(e.getDataObject());
+    if (m->type() == IpcMessageType::Hello) {
+        m_connectToServer_hasClientNode = m_connectToServer_server->hasClients(IpcClientType::Node);
+        m_connectToServer_helloMessageReceived = true;
+        m_events.raiseQuitEvent();
+    }
 }
 
-void IpcTests::sendMessageToClient_clientHandleMessageReceived(
-    const Event &e, void *) {
-  IpcMessage *m = static_cast<IpcMessage *>(e.getDataObject());
-  if (m->type() == IpcMessageType::LogLine) {
-    IpcLogLineMessage *llm = static_cast<IpcLogLineMessage *>(m);
-    LOG((CLOG_DEBUG "got ipc log message, %d", llm->logLine().c_str()));
-    m_sendMessageToClient_receivedString = llm->logLine();
-    m_events.raiseQuitEvent();
-  }
+void IpcTests::sendMessageToServer_serverHandleMessageReceived(const Event &e, void *)
+{
+    IpcMessage *m = static_cast<IpcMessage *>(e.getDataObject());
+    if (m->type() == IpcMessageType::Hello) {
+        LOG((CLOG_DEBUG "client said hello, sending test to server"));
+        IpcCommandMessage m("test", true);
+        m_sendMessageToServer_client->send(m);
+    } else if (m->type() == IpcMessageType::Command) {
+        IpcCommandMessage *cm = static_cast<IpcCommandMessage *>(m);
+        LOG((CLOG_DEBUG "got ipc command message, %d", cm->command().c_str()));
+        m_sendMessageToServer_receivedString = cm->command();
+        m_events.raiseQuitEvent();
+    }
+}
+
+void IpcTests::sendMessageToClient_serverHandleClientConnected(const Event &e, void *)
+{
+    IpcMessage *m = static_cast<IpcMessage *>(e.getDataObject());
+    if (m->type() == IpcMessageType::Hello) {
+        LOG((CLOG_DEBUG "client said hello, sending test to client"));
+        IpcLogLineMessage m("test");
+        m_sendMessageToClient_server->send(m, IpcClientType::Node);
+    }
+}
+
+void IpcTests::sendMessageToClient_clientHandleMessageReceived(const Event &e, void *)
+{
+    IpcMessage *m = static_cast<IpcMessage *>(e.getDataObject());
+    if (m->type() == IpcMessageType::LogLine) {
+        IpcLogLineMessage *llm = static_cast<IpcLogLineMessage *>(m);
+        LOG((CLOG_DEBUG "got ipc log message, %d", llm->logLine().c_str()));
+        m_sendMessageToClient_receivedString = llm->logLine();
+        m_events.raiseQuitEvent();
+    }
 }
 
 #endif // WINAPI_CARBON

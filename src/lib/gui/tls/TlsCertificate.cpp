@@ -40,42 +40,43 @@ static const char *const kUnixOpenSslCommand = "openssl";
 
 namespace deskflow::gui {
 
-QString openSslWindowsDir() {
+QString openSslWindowsDir()
+{
+    auto appDir = QDir(QCoreApplication::applicationDirPath());
+    auto openSslDir = QDir(appDir.filePath(kWinOpenSslDir));
 
-  auto appDir = QDir(QCoreApplication::applicationDirPath());
-  auto openSslDir = QDir(appDir.filePath(kWinOpenSslDir));
+    // in production, openssl is deployed with the app.
+    // in development, we can use the openssl path available at compile-time.
+    if (!openSslDir.exists()) {
+        openSslDir = QDir(OPENSSL_EXE_DIR);
+    }
 
-  // in production, openssl is deployed with the app.
-  // in development, we can use the openssl path available at compile-time.
-  if (!openSslDir.exists()) {
-    openSslDir = QDir(OPENSSL_EXE_DIR);
-  }
+    // if the path still isn't found, something is seriously wrong.
+    if (!openSslDir.exists()) {
+        qFatal() << "openssl dir not found: " << openSslDir;
+    }
 
-  // if the path still isn't found, something is seriously wrong.
-  if (!openSslDir.exists()) {
-    qFatal() << "openssl dir not found: " << openSslDir;
-  }
-
-  return QDir::cleanPath(openSslDir.absolutePath());
+    return QDir::cleanPath(openSslDir.absolutePath());
 }
 
-QString openSslWindowsBinary() {
-  auto dir = QDir(openSslWindowsDir());
-  auto path = dir.filePath(kWinOpenSslBinary);
+QString openSslWindowsBinary()
+{
+    auto dir = QDir(openSslWindowsDir());
+    auto path = dir.filePath(kWinOpenSslBinary);
 
-  // when installed, there is no openssl bin dir; it's installed at the base.
-  // in development, we use the standard dir structure for openssl (bin dir).
-  if (!QFile::exists(path)) {
-    auto binDir = QDir(dir.filePath("bin"));
-    path = binDir.filePath(kWinOpenSslBinary);
-  }
+    // when installed, there is no openssl bin dir; it's installed at the base.
+    // in development, we use the standard dir structure for openssl (bin dir).
+    if (!QFile::exists(path)) {
+        auto binDir = QDir(dir.filePath("bin"));
+        path = binDir.filePath(kWinOpenSslBinary);
+    }
 
-  // if the path still isn't found, something is seriously wrong.
-  if (!QFile::exists(path)) {
-    qFatal() << "openssl binary not found: " << path;
-  }
+    // if the path still isn't found, something is seriously wrong.
+    if (!QFile::exists(path)) {
+        qFatal() << "openssl binary not found: " << path;
+    }
 
-  return path;
+    return path;
 }
 
 } // namespace deskflow::gui
@@ -84,16 +85,20 @@ using namespace deskflow::gui;
 
 #endif
 
-TlsCertificate::TlsCertificate(QObject *parent) : QObject(parent) {}
+TlsCertificate::TlsCertificate(QObject *parent)
+    : QObject(parent)
+{
+}
 
-bool TlsCertificate::runTool(const QStringList &args) {
+bool TlsCertificate::runTool(const QStringList &args)
+{
 #if defined(Q_OS_WIN)
-  const auto program = openSslWindowsBinary();
+    const auto program = openSslWindowsBinary();
 #else
-  const auto program = kUnixOpenSslCommand;
+    const auto program = kUnixOpenSslCommand;
 #endif
 
-  QStringList environment;
+    QStringList environment;
 
 // Windows is special! :)
 // For OpenSSL, it's very common to bundle the openssl.exe and openssl.cnf files
@@ -101,146 +106,144 @@ bool TlsCertificate::runTool(const QStringList &args) {
 // env, because vcpkg can't find the openssl.cnf file by default, so we need to
 // give it a bit of guidance by setting the `OPENSSL_CONF` env var.
 #if defined(Q_OS_WIN)
-  const auto openSslDir = QDir(openSslWindowsDir());
-  const auto config = QDir::cleanPath(openSslDir.filePath(kConfigFile));
-  environment << QString("OPENSSL_CONF=%1").arg(config);
+    const auto openSslDir = QDir(openSslWindowsDir());
+    const auto config = QDir::cleanPath(openSslDir.filePath(kConfigFile));
+    environment << QString("OPENSSL_CONF=%1").arg(config);
 #endif
 
-  QProcess process;
-  process.setEnvironment(environment);
-  for (const auto &envVar : environment) {
-    qDebug("set env var: %s", qUtf8Printable(envVar));
-  }
+    QProcess process;
+    process.setEnvironment(environment);
+    for (const auto &envVar : environment) {
+        qDebug("set env var: %s", qUtf8Printable(envVar));
+    }
 
-  qDebug(
-      "running: %s %s", qUtf8Printable(program),
-      qUtf8Printable(args.join(" ")));
-  process.start(program, args);
-  bool success = process.waitForStarted();
+    qDebug("running: %s %s", qUtf8Printable(program), qUtf8Printable(args.join(" ")));
+    process.start(program, args);
+    bool success = process.waitForStarted();
 
-  QString toolStderr;
-  if (success && process.waitForFinished()) {
-    m_toolStdout = process.readAllStandardOutput().trimmed();
-    toolStderr = process.readAllStandardError().trimmed();
-  }
+    QString toolStderr;
+    if (success && process.waitForFinished()) {
+        m_toolStdout = process.readAllStandardOutput().trimmed();
+        toolStderr = process.readAllStandardError().trimmed();
+    }
 
-  if (int code = process.exitCode(); !success || code != 0) {
-    qDebug("openssl failed with code %d: %s", code, qUtf8Printable(toolStderr));
+    if (int code = process.exitCode(); !success || code != 0) {
+        qDebug("openssl failed with code %d: %s", code, qUtf8Printable(toolStderr));
 
-    qCritical(
-        "failed to generate tls certificate:\n\n%s",
-        qUtf8Printable(toolStderr));
-    return false;
-  }
+        qCritical("failed to generate tls certificate:\n\n%s", qUtf8Printable(toolStderr));
+        return false;
+    }
 
-  return true;
-}
-
-bool TlsCertificate::generateCertificate(const QString &path, int keyLength) {
-  qDebug("generating tls certificate: %s", qUtf8Printable(path));
-
-  QFileInfo info(path);
-  QDir dir(info.absolutePath());
-  if (!dir.exists() && !dir.mkpath(".")) {
-    qCritical("failed to create directory for tls certificate");
-    return false;
-  }
-
-  QString keySize = kCertificateKeyLength + QString::number(keyLength);
-
-  QStringList arguments;
-
-  // self signed certificate
-  arguments.append("req");
-  arguments.append("-x509");
-  arguments.append("-nodes");
-
-  // valid duration
-  arguments.append("-days");
-  arguments.append(kCertificateLifetime);
-
-  // subject information
-  arguments.append("-subj");
-
-  QString subInfo(kCertificateSubjectInfo);
-  arguments.append(subInfo);
-
-  // private key
-  arguments.append("-newkey");
-  arguments.append(keySize);
-
-  // key output filename
-  arguments.append("-keyout");
-  arguments.append(path);
-
-  // certificate output filename
-  arguments.append("-out");
-  arguments.append(path);
-
-  if (runTool(arguments)) {
-    qDebug("tls certificate generated");
-
-    return generateFingerprint(path);
-  } else {
-    qCritical("failed to generate tls certificate");
-    return false;
-  }
-}
-
-bool TlsCertificate::generateFingerprint(const QString &certificateFilename) {
-  qDebug("generating tls fingerprint");
-
-  QStringList arguments;
-  arguments.append("x509");
-  arguments.append("-fingerprint");
-  arguments.append(kCertificateHashAlgorithm);
-  arguments.append("-noout");
-  arguments.append("-in");
-  arguments.append(certificateFilename);
-
-  if (!runTool(arguments)) {
-    qCritical("failed to generate tls fingerprint");
-    return false;
-  }
-
-  // find the fingerprint from the tool output
-  auto i = m_toolStdout.indexOf("=");
-  if (i != -1) {
-    i++;
-    QString fingerprint = m_toolStdout.mid(i, m_toolStdout.size() - i);
-
-    TlsFingerprint::local().trust(fingerprint, false);
-    qDebug("tls fingerprint generated");
     return true;
-  } else {
-    qCritical("failed to find tls fingerprint in tls tool output");
-    return false;
-  }
 }
 
-int TlsCertificate::getCertKeyLength(const QString &path) {
+bool TlsCertificate::generateCertificate(const QString &path, int keyLength)
+{
+    qDebug("generating tls certificate: %s", qUtf8Printable(path));
 
-  QStringList arguments;
-  arguments.append("rsa");
-  arguments.append("-in");
-  arguments.append(path);
-  arguments.append("-text");
-  arguments.append("-noout");
+    QFileInfo info(path);
+    QDir dir(info.absolutePath());
+    if (!dir.exists() && !dir.mkpath(".")) {
+        qCritical("failed to create directory for tls certificate");
+        return false;
+    }
 
-  if (!runTool(arguments)) {
-    qFatal("failed to get key length from certificate");
-    return 0;
-  }
+    QString keySize = kCertificateKeyLength + QString::number(keyLength);
 
-  const QString searchStart("Private-Key: (");
-  const QString searchEnd(" bit");
+    QStringList arguments;
 
-  // Get the line that contains the key length from the output
-  const auto indexStart = m_toolStdout.indexOf(searchStart);
-  const auto indexEnd = m_toolStdout.indexOf(searchEnd, indexStart);
-  const auto start = indexStart + searchStart.length();
-  const auto end = indexEnd - (indexStart + searchStart.length());
-  auto keyLength = m_toolStdout.mid(start, end);
+    // self signed certificate
+    arguments.append("req");
+    arguments.append("-x509");
+    arguments.append("-nodes");
 
-  return keyLength.toInt();
+    // valid duration
+    arguments.append("-days");
+    arguments.append(kCertificateLifetime);
+
+    // subject information
+    arguments.append("-subj");
+
+    QString subInfo(kCertificateSubjectInfo);
+    arguments.append(subInfo);
+
+    // private key
+    arguments.append("-newkey");
+    arguments.append(keySize);
+
+    // key output filename
+    arguments.append("-keyout");
+    arguments.append(path);
+
+    // certificate output filename
+    arguments.append("-out");
+    arguments.append(path);
+
+    if (runTool(arguments)) {
+        qDebug("tls certificate generated");
+
+        return generateFingerprint(path);
+    } else {
+        qCritical("failed to generate tls certificate");
+        return false;
+    }
+}
+
+bool TlsCertificate::generateFingerprint(const QString &certificateFilename)
+{
+    qDebug("generating tls fingerprint");
+
+    QStringList arguments;
+    arguments.append("x509");
+    arguments.append("-fingerprint");
+    arguments.append(kCertificateHashAlgorithm);
+    arguments.append("-noout");
+    arguments.append("-in");
+    arguments.append(certificateFilename);
+
+    if (!runTool(arguments)) {
+        qCritical("failed to generate tls fingerprint");
+        return false;
+    }
+
+    // find the fingerprint from the tool output
+    auto i = m_toolStdout.indexOf("=");
+    if (i != -1) {
+        i++;
+        QString fingerprint = m_toolStdout.mid(i, m_toolStdout.size() - i);
+
+        TlsFingerprint::local().trust(fingerprint, false);
+        qDebug("tls fingerprint generated");
+        return true;
+    } else {
+        qCritical("failed to find tls fingerprint in tls tool output");
+        return false;
+    }
+}
+
+int TlsCertificate::getCertKeyLength(const QString &path)
+{
+    QStringList arguments;
+    arguments.append("rsa");
+    arguments.append("-in");
+    arguments.append(path);
+    arguments.append("-text");
+    arguments.append("-noout");
+
+    if (!runTool(arguments)) {
+        qFatal("failed to get key length from certificate");
+        return 0;
+    }
+
+    const QString searchStart("Private-Key: (");
+    const QString searchEnd(" bit");
+
+    // Get the line that contains the key length from the output
+    const auto indexStart = m_toolStdout.indexOf(searchStart);
+    const auto indexEnd = m_toolStdout.indexOf(searchEnd, indexStart);
+    const auto start = indexStart + searchStart.length();
+    const auto end = indexEnd - (indexStart + searchStart.length());
+    auto keyLength = m_toolStdout.mid(start, end);
+
+    return keyLength.toInt();
 }

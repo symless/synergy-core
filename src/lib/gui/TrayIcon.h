@@ -26,25 +26,26 @@
 
 namespace deskflow::gui {
 
-class TrayIcon : public QObject {
-  Q_OBJECT
+class TrayIcon : public QObject
+{
+    Q_OBJECT
 public:
-  explicit TrayIcon() = default;
+    explicit TrayIcon() = default;
 
-  void create(std::vector<QAction *> const &actions);
-  void setIcon(const QIcon &icon);
+    void create(std::vector<QAction *> const &actions);
+    void setIcon(const QIcon &icon);
 
 signals:
-  void activated(QSystemTrayIcon::ActivationReason reason);
+    void activated(QSystemTrayIcon::ActivationReason reason);
 
 private:
-  void showRetryLoop();
+    void showRetryLoop();
 
-  std::unique_ptr<QSystemTrayIcon> m_pTrayIcon;
-  std::unique_ptr<QMenu> m_pTrayIconMenu;
-  std::function<void()> m_init;
-  std::function<void(const QIcon &icon)> m_setIcon;
-  QIcon m_icon;
+    std::unique_ptr<QSystemTrayIcon> m_pTrayIcon;
+    std::unique_ptr<QMenu> m_pTrayIconMenu;
+    std::function<void()> m_init;
+    std::function<void(const QIcon &icon)> m_setIcon;
+    QIcon m_icon;
 };
 
 } // namespace deskflow::gui

@@ -27,43 +27,49 @@
 // XBase
 //
 
-XBase::XBase() : std::runtime_error("") {
-  // do nothing
+XBase::XBase()
+    : std::runtime_error("")
+{
+    // do nothing
 }
 
-XBase::XBase(const String &msg) : std::runtime_error(msg) {
-  // do nothing
+XBase::XBase(const String &msg)
+    : std::runtime_error(msg)
+{
+    // do nothing
 }
 
-XBase::~XBase() _NOEXCEPT {
-  // do nothing
+XBase::~XBase() _NOEXCEPT
+{
+    // do nothing
 }
 
-const char *XBase::what() const _NOEXCEPT {
-  if (const char *what = std::runtime_error::what();
-      what != nullptr && what[0] != '\0') {
-    return what;
-  }
+const char *XBase::what() const _NOEXCEPT
+{
+    if (const char *what = std::runtime_error::what(); what != nullptr && what[0] != '\0') {
+        return what;
+    }
 
-  m_what = getWhat();
-  return m_what.c_str();
+    m_what = getWhat();
+    return m_what.c_str();
 }
 
-String XBase::format(const char * /*id*/, const char *fmt, ...) const throw() {
-  // FIXME -- lookup message string using id as an index.  set
-  // fmt to that string if it exists.
+String XBase::format(const char * /*id*/, const char *fmt, ...) const throw()
+{
+    // FIXME -- lookup message string using id as an index.  set
+    // fmt to that string if it exists.
 
-  // format
-  String result;
-  va_list args;
-  va_start(args, fmt);
-  try {
-    result = deskflow::string::vformat(fmt, args);
-  } catch (...) {
-    // ignore
-    result.clear();
-  }
-  va_end(args);
+    // format
+    String result;
+    va_list args;
+    va_start(args, fmt);
+    try {
+        result = deskflow::string::vformat(fmt, args);
+    } catch (...) {
+        // ignore
+        result.clear();
+    }
+    va_end(args);
 
-  return result;
+    return result;
 }

@@ -29,16 +29,17 @@
 using namespace testing;
 using namespace deskflow::gui;
 
-TEST(SettingsDialogTests, ctor_getsScreenName) {
-  TestQtFullApp app;
-  NiceMock<AppConfigMock> appConfig;
-  NiceMock<ServerConfigMock> serverConfig;
-  auto cpDeps = std::make_shared<CoreProcess::Deps>();
-  CoreProcess coreProcess(appConfig, serverConfig, cpDeps);
+TEST(SettingsDialogTests, ctor_getsScreenName)
+{
+    TestQtFullApp app;
+    NiceMock<AppConfigMock> appConfig;
+    NiceMock<ServerConfigMock> serverConfig;
+    auto cpDeps = std::make_shared<CoreProcess::Deps>();
+    CoreProcess coreProcess(appConfig, serverConfig, cpDeps);
 
-  EXPECT_CALL(appConfig, screenName()).Times(1);
+    EXPECT_CALL(appConfig, screenName()).Times(1);
 
-  SettingsDialog settingsDialog(nullptr, appConfig, serverConfig, coreProcess);
+    SettingsDialog settingsDialog(nullptr, appConfig, serverConfig, coreProcess);
 }
 
 #endif

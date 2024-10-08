@@ -25,27 +25,28 @@
 
 namespace deskflow::gui {
 
-class TlsUtility : public QObject {
-  Q_OBJECT
+class TlsUtility : public QObject
+{
+    Q_OBJECT
 
 public:
-  explicit TlsUtility(const IAppConfig &appConfig);
+    explicit TlsUtility(const IAppConfig &appConfig);
 
-  bool generateCertificate();
-  bool persistCertificate();
+    bool generateCertificate();
+    bool persistCertificate();
 
-  /**
-   * @brief Combines the availability and the enabled status of TLS.
-   *
-   * @return Given that the app setting for TLS is enabled:
-   * If licensing is enabled, it checks whether the product has TLS
-   * available, and if licensing is not enabled, true is returned.
-   */
-  bool isEnabled() const;
+    /**
+     * @brief Combines the availability and the enabled status of TLS.
+     *
+     * @return Given that the app setting for TLS is enabled:
+     * If licensing is enabled, it checks whether the product has TLS
+     * available, and if licensing is not enabled, true is returned.
+     */
+    bool isEnabled() const;
 
 private:
-  const IAppConfig &m_appConfig;
-  TlsCertificate m_certificate;
+    const IAppConfig &m_appConfig;
+    TlsCertificate m_certificate;
 };
 
 } // namespace deskflow::gui

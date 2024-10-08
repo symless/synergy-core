@@ -21,21 +21,20 @@
 #include "platform/OSXClipboardAnyTextConverter.h"
 
 //! Convert to/from locale text encoding
-class OSXClipboardTextConverter : public OSXClipboardAnyTextConverter {
+class OSXClipboardTextConverter : public OSXClipboardAnyTextConverter
+{
 public:
-  OSXClipboardTextConverter();
-  virtual ~OSXClipboardTextConverter();
+    OSXClipboardTextConverter();
+    virtual ~OSXClipboardTextConverter();
 
-  // IOSXClipboardAnyTextConverter overrides
-  virtual CFStringRef getOSXFormat() const;
+    // IOSXClipboardAnyTextConverter overrides
+    virtual CFStringRef getOSXFormat() const;
 
 protected:
-  // OSXClipboardAnyTextConverter overrides
-  virtual String doFromIClipboard(const String &) const;
-  virtual String doToIClipboard(const String &) const;
+    // OSXClipboardAnyTextConverter overrides
+    virtual String doFromIClipboard(const String &) const;
+    virtual String doToIClipboard(const String &) const;
 
-  // generic encoding converter
-  static String convertString(
-      const String &data, CFStringEncoding fromEncoding,
-      CFStringEncoding toEncoding);
+    // generic encoding converter
+    static String convertString(const String &data, CFStringEncoding fromEncoding, CFStringEncoding toEncoding);
 };

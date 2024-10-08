@@ -23,80 +23,115 @@
 
 #include <fstream>
 
-enum EFileLogOutputter {
-  kFileSizeLimit = 1024 // kb
+enum EFileLogOutputter
+{
+    kFileSizeLimit = 1024 // kb
 };
 
 //
 // StopLogOutputter
 //
 
-StopLogOutputter::StopLogOutputter() {
-  // do nothing
+StopLogOutputter::StopLogOutputter()
+{
+    // do nothing
 }
 
-StopLogOutputter::~StopLogOutputter() {
-  // do nothing
+StopLogOutputter::~StopLogOutputter()
+{
+    // do nothing
 }
 
-void StopLogOutputter::open(const char *) {
-  // do nothing
+void StopLogOutputter::open(const char *)
+{
+    // do nothing
 }
 
-void StopLogOutputter::close() {
-  // do nothing
+void StopLogOutputter::close()
+{
+    // do nothing
 }
 
-void StopLogOutputter::show(bool) {
-  // do nothing
+void StopLogOutputter::show(bool)
+{
+    // do nothing
 }
 
-bool StopLogOutputter::write(ELevel, const char *) { return false; }
+bool StopLogOutputter::write(ELevel, const char *)
+{
+    return false;
+}
 
 //
 // ConsoleLogOutputter
 //
 
-ConsoleLogOutputter::ConsoleLogOutputter() {}
-
-ConsoleLogOutputter::~ConsoleLogOutputter() {}
-
-void ConsoleLogOutputter::open(const char *title) { ARCH->openConsole(title); }
-
-void ConsoleLogOutputter::close() { ARCH->closeConsole(); }
-
-void ConsoleLogOutputter::show(bool showIfEmpty) {
-  ARCH->showConsole(showIfEmpty);
+ConsoleLogOutputter::ConsoleLogOutputter()
+{
 }
 
-bool ConsoleLogOutputter::write(ELevel level, const char *msg) {
-  ARCH->writeConsole(level, msg);
-  return true;
+ConsoleLogOutputter::~ConsoleLogOutputter()
+{
 }
 
-void ConsoleLogOutputter::flush() {}
+void ConsoleLogOutputter::open(const char *title)
+{
+    ARCH->openConsole(title);
+}
+
+void ConsoleLogOutputter::close()
+{
+    ARCH->closeConsole();
+}
+
+void ConsoleLogOutputter::show(bool showIfEmpty)
+{
+    ARCH->showConsole(showIfEmpty);
+}
+
+bool ConsoleLogOutputter::write(ELevel level, const char *msg)
+{
+    ARCH->writeConsole(level, msg);
+    return true;
+}
+
+void ConsoleLogOutputter::flush()
+{
+}
 
 //
 // SystemLogOutputter
 //
 
-SystemLogOutputter::SystemLogOutputter() {
-  // do nothing
+SystemLogOutputter::SystemLogOutputter()
+{
+    // do nothing
 }
 
-SystemLogOutputter::~SystemLogOutputter() {
-  // do nothing
+SystemLogOutputter::~SystemLogOutputter()
+{
+    // do nothing
 }
 
-void SystemLogOutputter::open(const char *title) { ARCH->openLog(title); }
+void SystemLogOutputter::open(const char *title)
+{
+    ARCH->openLog(title);
+}
 
-void SystemLogOutputter::close() { ARCH->closeLog(); }
+void SystemLogOutputter::close()
+{
+    ARCH->closeLog();
+}
 
-void SystemLogOutputter::show(bool showIfEmpty) { ARCH->showLog(showIfEmpty); }
+void SystemLogOutputter::show(bool showIfEmpty)
+{
+    ARCH->showLog(showIfEmpty);
+}
 
-bool SystemLogOutputter::write(ELevel level, const char *msg) {
-  ARCH->writeLog(level, msg);
-  return true;
+bool SystemLogOutputter::write(ELevel level, const char *msg)
+{
+    ARCH->writeLog(level, msg);
+    return true;
 }
 
 //
@@ -104,24 +139,26 @@ bool SystemLogOutputter::write(ELevel level, const char *msg) {
 //
 
 SystemLogger::SystemLogger(const char *title, bool blockConsole)
-    : m_stop(NULL) {
-  // redirect log messages
-  if (blockConsole) {
-    m_stop = new StopLogOutputter;
-    CLOG->insert(m_stop);
-  }
-  m_syslog = new SystemLogOutputter;
-  m_syslog->open(title);
-  CLOG->insert(m_syslog);
+    : m_stop(NULL)
+{
+    // redirect log messages
+    if (blockConsole) {
+        m_stop = new StopLogOutputter;
+        CLOG->insert(m_stop);
+    }
+    m_syslog = new SystemLogOutputter;
+    m_syslog->open(title);
+    CLOG->insert(m_syslog);
 }
 
-SystemLogger::~SystemLogger() {
-  CLOG->remove(m_syslog);
-  delete m_syslog;
-  if (m_stop != NULL) {
-    CLOG->remove(m_stop);
-    delete m_stop;
-  }
+SystemLogger::~SystemLogger()
+{
+    CLOG->remove(m_syslog);
+    delete m_syslog;
+    if (m_stop != NULL) {
+        CLOG->remove(m_stop);
+        delete m_stop;
+    }
 }
 
 //
@@ -129,86 +166,104 @@ SystemLogger::~SystemLogger() {
 //
 
 BufferedLogOutputter::BufferedLogOutputter(UInt32 maxBufferSize)
-    : m_maxBufferSize(maxBufferSize) {
-  // do nothing
+    : m_maxBufferSize(maxBufferSize)
+{
+    // do nothing
 }
 
-BufferedLogOutputter::~BufferedLogOutputter() {
-  // do nothing
+BufferedLogOutputter::~BufferedLogOutputter()
+{
+    // do nothing
 }
 
-BufferedLogOutputter::const_iterator BufferedLogOutputter::begin() const {
-  return m_buffer.begin();
+BufferedLogOutputter::const_iterator BufferedLogOutputter::begin() const
+{
+    return m_buffer.begin();
 }
 
-BufferedLogOutputter::const_iterator BufferedLogOutputter::end() const {
-  return m_buffer.end();
+BufferedLogOutputter::const_iterator BufferedLogOutputter::end() const
+{
+    return m_buffer.end();
 }
 
-void BufferedLogOutputter::open(const char *) {
-  // do nothing
+void BufferedLogOutputter::open(const char *)
+{
+    // do nothing
 }
 
-void BufferedLogOutputter::close() {
-  // remove all elements from the buffer
-  m_buffer.clear();
+void BufferedLogOutputter::close()
+{
+    // remove all elements from the buffer
+    m_buffer.clear();
 }
 
-void BufferedLogOutputter::show(bool) {
-  // do nothing
+void BufferedLogOutputter::show(bool)
+{
+    // do nothing
 }
 
-bool BufferedLogOutputter::write(ELevel, const char *message) {
-  while (m_buffer.size() >= m_maxBufferSize) {
-    m_buffer.pop_front();
-  }
-  m_buffer.push_back(String(message));
-  return true;
+bool BufferedLogOutputter::write(ELevel, const char *message)
+{
+    while (m_buffer.size() >= m_maxBufferSize) {
+        m_buffer.pop_front();
+    }
+    m_buffer.push_back(String(message));
+    return true;
 }
 
 //
 // FileLogOutputter
 //
 
-FileLogOutputter::FileLogOutputter(const char *logFile) {
-  setLogFilename(logFile);
+FileLogOutputter::FileLogOutputter(const char *logFile)
+{
+    setLogFilename(logFile);
 }
 
-FileLogOutputter::~FileLogOutputter() {}
-
-void FileLogOutputter::setLogFilename(const char *logFile) {
-  assert(logFile != NULL);
-  m_fileName = logFile;
+FileLogOutputter::~FileLogOutputter()
+{
 }
 
-bool FileLogOutputter::write(ELevel level, const char *message) {
-  bool moveFile = false;
+void FileLogOutputter::setLogFilename(const char *logFile)
+{
+    assert(logFile != NULL);
+    m_fileName = logFile;
+}
 
-  std::ofstream m_handle;
-  m_handle.open(deskflow::filesystem::path(m_fileName), std::fstream::app);
-  if (m_handle.is_open() && m_handle.fail() != true) {
-    m_handle << message << std::endl;
+bool FileLogOutputter::write(ELevel level, const char *message)
+{
+    bool moveFile = false;
 
-    // when file size exceeds limits, move to 'old log' filename.
-    size_t p = m_handle.tellp();
-    if (p > (kFileSizeLimit * 1024)) {
-      moveFile = true;
+    std::ofstream m_handle;
+    m_handle.open(deskflow::filesystem::path(m_fileName), std::fstream::app);
+    if (m_handle.is_open() && m_handle.fail() != true) {
+        m_handle << message << std::endl;
+
+        // when file size exceeds limits, move to 'old log' filename.
+        size_t p = m_handle.tellp();
+        if (p > (kFileSizeLimit * 1024)) {
+            moveFile = true;
+        }
     }
-  }
-  m_handle.close();
+    m_handle.close();
 
-  if (moveFile) {
-    String oldLogFilename =
-        deskflow::string::sprintf("%s.1", m_fileName.c_str());
-    remove(oldLogFilename.c_str());
-    rename(m_fileName.c_str(), oldLogFilename.c_str());
-  }
+    if (moveFile) {
+        String oldLogFilename = deskflow::string::sprintf("%s.1", m_fileName.c_str());
+        remove(oldLogFilename.c_str());
+        rename(m_fileName.c_str(), oldLogFilename.c_str());
+    }
 
-  return true;
+    return true;
 }
 
-void FileLogOutputter::open(const char *title) {}
+void FileLogOutputter::open(const char *title)
+{
+}
 
-void FileLogOutputter::close() {}
+void FileLogOutputter::close()
+{
+}
 
-void FileLogOutputter::show(bool showIfEmpty) {}
+void FileLogOutputter::show(bool showIfEmpty)
+{
+}

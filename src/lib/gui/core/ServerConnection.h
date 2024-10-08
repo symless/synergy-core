@@ -27,37 +27,39 @@
 
 namespace deskflow::gui {
 
-class ServerConnection : public QObject {
-  Q_OBJECT
-  using IServerConfig = deskflow::gui::IServerConfig;
+class ServerConnection : public QObject
+{
+    Q_OBJECT
+    using IServerConfig = deskflow::gui::IServerConfig;
 
 public:
-  struct Deps {
-    virtual ~Deps() = default;
-    virtual messages::NewClientPromptResult
-    showNewClientPrompt(QWidget *parent, const QString &clientName) const;
-  };
+    struct Deps
+    {
+        virtual ~Deps() = default;
+        virtual messages::NewClientPromptResult showNewClientPrompt(QWidget *parent, const QString &clientName) const;
+    };
 
-  explicit ServerConnection(
-      QWidget *parent, IAppConfig &appConfig, IServerConfig &serverConfig,
-      const config::ServerConfigDialogState &serverConfigDialogState,
-      std::shared_ptr<Deps> deps = std::make_shared<Deps>());
-  void handleLogLine(const QString &logLine);
+    explicit ServerConnection(QWidget *parent,
+                              IAppConfig &appConfig,
+                              IServerConfig &serverConfig,
+                              const config::ServerConfigDialogState &serverConfigDialogState,
+                              std::shared_ptr<Deps> deps = std::make_shared<Deps>());
+    void handleLogLine(const QString &logLine);
 
 signals:
-  void messageShowing();
-  void configureClient(const QString &clientName);
+    void messageShowing();
+    void configureClient(const QString &clientName);
 
 private:
-  void handleNewClient(const QString &clientName);
+    void handleNewClient(const QString &clientName);
 
-  QWidget *m_pParent;
-  IAppConfig &m_appConfig;
-  IServerConfig &m_serverConfig;
-  const config::ServerConfigDialogState &m_serverConfigDialogState;
-  std::shared_ptr<Deps> m_pDeps;
-  QStringList m_receivedClients;
-  bool m_messageShowing = false;
+    QWidget *m_pParent;
+    IAppConfig &m_appConfig;
+    IServerConfig &m_serverConfig;
+    const config::ServerConfigDialogState &m_serverConfigDialogState;
+    std::shared_ptr<Deps> m_pDeps;
+    QStringList m_receivedClients;
+    bool m_messageShowing = false;
 };
 
 } // namespace deskflow::gui

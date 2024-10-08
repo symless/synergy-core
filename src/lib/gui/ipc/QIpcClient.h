@@ -30,32 +30,36 @@
 
 class IpcReader;
 
-class QIpcClient : public deskflow::gui::ipc::IQIpcClient {
-  Q_OBJECT
+class QIpcClient : public deskflow::gui::ipc::IQIpcClient
+{
+    Q_OBJECT
 
 public:
-  using StreamProvider = std::function<std::shared_ptr<QDataStreamProxy>()>;
+    using StreamProvider = std::function<std::shared_ptr<QDataStreamProxy>()>;
 
-  explicit QIpcClient(const StreamProvider &streamProvider = nullptr);
+    explicit QIpcClient(const StreamProvider &streamProvider = nullptr);
 
-  void sendHello() const override;
-  void sendCommand(const QString &command, ElevateMode elevate) const override;
-  void connectToHost() override;
-  void disconnectFromHost() override;
-  bool isConnected() const override { return m_isConnected; }
+    void sendHello() const override;
+    void sendCommand(const QString &command, ElevateMode elevate) const override;
+    void connectToHost() override;
+    void disconnectFromHost() override;
+    bool isConnected() const override
+    {
+        return m_isConnected;
+    }
 
 private slots:
-  void onRetryConnect();
-  void onSocketConnected() const;
-  void onIpcReaderHelloBack();
-  void onSocketError(QAbstractSocket::SocketError error);
-  void onIpcReaderRead(const QString &text);
+    void onRetryConnect();
+    void onSocketConnected() const;
+    void onIpcReaderHelloBack();
+    void onSocketError(QAbstractSocket::SocketError error);
+    void onIpcReaderRead(const QString &text);
 
 private:
-  std::unique_ptr<QTcpSocket> m_pSocket;
-  std::unique_ptr<IpcReader> m_pReader;
-  bool m_readerStarted = false;
-  StreamProvider m_streamProvider;
-  bool m_isConnected = false;
-  bool m_isConnecting = false;
+    std::unique_ptr<QTcpSocket> m_pSocket;
+    std::unique_ptr<IpcReader> m_pReader;
+    bool m_readerStarted = false;
+    StreamProvider m_streamProvider;
+    bool m_isConnected = false;
+    bool m_isConnecting = false;
 };

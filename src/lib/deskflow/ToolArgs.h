@@ -19,13 +19,14 @@
 
 #include "base/String.h"
 
-class ToolArgs {
+class ToolArgs
+{
 public:
-  ToolArgs();
+    ToolArgs();
 
 public:
-  bool m_printActiveDesktopName;
-  bool m_getInstalledDir;
-  bool m_getProfileDir;
-  bool m_getArch;
+    bool m_printActiveDesktopName;
+    bool m_getInstalledDir;
+    bool m_getProfileDir;
+    bool m_getArch;
 };

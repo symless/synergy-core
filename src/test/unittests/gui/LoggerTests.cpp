@@ -23,36 +23,40 @@
 using namespace testing;
 using namespace deskflow::gui;
 
-TEST(LoggerTests, handleMessage_withDebugEnvVarOn_emitsNewLine) {
-  Logger logger;
-  std::string newLineEmitted;
-  QObject::connect(
-      &logger, &Logger::newLine, //
-      [&newLineEmitted](const QString &line) {
-        newLineEmitted = line.toStdString();
-      });
-  qputenv("DESKFLOW_GUI_DEBUG", "true");
-  logger.loadEnvVars();
+TEST(LoggerTests, handleMessage_withDebugEnvVarOn_emitsNewLine)
+{
+    Logger logger;
+    std::string newLineEmitted;
+    QObject::connect(&logger,
+                     &Logger::newLine, //
+                     [&newLineEmitted](const QString &line) {
+                         newLineEmitted = line.toStdString();
+                     });
+    qputenv("DESKFLOW_GUI_DEBUG", "true");
+    logger.loadEnvVars();
 
-  logger.handleMessage(QtDebugMsg, "stub", "test");
+    logger.handleMessage(QtDebugMsg, "stub", "test");
 
-  EXPECT_THAT(newLineEmitted, HasSubstr("test"));
+    EXPECT_THAT(newLineEmitted, HasSubstr("test"));
 
-  qputenv("DESKFLOW_GUI_DEBUG", "");
+    qputenv("DESKFLOW_GUI_DEBUG", "");
 }
 
-TEST(LoggerTests, handleMessage_withDebugEnvVarOff_doesNotEmitNewLine) {
-  Logger logger;
-  bool newLineEmitted = false;
-  QObject::connect(
-      &logger, &Logger::newLine, //
-      [&newLineEmitted](const QString &line) { newLineEmitted = true; });
-  qputenv("DESKFLOW_GUI_DEBUG", "false");
-  logger.loadEnvVars();
+TEST(LoggerTests, handleMessage_withDebugEnvVarOff_doesNotEmitNewLine)
+{
+    Logger logger;
+    bool newLineEmitted = false;
+    QObject::connect(&logger,
+                     &Logger::newLine, //
+                     [&newLineEmitted](const QString &line) {
+                         newLineEmitted = true;
+                     });
+    qputenv("DESKFLOW_GUI_DEBUG", "false");
+    logger.loadEnvVars();
 
-  logger.handleMessage(QtDebugMsg, "stub", "test");
+    logger.handleMessage(QtDebugMsg, "stub", "test");
 
-  EXPECT_FALSE(newLineEmitted);
+    EXPECT_FALSE(newLineEmitted);
 
-  qputenv("DESKFLOW_GUI_DEBUG", "");
+    qputenv("DESKFLOW_GUI_DEBUG", "");
 }

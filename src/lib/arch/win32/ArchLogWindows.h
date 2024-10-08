@@ -26,17 +26,18 @@
 #define ARCH_LOG ArchLogWindows
 
 //! Win32 implementation of IArchLog
-class ArchLogWindows : public IArchLog {
+class ArchLogWindows : public IArchLog
+{
 public:
-  ArchLogWindows();
-  virtual ~ArchLogWindows();
+    ArchLogWindows();
+    virtual ~ArchLogWindows();
 
-  // IArchLog overrides
-  virtual void openLog(const char *name);
-  virtual void closeLog();
-  virtual void showLog(bool showIfEmpty);
-  virtual void writeLog(ELevel, const char *);
+    // IArchLog overrides
+    virtual void openLog(const char *name);
+    virtual void closeLog();
+    virtual void showLog(bool showIfEmpty);
+    virtual void writeLog(ELevel, const char *);
 
 private:
-  HANDLE m_eventLog;
+    HANDLE m_eventLog;
 };

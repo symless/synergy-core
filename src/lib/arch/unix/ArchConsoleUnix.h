@@ -22,8 +22,9 @@
 
 #define ARCH_CONSOLE ArchConsoleUnix
 
-class ArchConsoleUnix : public ArchConsoleStd {
+class ArchConsoleUnix : public ArchConsoleStd
+{
 public:
-  ArchConsoleUnix();
-  virtual ~ArchConsoleUnix();
+    ArchConsoleUnix();
+    virtual ~ArchConsoleUnix();
 };

@@ -28,37 +28,37 @@
 // TCPSocketFactory
 //
 
-TCPSocketFactory::TCPSocketFactory(
-    IEventQueue *events, SocketMultiplexer *socketMultiplexer)
-    : m_events(events),
-      m_socketMultiplexer(socketMultiplexer) {
-  // do nothing
+TCPSocketFactory::TCPSocketFactory(IEventQueue *events, SocketMultiplexer *socketMultiplexer)
+    : m_events(events)
+    , m_socketMultiplexer(socketMultiplexer)
+{
+    // do nothing
 }
 
-TCPSocketFactory::~TCPSocketFactory() {
-  // do nothing
+TCPSocketFactory::~TCPSocketFactory()
+{
+    // do nothing
 }
 
-IDataSocket *TCPSocketFactory::create(
-    bool secure, IArchNetwork::EAddressFamily family) const {
-  if (secure) {
-    SecureSocket *secureSocket =
-        new SecureSocket(m_events, m_socketMultiplexer, family);
-    secureSocket->initSsl(false);
-    return secureSocket;
-  } else {
-    return new TCPSocket(m_events, m_socketMultiplexer, family);
-  }
+IDataSocket *TCPSocketFactory::create(bool secure, IArchNetwork::EAddressFamily family) const
+{
+    if (secure) {
+        SecureSocket *secureSocket = new SecureSocket(m_events, m_socketMultiplexer, family);
+        secureSocket->initSsl(false);
+        return secureSocket;
+    } else {
+        return new TCPSocket(m_events, m_socketMultiplexer, family);
+    }
 }
 
-IListenSocket *TCPSocketFactory::createListen(
-    bool secure, IArchNetwork::EAddressFamily family) const {
-  IListenSocket *socket = NULL;
-  if (secure) {
-    socket = new SecureListenSocket(m_events, m_socketMultiplexer, family);
-  } else {
-    socket = new TCPListenSocket(m_events, m_socketMultiplexer, family);
-  }
+IListenSocket *TCPSocketFactory::createListen(bool secure, IArchNetwork::EAddressFamily family) const
+{
+    IListenSocket *socket = NULL;
+    if (secure) {
+        socket = new SecureListenSocket(m_events, m_socketMultiplexer, family);
+    } else {
+        socket = new TCPListenSocket(m_events, m_socketMultiplexer, family);
+    }
 
-  return socket;
+    return socket;
 }

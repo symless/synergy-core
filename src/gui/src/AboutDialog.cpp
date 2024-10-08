@@ -29,97 +29,100 @@
 using namespace deskflow::gui;
 
 AboutDialog::AboutDialog(MainWindow *parent)
-    : QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint),
-      Ui::AboutDialogBase() {
+    : QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint)
+    , Ui::AboutDialogBase()
+{
+    setupUi(this);
 
-  setupUi(this);
+    this->setFixedSize(this->size());
 
-  this->setFixedSize(this->size());
+    QString version = QString::fromStdString(deskflow::version());
+    m_pLabelDeskflowVersion->setText(version);
 
-  QString version = QString::fromStdString(deskflow::version());
-  m_pLabelDeskflowVersion->setText(version);
+    QString buildDateString = QString::fromLocal8Bit(BUILD_DATE).simplified();
+    QDate buildDate = QLocale("en_US").toDate(buildDateString, "yyyy-MM-dd");
+    m_pLabelBuildDate->setText(buildDate.toString(QLocale::system().dateFormat(QLocale::LongFormat)));
 
-  QString buildDateString = QString::fromLocal8Bit(BUILD_DATE).simplified();
-  QDate buildDate = QLocale("en_US").toDate(buildDateString, "yyyy-MM-dd");
-  m_pLabelBuildDate->setText(
-      buildDate.toString(QLocale::system().dateFormat(QLocale::LongFormat)));
-
-  this->setWindowTitle(QString("About %1").arg(DESKFLOW_APP_NAME));
+    this->setWindowTitle(QString("About %1").arg(DESKFLOW_APP_NAME));
 }
 
-int AboutDialog::exec() {
-  m_pDevelopersLabel->setText(importantDevelopers());
-  m_pCopyrightLabel->setText(QString::fromStdString(deskflow::copyright()));
-  updateLogo();
+int AboutDialog::exec()
+{
+    m_pDevelopersLabel->setText(importantDevelopers());
+    m_pCopyrightLabel->setText(QString::fromStdString(deskflow::copyright()));
+    updateLogo();
 
-  return QDialog::exec();
+    return QDialog::exec();
 }
 
-void AboutDialog::setLogo(const char *const &filename) const {
-  QPixmap logo(filename);
-  if (!logo.isNull()) {
-    m_pLabel_Logo->setPixmap(logo);
-  } else {
-    qCritical("logo file not found: %s", qPrintable(filename));
-  }
+void AboutDialog::setLogo(const char *const &filename) const
+{
+    QPixmap logo(filename);
+    if (!logo.isNull()) {
+        m_pLabel_Logo->setPixmap(logo);
+    } else {
+        qCritical("logo file not found: %s", qPrintable(filename));
+    }
 }
 
-void AboutDialog::updateLogo() const {
-  if (isDarkMode()) {
-    qDebug("showing dark logo");
-    setLogo(":/image/logo-dark.png");
-  } else {
-    qDebug("showing light logo");
-    setLogo(":/image/logo-light.png");
-  }
+void AboutDialog::updateLogo() const
+{
+    if (isDarkMode()) {
+        qDebug("showing dark logo");
+        setLogo(":/image/logo-dark.png");
+    } else {
+        qDebug("showing light logo");
+        setLogo(":/image/logo-light.png");
+    }
 }
 
-QString AboutDialog::importantDevelopers() const {
-  QStringList awesomePeople;
-  awesomePeople
+QString AboutDialog::importantDevelopers() const
+{
+    QStringList awesomePeople;
+    awesomePeople
 
-      // Chris is the ultimate creator, and the one who started it all in 2001.
-      << "Chris Schoeneman"
+        // Chris is the ultimate creator, and the one who started it all in 2001.
+        << "Chris Schoeneman"
 
-      // Richard and Adam developed CosmoDeskflow, the 90's predecessor project.
-      << "Richard Lee"
-      << "Adam Feder"
+        // Richard and Adam developed CosmoDeskflow, the 90's predecessor project.
+        << "Richard Lee"
+        << "Adam Feder"
 
-      // Nick continued the legacy in 2009 started by Chris.
-      << "Nick Bolton"
+        // Nick continued the legacy in 2009 started by Chris.
+        << "Nick Bolton"
 
-      // Volker wrote the first version of the GUI (QSynergy) in 2008.
-      << "Volker Lanz"
+        // Volker wrote the first version of the GUI (QSynergy) in 2008.
+        << "Volker Lanz"
 
-      // Re-ignited the project in 2008 and rebuilt the community.
-      << "Sorin Sbârnea"
+        // Re-ignited the project in 2008 and rebuilt the community.
+        << "Sorin Sbârnea"
 
-      // Contributors of bug fixes in the early days.
-      << "Ryan Breen"
-      << "Guido Poschta"
-      << "Bertrand Landry Hetu"
-      << "Tom Chadwick"
-      << "Brent Priddy"
-      << "Jason Axelson"
-      << "Jake Petroules"
+        // Contributors of bug fixes in the early days.
+        << "Ryan Breen"
+        << "Guido Poschta"
+        << "Bertrand Landry Hetu"
+        << "Tom Chadwick"
+        << "Brent Priddy"
+        << "Jason Axelson"
+        << "Jake Petroules"
 
-      // Implemented Wayland support (libei and libportal).
-      << "Peter Hutterer"
-      << "Olivier Fourdan"
+        // Implemented Wayland support (libei and libportal).
+        << "Peter Hutterer"
+        << "Olivier Fourdan"
 
-      // Symless employees (in order of joining).
-      << "Kyle Bloom"
-      << "Daun Chung"
-      << "Serhii Hadzhylov"
-      << "Oleksandr Lysytsia"
-      << "Olena Kutytska"
-      << "Owen Phillips"
-      << "Daniel Evenson";
+        // Symless employees (in order of joining).
+        << "Kyle Bloom"
+        << "Daun Chung"
+        << "Serhii Hadzhylov"
+        << "Oleksandr Lysytsia"
+        << "Olena Kutytska"
+        << "Owen Phillips"
+        << "Daniel Evenson";
 
-  for (auto &person : awesomePeople) {
-    // prevent names from breaking on the space when wrapped
-    person = person.replace(" ", QString::fromUtf8("&nbsp;"));
-  }
+    for (auto &person : awesomePeople) {
+        // prevent names from breaking on the space when wrapped
+        person = person.replace(" ", QString::fromUtf8("&nbsp;"));
+    }
 
-  return awesomePeople.join(", ") + ".";
+    return awesomePeople.join(", ") + ".";
 }

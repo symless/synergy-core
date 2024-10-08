@@ -29,59 +29,60 @@ class IMSWindowsClipboardConverter;
 class IMSWindowsClipboardFacade;
 
 //! Microsoft windows clipboard implementation
-class MSWindowsClipboard : public IClipboard {
+class MSWindowsClipboard : public IClipboard
+{
 public:
-  MSWindowsClipboard(HWND window);
-  MSWindowsClipboard(HWND window, IMSWindowsClipboardFacade &facade);
-  virtual ~MSWindowsClipboard();
+    MSWindowsClipboard(HWND window);
+    MSWindowsClipboard(HWND window, IMSWindowsClipboardFacade &facade);
+    virtual ~MSWindowsClipboard();
 
-  //! Empty clipboard without ownership
-  /*!
-  Take ownership of the clipboard and clear all data from it.
-  This must be called between a successful open() and close().
-  Return false if the clipboard ownership could not be taken;
-  the clipboard should not be emptied in this case.  Unlike
-  empty(), isOwnedByDeskflow() will return false when emptied
-  this way.  This is useful when deskflow wants to put data on
-  clipboard but pretend (to itself) that some other app did it.
-  When using empty(), deskflow assumes the data came from the
-  server and doesn't need to be sent back.  emptyUnowned()
-  makes deskflow send the data to the server.
-  */
-  bool emptyUnowned();
+    //! Empty clipboard without ownership
+    /*!
+    Take ownership of the clipboard and clear all data from it.
+    This must be called between a successful open() and close().
+    Return false if the clipboard ownership could not be taken;
+    the clipboard should not be emptied in this case.  Unlike
+    empty(), isOwnedByDeskflow() will return false when emptied
+    this way.  This is useful when deskflow wants to put data on
+    clipboard but pretend (to itself) that some other app did it.
+    When using empty(), deskflow assumes the data came from the
+    server and doesn't need to be sent back.  emptyUnowned()
+    makes deskflow send the data to the server.
+    */
+    bool emptyUnowned();
 
-  //! Test if clipboard is owned by deskflow
-  static bool isOwnedByDeskflow();
+    //! Test if clipboard is owned by deskflow
+    static bool isOwnedByDeskflow();
 
-  // IClipboard overrides
-  virtual bool empty();
-  virtual void add(EFormat, const String &data);
-  virtual bool open(Time) const;
-  virtual void close() const;
-  virtual Time getTime() const;
-  virtual bool has(EFormat) const;
-  virtual String get(EFormat) const;
+    // IClipboard overrides
+    virtual bool empty();
+    virtual void add(EFormat, const String &data);
+    virtual bool open(Time) const;
+    virtual void close() const;
+    virtual Time getTime() const;
+    virtual bool has(EFormat) const;
+    virtual String get(EFormat) const;
 
-  void setFacade(IMSWindowsClipboardFacade &facade);
-
-private:
-  void clearConverters();
-
-  UINT convertFormatToWin32(EFormat) const;
-  HANDLE convertTextToWin32(const String &data) const;
-  String convertTextFromWin32(HANDLE) const;
-
-  static UINT getOwnershipFormat();
+    void setFacade(IMSWindowsClipboardFacade &facade);
 
 private:
-  typedef std::vector<IMSWindowsClipboardConverter *> ConverterList;
+    void clearConverters();
 
-  HWND m_window;
-  mutable Time m_time;
-  ConverterList m_converters;
-  static UINT s_ownershipFormat;
-  IMSWindowsClipboardFacade *m_facade;
-  bool m_deleteFacade;
+    UINT convertFormatToWin32(EFormat) const;
+    HANDLE convertTextToWin32(const String &data) const;
+    String convertTextFromWin32(HANDLE) const;
+
+    static UINT getOwnershipFormat();
+
+private:
+    typedef std::vector<IMSWindowsClipboardConverter *> ConverterList;
+
+    HWND m_window;
+    mutable Time m_time;
+    ConverterList m_converters;
+    static UINT s_ownershipFormat;
+    IMSWindowsClipboardFacade *m_facade;
+    bool m_deleteFacade;
 };
 
 //! Clipboard format converter interface
@@ -89,24 +90,25 @@ private:
 This interface defines the methods common to all win32 clipboard format
 converters.
 */
-class IMSWindowsClipboardConverter : public IInterface {
+class IMSWindowsClipboardConverter : public IInterface
+{
 public:
-  // accessors
+    // accessors
 
-  // return the clipboard format this object converts from/to
-  virtual IClipboard::EFormat getFormat() const = 0;
+    // return the clipboard format this object converts from/to
+    virtual IClipboard::EFormat getFormat() const = 0;
 
-  // return the atom representing the win32 clipboard format that
-  // this object converts from/to
-  virtual UINT getWin32Format() const = 0;
+    // return the atom representing the win32 clipboard format that
+    // this object converts from/to
+    virtual UINT getWin32Format() const = 0;
 
-  // convert from the IClipboard format to the win32 clipboard format.
-  // the input data must be in the IClipboard format returned by
-  // getFormat().  the return data will be in the win32 clipboard
-  // format returned by getWin32Format(), allocated by GlobalAlloc().
-  virtual HANDLE fromIClipboard(const String &) const = 0;
+    // convert from the IClipboard format to the win32 clipboard format.
+    // the input data must be in the IClipboard format returned by
+    // getFormat().  the return data will be in the win32 clipboard
+    // format returned by getWin32Format(), allocated by GlobalAlloc().
+    virtual HANDLE fromIClipboard(const String &) const = 0;
 
-  // convert from the win32 clipboard format to the IClipboard format
-  // (i.e., the reverse of fromIClipboard()).
-  virtual String toIClipboard(HANDLE data) const = 0;
+    // convert from the win32 clipboard format to the IClipboard format
+    // (i.e., the reverse of fromIClipboard()).
+    virtual String toIClipboard(HANDLE data) const = 0;
 };

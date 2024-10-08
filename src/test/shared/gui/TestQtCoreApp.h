@@ -19,10 +19,14 @@
 
 #include <QCoreApplication>
 
-static int argc = 0;          // NOLINT NOSONAR
+static int argc = 0; // NOLINT NOSONAR
 static char **argv = nullptr; // NOLINT NOSONAR
 
-class TestQtCoreApp : public QCoreApplication {
+class TestQtCoreApp : public QCoreApplication
+{
 public:
-  explicit TestQtCoreApp() : QCoreApplication(argc, argv) {}
+    explicit TestQtCoreApp()
+        : QCoreApplication(argc, argv)
+    {
+    }
 };

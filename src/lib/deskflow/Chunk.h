@@ -20,17 +20,18 @@
 #include "common/basic_types.h"
 #include <base/EventTypes.h>
 
-class Chunk : public EventData {
+class Chunk : public EventData
+{
 public:
-  Chunk(size_t size);
-  Chunk(Chunk const &) = delete;
-  Chunk(Chunk &&) = delete;
-  ~Chunk() override;
+    Chunk(size_t size);
+    Chunk(Chunk const &) = delete;
+    Chunk(Chunk &&) = delete;
+    ~Chunk() override;
 
-  Chunk &operator=(Chunk const &) = delete;
-  Chunk &operator=(Chunk &&) = delete;
+    Chunk &operator=(Chunk const &) = delete;
+    Chunk &operator=(Chunk &&) = delete;
 
 public:
-  size_t m_dataSize;
-  char *m_chunk;
+    size_t m_dataSize;
+    char *m_chunk;
 };

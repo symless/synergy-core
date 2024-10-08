@@ -37,11 +37,9 @@ typedef SInt32 OptionValue;
 typedef std::vector<UInt32> OptionsList;
 
 // macro for packing 4 character strings into 4 byte integers
-#define OPTION_CODE(_s)                                                        \
-  (static_cast<UInt32>(static_cast<unsigned char>(_s[0]) << 24) |              \
-   static_cast<UInt32>(static_cast<unsigned char>(_s[1]) << 16) |              \
-   static_cast<UInt32>(static_cast<unsigned char>(_s[2]) << 8) |               \
-   static_cast<UInt32>(static_cast<unsigned char>(_s[3])))
+#define OPTION_CODE(_s)                                                                                                                                        \
+    (static_cast<UInt32>(static_cast<unsigned char>(_s[0]) << 24) | static_cast<UInt32>(static_cast<unsigned char>(_s[1]) << 16)                               \
+     | static_cast<UInt32>(static_cast<unsigned char>(_s[2]) << 8) | static_cast<UInt32>(static_cast<unsigned char>(_s[3])))
 
 //! @name Option identifiers
 //@{
@@ -73,27 +71,28 @@ static const OptionID kOptionClipboardSharingSize = OPTION_CODE("CLSZ");
 
 //! @name Screen switch corner enumeration
 //@{
-enum EScreenSwitchCorners {
-  kNoCorner,
-  kTopLeft,
-  kTopRight,
-  kBottomLeft,
-  kBottomRight,
-  kFirstCorner = kTopLeft,
-  kLastCorner = kBottomRight
+enum EScreenSwitchCorners
+{
+    kNoCorner,
+    kTopLeft,
+    kTopRight,
+    kBottomLeft,
+    kBottomRight,
+    kFirstCorner = kTopLeft,
+    kLastCorner = kBottomRight
 };
 //@}
 
 //! @name Screen switch corner masks
 //@{
-enum EScreenSwitchCornerMasks {
-  kNoCornerMask = 0,
-  kTopLeftMask = 1 << (kTopLeft - kFirstCorner),
-  kTopRightMask = 1 << (kTopRight - kFirstCorner),
-  kBottomLeftMask = 1 << (kBottomLeft - kFirstCorner),
-  kBottomRightMask = 1 << (kBottomRight - kFirstCorner),
-  kAllCornersMask =
-      kTopLeftMask | kTopRightMask | kBottomLeftMask | kBottomRightMask
+enum EScreenSwitchCornerMasks
+{
+    kNoCornerMask = 0,
+    kTopLeftMask = 1 << (kTopLeft - kFirstCorner),
+    kTopRightMask = 1 << (kTopRight - kFirstCorner),
+    kBottomLeftMask = 1 << (kBottomLeft - kFirstCorner),
+    kBottomRightMask = 1 << (kBottomRight - kFirstCorner),
+    kAllCornersMask = kTopLeftMask | kTopRightMask | kBottomLeftMask | kBottomRightMask
 };
 //@}
 

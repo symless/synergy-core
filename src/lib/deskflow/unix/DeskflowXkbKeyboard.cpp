@@ -26,34 +26,36 @@ namespace deskflow {
 
 namespace linux {
 
-DeskflowXkbKeyboard::DeskflowXkbKeyboard() {
-  using XkbDisplay = std::unique_ptr<Display, decltype(&XCloseDisplay)>;
-  XkbDisplay display(
-      XkbOpenDisplay(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr),
-      &XCloseDisplay);
+DeskflowXkbKeyboard::DeskflowXkbKeyboard()
+{
+    using XkbDisplay = std::unique_ptr<Display, decltype(&XCloseDisplay)>;
+    XkbDisplay display(XkbOpenDisplay(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr), &XCloseDisplay);
 
-  if (display) {
-    if (!XkbRF_GetNamesProp(display.get(), nullptr, &m_data)) {
-      LOG((CLOG_WARN "error reading keyboard layouts"));
+    if (display) {
+        if (!XkbRF_GetNamesProp(display.get(), nullptr, &m_data)) {
+            LOG((CLOG_WARN "error reading keyboard layouts"));
+        }
+    } else {
+        LOG((CLOG_WARN "can't open xkb display during reading languages"));
     }
-  } else {
-    LOG((CLOG_WARN "can't open xkb display during reading languages"));
-  }
 }
 
-const char *DeskflowXkbKeyboard::getLayout() const {
-  return m_data.layout ? m_data.layout : "us";
+const char *DeskflowXkbKeyboard::getLayout() const
+{
+    return m_data.layout ? m_data.layout : "us";
 }
 
-const char *DeskflowXkbKeyboard::getVariant() const {
-  return m_data.variant ? m_data.variant : "";
+const char *DeskflowXkbKeyboard::getVariant() const
+{
+    return m_data.variant ? m_data.variant : "";
 }
 
-DeskflowXkbKeyboard::~DeskflowXkbKeyboard() {
-  std::free(m_data.model);
-  std::free(m_data.layout);
-  std::free(m_data.variant);
-  std::free(m_data.options);
+DeskflowXkbKeyboard::~DeskflowXkbKeyboard()
+{
+    std::free(m_data.model);
+    std::free(m_data.layout);
+    std::free(m_data.variant);
+    std::free(m_data.options);
 }
 
 } // namespace linux

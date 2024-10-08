@@ -23,18 +23,19 @@
 #define WINDOWS_LEAN_AND_MEAN
 #include <Windows.h>
 
-class MSWindowsUtil {
+class MSWindowsUtil
+{
 public:
-  //! Get message string
-  /*!
-  Gets a string for \p id from the string table of \p instance.
-  */
-  static String getString(HINSTANCE instance, DWORD id);
+    //! Get message string
+    /*!
+    Gets a string for \p id from the string table of \p instance.
+    */
+    static String getString(HINSTANCE instance, DWORD id);
 
-  //! Get error string
-  /*!
-  Gets a system error message for \p error.  If the error cannot be
-  found return the string for \p id, replacing ${1} with \p error.
-  */
-  static String getErrorString(HINSTANCE, DWORD error, DWORD id);
+    //! Get error string
+    /*!
+    Gets a system error message for \p error.  If the error cannot be
+    found return the string for \p id, replacing ${1} with \p error.
+    */
+    static String getErrorString(HINSTANCE, DWORD error, DWORD id);
 };

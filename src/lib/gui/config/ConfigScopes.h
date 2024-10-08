@@ -27,48 +27,45 @@
 namespace deskflow::gui {
 
 /// @brief Encapsulates Qt config for both user and global scopes.
-class ConfigScopes : public QObject, public IConfigScopes {
-  using QSettingsProxy = deskflow::gui::proxy::QSettingsProxy;
+class ConfigScopes : public QObject, public IConfigScopes
+{
+    using QSettingsProxy = deskflow::gui::proxy::QSettingsProxy;
 
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  struct Deps {
-    virtual ~Deps() = default;
-    virtual std::shared_ptr<QSettingsProxy> makeUserSettings();
-    virtual std::shared_ptr<QSettingsProxy> makeSystemSettings();
-  };
+    struct Deps
+    {
+        virtual ~Deps() = default;
+        virtual std::shared_ptr<QSettingsProxy> makeUserSettings();
+        virtual std::shared_ptr<QSettingsProxy> makeSystemSettings();
+    };
 
-  explicit ConfigScopes(std::shared_ptr<Deps> deps = std::make_shared<Deps>());
-  ~ConfigScopes() override = default;
+    explicit ConfigScopes(std::shared_ptr<Deps> deps = std::make_shared<Deps>());
+    ~ConfigScopes() override = default;
 
-  void clear() const;
+    void clear() const;
 
-  void signalReady() override;
-  void save(bool emitSaving = true) override;
-  bool scopeContains(
-      const QString &name, Scope scope = Scope::Current) const override;
-  bool isActiveScopeWritable() const override;
-  void setInScope(
-      const QString &name, const QVariant &value,
-      Scope scope = Scope::Current) override;
-  QVariant getFromScope(
-      const QString &name, const QVariant &defaultValue = QVariant(),
-      Scope scope = Scope::Current) const override;
-  void setActiveScope(Scope scope = Scope::User) override;
-  Scope activeScope() const override;
-  QSettingsProxy &activeSettings() override;
-  const QSettingsProxy &activeSettings() const override;
-  QString activeFilePath() const override;
+    void signalReady() override;
+    void save(bool emitSaving = true) override;
+    bool scopeContains(const QString &name, Scope scope = Scope::Current) const override;
+    bool isActiveScopeWritable() const override;
+    void setInScope(const QString &name, const QVariant &value, Scope scope = Scope::Current) override;
+    QVariant getFromScope(const QString &name, const QVariant &defaultValue = QVariant(), Scope scope = Scope::Current) const override;
+    void setActiveScope(Scope scope = Scope::User) override;
+    Scope activeScope() const override;
+    QSettingsProxy &activeSettings() override;
+    const QSettingsProxy &activeSettings() const override;
+    QString activeFilePath() const override;
 
 signals:
-  void ready();
-  void saving();
+    void ready();
+    void saving();
 
 private:
-  Scope m_currentScope = Scope::User;
-  std::shared_ptr<QSettingsProxy> m_pUserSettingsProxy;
-  std::shared_ptr<QSettingsProxy> m_pSystemSettingsProxy;
+    Scope m_currentScope = Scope::User;
+    std::shared_ptr<QSettingsProxy> m_pUserSettingsProxy;
+    std::shared_ptr<QSettingsProxy> m_pSystemSettingsProxy;
 };
 
 } // namespace deskflow::gui

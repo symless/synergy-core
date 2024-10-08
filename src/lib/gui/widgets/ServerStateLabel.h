@@ -22,15 +22,16 @@
 
 namespace deskflow::gui::widgets {
 
-class ServerStateLabel : public QLabel {
+class ServerStateLabel : public QLabel
+{
 public:
-  explicit ServerStateLabel(QWidget *parent = nullptr);
-  void updateServerState(const QString &line);
+    explicit ServerStateLabel(QWidget *parent = nullptr);
+    void updateServerState(const QString &line);
 
 private:
-  QStringList m_clients;
+    QStringList m_clients;
 
-  void updateState();
+    void updateState();
 };
 
 } // namespace deskflow::gui::widgets

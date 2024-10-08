@@ -96,47 +96,59 @@ class Arch : public ARCH_CONSOLE,
              public ARCH_STRING,
              public ARCH_SYSTEM,
              public ARCH_TASKBAR,
-             public ARCH_TIME {
+             public ARCH_TIME
+{
 public:
-  Arch();
-  Arch(Arch *arch);
-  virtual ~Arch();
+    Arch();
+    Arch(Arch *arch);
+    virtual ~Arch();
 
-  //! Call init on other arch classes.
-  /*!
-  Some arch classes depend on others to exist first. When init is called
-  these classes will have ARCH available for use.
-  */
-  virtual void init();
+    //! Call init on other arch classes.
+    /*!
+    Some arch classes depend on others to exist first. When init is called
+    these classes will have ARCH available for use.
+    */
+    virtual void init();
 
-  //
-  // accessors
-  //
+    //
+    // accessors
+    //
 
-  //! Return the singleton instance
-  /*!
-  The client must have instantiated exactly once Arch object before
-  calling this function.
-  */
-  static Arch *getInstance();
+    //! Return the singleton instance
+    /*!
+    The client must have instantiated exactly once Arch object before
+    calling this function.
+    */
+    static Arch *getInstance();
 
-  static void setInstance(Arch *s) { s_instance = s; }
+    static void setInstance(Arch *s)
+    {
+        s_instance = s;
+    }
 
 private:
-  static Arch *s_instance;
+    static Arch *s_instance;
 };
 
 //! Convenience object to lock/unlock an arch mutex
-class ArchMutexLock {
+class ArchMutexLock
+{
 public:
-  ArchMutexLock(ArchMutex mutex) : m_mutex(mutex) { ARCH->lockMutex(m_mutex); }
-  ArchMutexLock(ArchMutexLock const &) = delete;
-  ArchMutexLock(ArchMutexLock &&) = delete;
-  ~ArchMutexLock() { ARCH->unlockMutex(m_mutex); }
+    ArchMutexLock(ArchMutex mutex)
+        : m_mutex(mutex)
+    {
+        ARCH->lockMutex(m_mutex);
+    }
+    ArchMutexLock(ArchMutexLock const &) = delete;
+    ArchMutexLock(ArchMutexLock &&) = delete;
+    ~ArchMutexLock()
+    {
+        ARCH->unlockMutex(m_mutex);
+    }
 
-  ArchMutexLock &operator=(ArchMutexLock const &) = delete;
-  ArchMutexLock &operator=(ArchMutexLock &&) = delete;
+    ArchMutexLock &operator=(ArchMutexLock const &) = delete;
+    ArchMutexLock &operator=(ArchMutexLock &&) = delete;
 
 private:
-  ArchMutex m_mutex;
+    ArchMutex m_mutex;
 };

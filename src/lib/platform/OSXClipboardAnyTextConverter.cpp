@@ -24,45 +24,58 @@
 // OSXClipboardAnyTextConverter
 //
 
-OSXClipboardAnyTextConverter::OSXClipboardAnyTextConverter() {
-  // do nothing
+OSXClipboardAnyTextConverter::OSXClipboardAnyTextConverter()
+{
+    // do nothing
 }
 
-OSXClipboardAnyTextConverter::~OSXClipboardAnyTextConverter() {
-  // do nothing
+OSXClipboardAnyTextConverter::~OSXClipboardAnyTextConverter()
+{
+    // do nothing
 }
 
-IClipboard::EFormat OSXClipboardAnyTextConverter::getFormat() const {
-  return IClipboard::kText;
+IClipboard::EFormat OSXClipboardAnyTextConverter::getFormat() const
+{
+    return IClipboard::kText;
 }
 
-String OSXClipboardAnyTextConverter::fromIClipboard(const String &data) const {
-  // convert linefeeds and then convert to desired encoding
-  return doFromIClipboard(convertLinefeedToMacOS(data));
+String OSXClipboardAnyTextConverter::fromIClipboard(const String &data) const
+{
+    // convert linefeeds and then convert to desired encoding
+    return doFromIClipboard(convertLinefeedToMacOS(data));
 }
 
-String OSXClipboardAnyTextConverter::toIClipboard(const String &data) const {
-  // convert text then newlines
-  return convertLinefeedToUnix(doToIClipboard(data));
+String OSXClipboardAnyTextConverter::toIClipboard(const String &data) const
+{
+    // convert text then newlines
+    return convertLinefeedToUnix(doToIClipboard(data));
 }
 
-static bool isLF(char ch) { return (ch == '\n'); }
-
-static bool isCR(char ch) { return (ch == '\r'); }
-
-String OSXClipboardAnyTextConverter::convertLinefeedToMacOS(const String &src) {
-  // note -- we assume src is a valid UTF-8 string
-  String copy = src;
-
-  std::replace_if(copy.begin(), copy.end(), isLF, '\r');
-
-  return copy;
+static bool isLF(char ch)
+{
+    return (ch == '\n');
 }
 
-String OSXClipboardAnyTextConverter::convertLinefeedToUnix(const String &src) {
-  String copy = src;
+static bool isCR(char ch)
+{
+    return (ch == '\r');
+}
 
-  std::replace_if(copy.begin(), copy.end(), isCR, '\n');
+String OSXClipboardAnyTextConverter::convertLinefeedToMacOS(const String &src)
+{
+    // note -- we assume src is a valid UTF-8 string
+    String copy = src;
 
-  return copy;
+    std::replace_if(copy.begin(), copy.end(), isLF, '\r');
+
+    return copy;
+}
+
+String OSXClipboardAnyTextConverter::convertLinefeedToUnix(const String &src)
+{
+    String copy = src;
+
+    std::replace_if(copy.begin(), copy.end(), isCR, '\n');
+
+    return copy;
 }

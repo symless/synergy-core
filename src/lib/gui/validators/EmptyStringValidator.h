@@ -21,10 +21,11 @@
 
 namespace validators {
 
-class EmptyStringValidator : public IStringValidator {
+class EmptyStringValidator : public IStringValidator
+{
 public:
-  explicit EmptyStringValidator(const QString &message);
-  bool validate(const QString &input) const override;
+    explicit EmptyStringValidator(const QString &message);
+    bool validate(const QString &input) const override;
 };
 
 } // namespace validators

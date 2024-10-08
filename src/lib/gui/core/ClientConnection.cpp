@@ -28,58 +28,56 @@ namespace deskflow::gui {
 // ClientConnection::Deps
 //
 
-void ClientConnection::Deps::showError(
-    QWidget *parent, messages::ClientError error,
-    const QString &address) const {
-  messages::showClientConnectError(parent, error, address);
+void ClientConnection::Deps::showError(QWidget *parent, messages::ClientError error, const QString &address) const
+{
+    messages::showClientConnectError(parent, error, address);
 }
 
 //
 // ClientConnection
 //
 
-void ClientConnection::handleLogLine(const QString &logLine) {
+void ClientConnection::handleLogLine(const QString &logLine)
+{
+    if (logLine.contains("failed to connect to server")) {
+        if (!m_showMessage) {
+            qDebug("message already shown, skipping");
+            return;
+        }
 
-  if (logLine.contains("failed to connect to server")) {
+        m_showMessage = false;
 
-    if (!m_showMessage) {
-      qDebug("message already shown, skipping");
-      return;
+        // ignore the message if it's about the server refusing by name as
+        // this will trigger the server to show an 'add client' dialog.
+        if (logLine.contains("server refused client with our name")) {
+            qDebug("ignoring client name refused message");
+            return;
+        }
+
+        showMessage(logLine);
+    } else if (logLine.contains("connected to server")) {
+        m_showMessage = false;
     }
-
-    m_showMessage = false;
-
-    // ignore the message if it's about the server refusing by name as
-    // this will trigger the server to show an 'add client' dialog.
-    if (logLine.contains("server refused client with our name")) {
-      qDebug("ignoring client name refused message");
-      return;
-    }
-
-    showMessage(logLine);
-  } else if (logLine.contains("connected to server")) {
-    m_showMessage = false;
-  }
 }
 
-void ClientConnection::showMessage(const QString &logLine) {
-  using enum messages::ClientError;
+void ClientConnection::showMessage(const QString &logLine)
+{
+    using enum messages::ClientError;
 
-  emit messageShowing();
+    emit messageShowing();
 
-  const auto address = m_appConfig.serverHostname();
-  auto message =
-      QString("<p>The connection to server '%1' didn't work.</p>").arg(address);
+    const auto address = m_appConfig.serverHostname();
+    auto message = QString("<p>The connection to server '%1' didn't work.</p>").arg(address);
 
-  if (logLine.contains("server already has a connected client with our name")) {
-    m_deps->showError(m_pParent, AlreadyConnected, address);
-  } else if (QHostAddress a(address); a.isNull()) {
-    qDebug("ip not detected, showing hostname error");
-    m_deps->showError(m_pParent, HostnameError, address);
-  } else {
-    qDebug("ip detected, showing generic error");
-    m_deps->showError(m_pParent, GenericError, address);
-  }
+    if (logLine.contains("server already has a connected client with our name")) {
+        m_deps->showError(m_pParent, AlreadyConnected, address);
+    } else if (QHostAddress a(address); a.isNull()) {
+        qDebug("ip not detected, showing hostname error");
+        m_deps->showError(m_pParent, HostnameError, address);
+    } else {
+        qDebug("ip detected, showing generic error");
+        m_deps->showError(m_pParent, GenericError, address);
+    }
 }
 
 } // namespace deskflow::gui

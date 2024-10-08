@@ -31,157 +31,172 @@ using namespace testing;
 
 namespace {
 
-class QProcessProxyMock : public proxy::QProcessProxy {
+class QProcessProxyMock : public proxy::QProcessProxy
+{
 public:
-  operator bool() const override { return toBool(); }
+    operator bool() const override
+    {
+        return toBool();
+    }
 
-  QProcessProxyMock() {
-    ON_CALL(*this, toBool()).WillByDefault(Return(true));
-    ON_CALL(*this, state())
-        .WillByDefault(Return(QProcess::ProcessState::Running));
-    ON_CALL(*this, waitForStarted()).WillByDefault(Return(true));
-  }
+    QProcessProxyMock()
+    {
+        ON_CALL(*this, toBool()).WillByDefault(Return(true));
+        ON_CALL(*this, state()).WillByDefault(Return(QProcess::ProcessState::Running));
+        ON_CALL(*this, waitForStarted()).WillByDefault(Return(true));
+    }
 
-  MOCK_METHOD(bool, toBool, (), (const));
-  MOCK_METHOD(void, create, (), (override));
-  MOCK_METHOD(
-      void, start, (const QString &program, const QStringList &arguments),
-      (override));
-  MOCK_METHOD(bool, waitForStarted, (), (override));
-  MOCK_METHOD(QProcess::ProcessState, state, (), (const, override));
-  MOCK_METHOD(void, close, (), (override));
-  MOCK_METHOD(QString, readAllStandardOutput, (), (override));
-  MOCK_METHOD(QString, readAllStandardError, (), (override));
+    MOCK_METHOD(bool, toBool, (), (const));
+    MOCK_METHOD(void, create, (), (override));
+    MOCK_METHOD(void, start, (const QString &program, const QStringList &arguments), (override));
+    MOCK_METHOD(bool, waitForStarted, (), (override));
+    MOCK_METHOD(QProcess::ProcessState, state, (), (const, override));
+    MOCK_METHOD(void, close, (), (override));
+    MOCK_METHOD(QString, readAllStandardOutput, (), (override));
+    MOCK_METHOD(QString, readAllStandardError, (), (override));
 };
 
-class QIpcClientMock : public ipc::IQIpcClient {
+class QIpcClientMock : public ipc::IQIpcClient
+{
 public:
-  QIpcClientMock() {
-    ON_CALL(*this, isConnected()).WillByDefault(Return(true));
-  }
+    QIpcClientMock()
+    {
+        ON_CALL(*this, isConnected()).WillByDefault(Return(true));
+    }
 
-  MOCK_METHOD(void, sendHello, (), (const, override));
-  MOCK_METHOD(
-      void, sendCommand, (const QString &command, ElevateMode elevate),
-      (const, override));
-  MOCK_METHOD(void, connectToHost, (), (override));
-  MOCK_METHOD(void, disconnectFromHost, (), (override));
-  MOCK_METHOD(bool, isConnected, (), (const, override));
+    MOCK_METHOD(void, sendHello, (), (const, override));
+    MOCK_METHOD(void, sendCommand, (const QString &command, ElevateMode elevate), (const, override));
+    MOCK_METHOD(void, connectToHost, (), (override));
+    MOCK_METHOD(void, disconnectFromHost, (), (override));
+    MOCK_METHOD(bool, isConnected, (), (const, override));
 };
 
-class DepsMock : public CoreProcess::Deps {
+class DepsMock : public CoreProcess::Deps
+{
 public:
-  DepsMock() {
-    ON_CALL(*this, process()).WillByDefault(ReturnRef(m_process));
-    ON_CALL(*this, ipcClient()).WillByDefault(ReturnRef(m_ipcClient));
-    ON_CALL(*this, appPath(_)).WillByDefault(Return("stub app path"));
-    ON_CALL(*this, fileExists(_)).WillByDefault(Return(true));
-    ON_CALL(*this, getProfileRoot()).WillByDefault(Return("stub profile"));
-  }
+    DepsMock()
+    {
+        ON_CALL(*this, process()).WillByDefault(ReturnRef(m_process));
+        ON_CALL(*this, ipcClient()).WillByDefault(ReturnRef(m_ipcClient));
+        ON_CALL(*this, appPath(_)).WillByDefault(Return("stub app path"));
+        ON_CALL(*this, fileExists(_)).WillByDefault(Return(true));
+        ON_CALL(*this, getProfileRoot()).WillByDefault(Return("stub profile"));
+    }
 
-  MOCK_METHOD(proxy::QProcessProxy &, process, (), (override));
-  MOCK_METHOD(ipc::IQIpcClient &, ipcClient, (), (override));
-  MOCK_METHOD(QString, appPath, (const QString &name), (const, override));
-  MOCK_METHOD(bool, fileExists, (const QString &path), (const, override));
-  MOCK_METHOD(QString, getProfileRoot, (), (const, override));
+    MOCK_METHOD(proxy::QProcessProxy &, process, (), (override));
+    MOCK_METHOD(ipc::IQIpcClient &, ipcClient, (), (override));
+    MOCK_METHOD(QString, appPath, (const QString &name), (const, override));
+    MOCK_METHOD(bool, fileExists, (const QString &path), (const, override));
+    MOCK_METHOD(QString, getProfileRoot, (), (const, override));
 
-  NiceMock<QProcessProxyMock> m_process;
-  NiceMock<QIpcClientMock> m_ipcClient;
+    NiceMock<QProcessProxyMock> m_process;
+    NiceMock<QIpcClientMock> m_ipcClient;
 };
 
-class CoreProcessTests : public Test {
+class CoreProcessTests : public Test
+{
 public:
-  CoreProcessTests() : m_coreProcess(m_appConfig, m_serverConfig, m_pDeps) {}
+    CoreProcessTests()
+        : m_coreProcess(m_appConfig, m_serverConfig, m_pDeps)
+    {
+    }
 
-  NiceMock<AppConfigMock> m_appConfig;
-  NiceMock<ServerConfigMock> m_serverConfig;
-  std::shared_ptr<NiceMock<DepsMock>> m_pDeps =
-      std::make_shared<NiceMock<DepsMock>>();
-  CoreProcess m_coreProcess;
+    NiceMock<AppConfigMock> m_appConfig;
+    NiceMock<ServerConfigMock> m_serverConfig;
+    std::shared_ptr<NiceMock<DepsMock>> m_pDeps = std::make_shared<NiceMock<DepsMock>>();
+    CoreProcess m_coreProcess;
 };
 
 } // namespace
 
-TEST_F(CoreProcessTests, start_serverDesktop_callsProcessStart) {
-  m_coreProcess.setMode(CoreProcess::Mode::Server);
+TEST_F(CoreProcessTests, start_serverDesktop_callsProcessStart)
+{
+    m_coreProcess.setMode(CoreProcess::Mode::Server);
 
-  EXPECT_CALL(m_pDeps->m_process, start(_, _)).Times(1);
+    EXPECT_CALL(m_pDeps->m_process, start(_, _)).Times(1);
 
-  m_coreProcess.start(ProcessMode::kDesktop);
+    m_coreProcess.start(ProcessMode::kDesktop);
 }
 
-TEST_F(CoreProcessTests, start_serverService_callsSendCommand) {
-  m_coreProcess.setMode(CoreProcess::Mode::Server);
+TEST_F(CoreProcessTests, start_serverService_callsSendCommand)
+{
+    m_coreProcess.setMode(CoreProcess::Mode::Server);
 
-  EXPECT_CALL(m_pDeps->m_ipcClient, sendCommand(_, _)).Times(1);
+    EXPECT_CALL(m_pDeps->m_ipcClient, sendCommand(_, _)).Times(1);
 
-  m_coreProcess.start(ProcessMode::kService);
+    m_coreProcess.start(ProcessMode::kService);
 }
 
-TEST_F(CoreProcessTests, start_clientDesktop_callsProcessStart) {
-  m_coreProcess.setMode(CoreProcess::Mode::Client);
-  m_coreProcess.setAddress("stub address");
+TEST_F(CoreProcessTests, start_clientDesktop_callsProcessStart)
+{
+    m_coreProcess.setMode(CoreProcess::Mode::Client);
+    m_coreProcess.setAddress("stub address");
 
-  EXPECT_CALL(m_pDeps->m_process, start(_, _)).Times(1);
+    EXPECT_CALL(m_pDeps->m_process, start(_, _)).Times(1);
 
-  m_coreProcess.start(ProcessMode::kDesktop);
+    m_coreProcess.start(ProcessMode::kDesktop);
 }
 
-TEST_F(CoreProcessTests, start_clientService_callsSendCommand) {
-  m_coreProcess.setMode(CoreProcess::Mode::Client);
-  m_coreProcess.setAddress("stub address");
+TEST_F(CoreProcessTests, start_clientService_callsSendCommand)
+{
+    m_coreProcess.setMode(CoreProcess::Mode::Client);
+    m_coreProcess.setAddress("stub address");
 
-  EXPECT_CALL(m_pDeps->m_ipcClient, sendCommand(_, _)).Times(1);
+    EXPECT_CALL(m_pDeps->m_ipcClient, sendCommand(_, _)).Times(1);
 
-  m_coreProcess.start(ProcessMode::kService);
+    m_coreProcess.start(ProcessMode::kService);
 }
 
-TEST_F(CoreProcessTests, stop_serverDesktop_callsProcessClose) {
-  m_coreProcess.setMode(CoreProcess::Mode::Server);
-  m_coreProcess.start();
+TEST_F(CoreProcessTests, stop_serverDesktop_callsProcessClose)
+{
+    m_coreProcess.setMode(CoreProcess::Mode::Server);
+    m_coreProcess.start();
 
-  EXPECT_CALL(m_pDeps->m_process, close()).Times(1);
+    EXPECT_CALL(m_pDeps->m_process, close()).Times(1);
 
-  m_coreProcess.stop(ProcessMode::kDesktop);
+    m_coreProcess.stop(ProcessMode::kDesktop);
 }
 
-TEST_F(CoreProcessTests, stop_serverService_callsSendCommand) {
-  m_coreProcess.setMode(CoreProcess::Mode::Server);
-  m_coreProcess.start();
+TEST_F(CoreProcessTests, stop_serverService_callsSendCommand)
+{
+    m_coreProcess.setMode(CoreProcess::Mode::Server);
+    m_coreProcess.start();
 
-  EXPECT_CALL(m_pDeps->m_ipcClient, sendCommand(_, _)).Times(1);
+    EXPECT_CALL(m_pDeps->m_ipcClient, sendCommand(_, _)).Times(1);
 
-  m_coreProcess.stop(ProcessMode::kService);
+    m_coreProcess.stop(ProcessMode::kService);
 }
 
-TEST_F(CoreProcessTests, stop_clientDesktop_callsProcessClose) {
-  m_coreProcess.setMode(CoreProcess::Mode::Client);
-  m_coreProcess.setAddress("stub address");
-  m_coreProcess.start();
+TEST_F(CoreProcessTests, stop_clientDesktop_callsProcessClose)
+{
+    m_coreProcess.setMode(CoreProcess::Mode::Client);
+    m_coreProcess.setAddress("stub address");
+    m_coreProcess.start();
 
-  EXPECT_CALL(m_pDeps->m_process, close()).Times(1);
+    EXPECT_CALL(m_pDeps->m_process, close()).Times(1);
 
-  m_coreProcess.stop(ProcessMode::kDesktop);
+    m_coreProcess.stop(ProcessMode::kDesktop);
 }
 
-TEST_F(CoreProcessTests, stop_clientService_callsSendCommand) {
-  m_coreProcess.setMode(CoreProcess::Mode::Client);
-  m_coreProcess.setAddress("stub address");
-  m_coreProcess.start();
+TEST_F(CoreProcessTests, stop_clientService_callsSendCommand)
+{
+    m_coreProcess.setMode(CoreProcess::Mode::Client);
+    m_coreProcess.setAddress("stub address");
+    m_coreProcess.start();
 
-  EXPECT_CALL(m_pDeps->m_ipcClient, sendCommand(_, _)).Times(1);
+    EXPECT_CALL(m_pDeps->m_ipcClient, sendCommand(_, _)).Times(1);
 
-  m_coreProcess.stop(ProcessMode::kService);
+    m_coreProcess.stop(ProcessMode::kService);
 }
 
-TEST_F(CoreProcessTests, restart_serverDesktop_callsProcessStart) {
-  ON_CALL(m_appConfig, processMode())
-      .WillByDefault(Return(ProcessMode::kDesktop));
-  m_coreProcess.setMode(CoreProcess::Mode::Server);
-  m_coreProcess.start();
+TEST_F(CoreProcessTests, restart_serverDesktop_callsProcessStart)
+{
+    ON_CALL(m_appConfig, processMode()).WillByDefault(Return(ProcessMode::kDesktop));
+    m_coreProcess.setMode(CoreProcess::Mode::Server);
+    m_coreProcess.start();
 
-  EXPECT_CALL(m_pDeps->m_process, close()).Times(1);
-  EXPECT_CALL(m_pDeps->m_process, start(_, _)).Times(1);
+    EXPECT_CALL(m_pDeps->m_process, close()).Times(1);
+    EXPECT_CALL(m_pDeps->m_process, start(_, _)).Times(1);
 
-  m_coreProcess.restart();
+    m_coreProcess.restart();
 }

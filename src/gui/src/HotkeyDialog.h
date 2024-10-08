@@ -25,26 +25,34 @@
 
 #include <QDialog>
 
-class HotkeyDialog : public QDialog, public Ui::HotkeyDialogBase {
-  Q_OBJECT
+class HotkeyDialog : public QDialog, public Ui::HotkeyDialogBase
+{
+    Q_OBJECT
 
 public:
-  HotkeyDialog(QWidget *parent, Hotkey &hotkey);
+    HotkeyDialog(QWidget *parent, Hotkey &hotkey);
 
 public:
-  const Hotkey &hotkey() const { return m_Hotkey; }
+    const Hotkey &hotkey() const
+    {
+        return m_Hotkey;
+    }
 
 protected slots:
-  void accept();
+    void accept();
 
 protected:
-  const KeySequenceWidget *sequenceWidget() const {
-    return m_pKeySequenceWidgetHotkey;
-  }
-  Hotkey &hotkey() { return m_Hotkey; }
+    const KeySequenceWidget *sequenceWidget() const
+    {
+        return m_pKeySequenceWidgetHotkey;
+    }
+    Hotkey &hotkey()
+    {
+        return m_Hotkey;
+    }
 
 private:
-  Hotkey &m_Hotkey;
+    Hotkey &m_Hotkey;
 };
 
 #endif

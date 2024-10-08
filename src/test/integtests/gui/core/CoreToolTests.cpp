@@ -20,29 +20,32 @@
 
 #include <gtest/gtest.h>
 
-TEST(CoreToolTests, getProfileDir_noMock_returnsNonEmpty) {
-  TestQtCoreApp app;
-  CoreTool coreTool;
+TEST(CoreToolTests, getProfileDir_noMock_returnsNonEmpty)
+{
+    TestQtCoreApp app;
+    CoreTool coreTool;
 
-  QString profileDir = coreTool.getProfileDir();
+    QString profileDir = coreTool.getProfileDir();
 
-  EXPECT_FALSE(profileDir.isEmpty());
+    EXPECT_FALSE(profileDir.isEmpty());
 }
 
-TEST(CoreToolTests, getInstalledDir_noMock_returnsNonEmpty) {
-  TestQtCoreApp app;
-  CoreTool coreTool;
+TEST(CoreToolTests, getInstalledDir_noMock_returnsNonEmpty)
+{
+    TestQtCoreApp app;
+    CoreTool coreTool;
 
-  QString installedDir = coreTool.getInstalledDir();
+    QString installedDir = coreTool.getInstalledDir();
 
-  EXPECT_FALSE(installedDir.isEmpty());
+    EXPECT_FALSE(installedDir.isEmpty());
 }
 
-TEST(CoreToolTests, getArch_noMock_returnsNonEmpty) {
-  TestQtCoreApp app;
-  CoreTool coreTool;
+TEST(CoreToolTests, getArch_noMock_returnsNonEmpty)
+{
+    TestQtCoreApp app;
+    CoreTool coreTool;
 
-  QString arch = coreTool.getArch();
+    QString arch = coreTool.getArch();
 
-  EXPECT_FALSE(arch.isEmpty());
+    EXPECT_FALSE(arch.isEmpty());
 }

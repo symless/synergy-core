@@ -35,29 +35,29 @@ AddClientDialog::AddClientDialog(const QString &clientName, QWidget *parent)
   QIcon icon(":res/icons/64x64/video-display.png");
   QSize IconSize(32, 32);
 
-  m_pButtonLeft = new QPushButton(this);
-  m_pButtonLeft->setIcon(icon);
-  m_pButtonLeft->setIconSize(IconSize);
-  gridLayout->addWidget(m_pButtonLeft, 2, 0, 1, 1, Qt::AlignCenter);
-  connect(m_pButtonLeft, SIGNAL(clicked()), this, SLOT(handleButtonLeft()));
+    m_pButtonLeft = new QPushButton(this);
+    m_pButtonLeft->setIcon(icon);
+    m_pButtonLeft->setIconSize(IconSize);
+    gridLayout->addWidget(m_pButtonLeft, 2, 0, 1, 1, Qt::AlignCenter);
+    connect(m_pButtonLeft, &QPushButton::clicked, this, &AddClientDialog::handleButtonLeft);
 
-  m_pButtonUp = new QPushButton(this);
-  m_pButtonUp->setIcon(icon);
-  m_pButtonUp->setIconSize(IconSize);
-  gridLayout->addWidget(m_pButtonUp, 1, 1, 1, 1, Qt::AlignCenter);
-  connect(m_pButtonUp, SIGNAL(clicked()), this, SLOT(handleButtonUp()));
+    m_pButtonUp = new QPushButton(this);
+    m_pButtonUp->setIcon(icon);
+    m_pButtonUp->setIconSize(IconSize);
+    gridLayout->addWidget(m_pButtonUp, 1, 1, 1, 1, Qt::AlignCenter);
+    connect(m_pButtonUp, &QPushButton::clicked, this, &AddClientDialog::handleButtonUp);
 
-  m_pButtonRight = new QPushButton(this);
-  m_pButtonRight->setIcon(icon);
-  m_pButtonRight->setIconSize(IconSize);
-  gridLayout->addWidget(m_pButtonRight, 2, 2, 1, 1, Qt::AlignCenter);
-  connect(m_pButtonRight, SIGNAL(clicked()), this, SLOT(handleButtonRight()));
+    m_pButtonRight = new QPushButton(this);
+    m_pButtonRight->setIcon(icon);
+    m_pButtonRight->setIconSize(IconSize);
+    gridLayout->addWidget(m_pButtonRight, 2, 2, 1, 1, Qt::AlignCenter);
+    connect(m_pButtonRight, &QPushButton::clicked, this, &AddClientDialog::handleButtonRight);
 
-  m_pButtonDown = new QPushButton(this);
-  m_pButtonDown->setIcon(icon);
-  m_pButtonDown->setIconSize(IconSize);
-  gridLayout->addWidget(m_pButtonDown, 3, 1, 1, 1, Qt::AlignCenter);
-  connect(m_pButtonDown, SIGNAL(clicked()), this, SLOT(handleButtonDown()));
+    m_pButtonDown = new QPushButton(this);
+    m_pButtonDown->setIcon(icon);
+    m_pButtonDown->setIconSize(IconSize);
+    gridLayout->addWidget(m_pButtonDown, 3, 1, 1, 1, Qt::AlignCenter);
+    connect(m_pButtonDown, &QPushButton::clicked, this, &AddClientDialog::handleButtonDown);
 
   m_pLabelCenter = new QLabel(this);
   m_pLabelCenter->setPixmap(QPixmap(":res/icons/64x64/video-display.png"));
@@ -67,9 +67,8 @@ AddClientDialog::AddClientDialog(const QString &clientName, QWidget *parent)
   m_pDialogButtonBox->setLayoutDirection(Qt::RightToLeft);
 #endif
 
-  QPushButton *advanced =
-      m_pDialogButtonBox->addButton("Advanced", QDialogButtonBox::HelpRole);
-  connect(advanced, SIGNAL(clicked()), this, SLOT(handleButtonAdvanced()));
+    QPushButton *advanced = m_pDialogButtonBox->addButton("Advanced", QDialogButtonBox::HelpRole);
+    connect(advanced, &QPushButton::clicked, this, &AddClientDialog::handleButtonAdvanced);
 }
 
 AddClientDialog::~AddClientDialog() {

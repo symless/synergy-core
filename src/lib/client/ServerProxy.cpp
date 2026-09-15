@@ -454,9 +454,11 @@ KeyID ServerProxy::translateKey(KeyID id) const
   }
 
   if (id2 != kKeyModifierIDNull) {
-    return s_translationTable[m_modifierTranslationTable[id2]][side];
+    return std::clamp<KeyModifierMask>(
+        s_translationTable[m_modifierTranslationTable[id2]][side], 0, kKeyModifierIDLast - 1
+    );
   } else {
-    return id;
+    return std::clamp<KeyModifierMask>(id, 0, kKeyModifierIDLast - 1);
   }
 }
 
@@ -486,7 +488,7 @@ KeyModifierMask ServerProxy::translateModifierMask(KeyModifierMask mask) const
   if ((mask & KeyModifierSuper) != 0) {
     newMask |= s_masks[m_modifierTranslationTable[kKeyModifierIDSuper]];
   }
-  return newMask;
+  return std::clamp<KeyModifierMask>(newMask, 0, kKeyModifierIDLast - 1);
 }
 
 void ServerProxy::enter()
@@ -796,7 +798,7 @@ void ServerProxy::setOptions()
     }
 
     if (id != kKeyModifierIDNull) {
-      m_modifierTranslationTable[id] = options[i + 1];
+      m_modifierTranslationTable[id] = std::clamp<KeyModifierMask>(options[i + 1], 0, kKeyModifierIDLast - 1);
       LOG_VERBOSE("modifier %d mapped to %d", id, m_modifierTranslationTable[id]);
     }
   }
